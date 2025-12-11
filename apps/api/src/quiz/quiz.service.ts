@@ -23,7 +23,7 @@ export class QuizService {
     }
 
     // Parsear el quiz desde JSON
-    const quiz = lesson.quiz as Quiz;
+    const quiz = lesson.quiz as unknown as Quiz;
 
     if (!quiz.questions || quiz.questions.length === 0) {
       throw new BadRequestException('El quiz no tiene preguntas');
