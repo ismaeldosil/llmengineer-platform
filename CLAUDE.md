@@ -165,6 +165,39 @@ npm run lint                               # ESLint
 npm run typecheck                          # TypeScript check
 ```
 
+## Política de Testing (OBLIGATORIO)
+
+**COBERTURA MÍNIMA: 90%**
+
+Esta es una política estricta del proyecto. Todo código debe cumplir:
+
+### Requisitos
+- **Coverage mínimo**: 90% en líneas, funciones, branches y statements
+- **Tests obligatorios**: Cada servicio/componente DEBE tener su archivo `.spec.ts` o `.test.ts`
+- **CI bloqueante**: El pipeline falla si coverage < 90%
+
+### Reglas
+1. **NO se puede mergear código sin tests** que cubran al menos el 90%
+2. **Cada endpoint de API** debe tener tests unitarios del servicio + tests E2E
+3. **Cada componente React** debe tener tests de renderizado y comportamiento
+4. **Cada función utilitaria** debe tener tests de casos normales y edge cases
+
+### Al implementar cualquier ticket:
+1. Escribir tests ANTES o JUNTO con el código (TDD preferido)
+2. Ejecutar `npm run test:cov` para verificar coverage
+3. Si coverage < 90%, agregar más tests antes de commit
+4. Los tests deben ser significativos, no solo para subir números
+
+### Estructura de Tests
+```
+apps/api/src/
+├── auth/
+│   ├── auth.service.ts
+│   ├── auth.service.spec.ts      # ← OBLIGATORIO
+│   ├── auth.controller.ts
+│   └── auth.controller.spec.ts   # ← OBLIGATORIO
+```
+
 ## Flujo de Trabajo con Agentes
 
 1. **Recibir ticket** del sprint o crear nuevo
