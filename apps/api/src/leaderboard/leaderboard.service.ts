@@ -52,7 +52,7 @@ export class LeaderboardService {
       const userMap = new Map(users.map((u) => [u.id, u]));
 
       entries = weeklyXp.map((w) => {
-        const user = userMap.get(w.userId);
+        const user = userMap.get(w.userId) as any;
         return {
           user: {
             id: user?.id,
