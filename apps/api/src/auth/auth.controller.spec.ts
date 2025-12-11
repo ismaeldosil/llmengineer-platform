@@ -130,4 +130,41 @@ describe('AuthController', () => {
       expect(result.user.displayName).toBe(registerDto.displayName);
     });
   });
+
+  describe('getMe', () => {
+    it('should return the current user from @CurrentUser decorator', async () => {
+      const mockUser = {
+        id: 'user-123',
+        email: 'test@example.com',
+        displayName: 'Test User',
+        level: 1,
+        totalXP: 0,
+      };
+
+      const result = await controller.getMe(mockUser);
+
+      expect(result).toEqual(mockUser);
+      expect(result.id).toBe('user-123');
+      expect(result.email).toBe('test@example.com');
+    });
+
+    it('should return user with all properties', async () => {
+      const mockUser = {
+        id: 'user-456',
+        email: 'complete@example.com',
+        displayName: 'Complete User',
+        level: 5,
+        totalXP: 5000,
+        streakDays: 10,
+        createdAt: new Date('2024-01-01'),
+      };
+
+      const result = await controller.getMe(mockUser);
+
+      expect(result).toEqual(mockUser);
+      expect(result.level).toBe(5);
+      expect(result.totalXP).toBe(5000);
+      expect(result.streakDays).toBe(10);
+    });
+  });
 });
