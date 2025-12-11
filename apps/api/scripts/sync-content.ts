@@ -91,6 +91,7 @@ export function readJsonFile<T>(filePath: string): T | null {
     const content = fs.readFileSync(filePath, 'utf-8');
     return JSON.parse(content) as T;
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.warn(`Failed to read JSON file: ${filePath}`, error);
     return null;
   }
@@ -101,6 +102,7 @@ export async function syncLesson(
   lessonData: LessonJSON
 ): Promise<boolean> {
   if (!validateLessonData(lessonData)) {
+    // eslint-disable-next-line no-console
     console.warn(`Skipping invalid lesson: ${JSON.stringify(lessonData)}`);
     return false;
   }
@@ -142,6 +144,7 @@ export async function syncBadge(
   badge: BadgeJSON
 ): Promise<boolean> {
   if (!validateBadgeData(badge)) {
+    // eslint-disable-next-line no-console
     console.warn(`Skipping invalid badge: ${JSON.stringify(badge)}`);
     return false;
   }
@@ -176,6 +179,7 @@ export async function syncLessons(
   prisma: PrismaClient,
   contentPath: string
 ): Promise<number> {
+  // eslint-disable-next-line no-console
   console.log('Syncing lessons from content repository...');
 
   const lessonsDir = path.join(contentPath, 'lessons');
@@ -193,6 +197,7 @@ export async function syncLessons(
     const weekPath = path.join(lessonsDir, weekDir);
     const lessonFiles = getLessonFiles(weekPath);
 
+    // eslint-disable-next-line no-console
     console.log(`\nProcessing ${weekDir} (${lessonFiles.length} lessons)...`);
 
     for (const lessonFile of lessonFiles) {
@@ -202,6 +207,7 @@ export async function syncLessons(
       if (lessonData) {
         const success = await syncLesson(prisma, lessonData);
         if (success) {
+          // eslint-disable-next-line no-console
           console.log(`  ✓ Synced: ${lessonData.slug}`);
           totalLessons++;
         }
@@ -209,6 +215,7 @@ export async function syncLessons(
     }
   }
 
+  // eslint-disable-next-line no-console
   console.log(`\n✓ Successfully synced ${totalLessons} lessons`);
   return totalLessons;
 }
@@ -217,6 +224,7 @@ export async function syncBadges(
   prisma: PrismaClient,
   contentPath: string
 ): Promise<number> {
+  // eslint-disable-next-line no-console
   console.log('\nSyncing badges from content repository...');
 
   const badgesFile = path.join(contentPath, 'badges', 'badges.json');
@@ -236,11 +244,13 @@ export async function syncBadges(
   for (const badge of badgesData.badges) {
     const success = await syncBadge(prisma, badge);
     if (success) {
+      // eslint-disable-next-line no-console
       console.log(`  ✓ Synced: ${badge.slug}`);
       syncedCount++;
     }
   }
 
+  // eslint-disable-next-line no-console
   console.log(`\n✓ Successfully synced ${syncedCount} badges`);
   return syncedCount;
 }
@@ -249,9 +259,13 @@ export async function syncContent(
   prisma: PrismaClient,
   contentPath: string = DEFAULT_CONTENT_PATH
 ): Promise<{ lessons: number; badges: number }> {
+  // eslint-disable-next-line no-console
   console.log('='.repeat(60));
+  // eslint-disable-next-line no-console
   console.log('Content Synchronization Script');
+  // eslint-disable-next-line no-console
   console.log('='.repeat(60));
+  // eslint-disable-next-line no-console
   console.log(`Content Repository: ${contentPath}\n`);
 
   if (!fs.existsSync(contentPath)) {
@@ -264,8 +278,11 @@ export async function syncContent(
   const badges = await syncBadges(prisma, contentPath);
   const lessons = await syncLessons(prisma, contentPath);
 
+  // eslint-disable-next-line no-console
   console.log('\n' + '='.repeat(60));
+  // eslint-disable-next-line no-console
   console.log('✓ Content synchronization completed successfully!');
+  // eslint-disable-next-line no-console
   console.log('='.repeat(60));
 
   return { lessons, badges };
@@ -278,6 +295,7 @@ export async function main(): Promise<void> {
   try {
     await syncContent(prisma);
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error('\n❌ Error during content sync:', error);
     throw error;
   } finally {

@@ -22,7 +22,7 @@ export default function ProfileScreen() {
 
   const handleEditProfile = () => {
     // Placeholder for future implementation
-    console.log('Edit profile - to be implemented');
+    // TODO: Implement edit profile modal
   };
 
   const isLoading = progressLoading || badgesLoading;

@@ -4,24 +4,30 @@ import * as bcrypt from 'bcrypt';
 const prisma = new PrismaClient();
 
 async function main() {
+  // eslint-disable-next-line no-console
   console.log('Starting database seed...');
 
   // Seed Badges
+  // eslint-disable-next-line no-console
   console.log('Seeding badges...');
   await seedBadges();
 
   // Seed Lessons
+  // eslint-disable-next-line no-console
   console.log('Seeding lessons...');
   await seedLessons();
 
   // Seed Test User
+  // eslint-disable-next-line no-console
   console.log('Seeding test user...');
   const testUser = await seedTestUser();
 
   // Seed Sample Completions
+  // eslint-disable-next-line no-console
   console.log('Seeding sample completions...');
   await seedSampleCompletions(testUser.id);
 
+  // eslint-disable-next-line no-console
   console.log('Database seed completed successfully!');
 }
 
@@ -187,6 +193,7 @@ async function seedBadges() {
     });
   }
 
+  // eslint-disable-next-line no-console
   console.log(`✓ Seeded ${badges.length} badges`);
 }
 
@@ -343,6 +350,7 @@ async function seedLessons() {
     });
   }
 
+  // eslint-disable-next-line no-console
   console.log(`✓ Seeded ${lessons.length} lessons`);
 }
 
@@ -372,6 +380,7 @@ async function seedTestUser() {
     },
   });
 
+  // eslint-disable-next-line no-console
   console.log(`✓ Created test user: ${user.email}`);
   return user;
 }
@@ -440,7 +449,9 @@ async function seedSampleCompletions(userId: string) {
     },
   });
 
+  // eslint-disable-next-line no-console
   console.log(`✓ Created ${completions.length} sample completions`);
+  // eslint-disable-next-line no-console
   console.log(`✓ Created 2 streak log entries`);
 }
 

@@ -90,5 +90,8 @@ jobs:
       - name: Build shared packages
         run: npm run build -w @llmengineer/shared
 
+      - name: Generate Prisma Client
+        run: npm run db:generate -w @llmengineer/api
+
       - name: Build API
         run: npm run build -w @llmengineer/api
