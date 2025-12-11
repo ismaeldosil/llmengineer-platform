@@ -1,0 +1,136 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  password     String
+  displayName  String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  progress     UserProgress?
+  completions  LessonCompletion[]
+  badges       UserBadge[]
+  streakLog    StreakLog[]
+
+  @@map("users")
+}
+
+model UserProgress {
+  id               String   @id @default(cuid())
+  userId           String   @unique
+  totalXp          Int      @default(0)
+  level            Int      @default(1)
+  levelTitle       String   @default("Prompt Curious")
+  currentStreak    Int      @default(0)
+  longestStreak    Int      @default(0)
+  lessonsCompleted Int      @default(0)
+  lastActiveAt     DateTime @default(now())
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_progress")
+}
+
+model Lesson {
+  id               String   @id @default(cuid())
+  slug             String   @unique
+  title            String
+  description      String
+  week             Int
+  order            Int
+  difficulty       Difficulty @default(beginner)
+  xpReward         Int      @default(100)
+  estimatedMinutes Int      @default(15)
+  contentUrl       String?
+  sections         Json     @default("[]")
+  isPublished      Boolean  @default(false)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  completions LessonCompletion[]
+
+  @@unique([week, order])
+  @@map("lessons")
+}
+
+enum Difficulty {
+  beginner
+  intermediate
+  advanced
+}
+
+model LessonCompletion {
+  id               String   @id @default(cuid())
+  userId           String
+  lessonId         String
+  timeSpentSeconds Int
+  xpEarned         Int
+  completedAt      DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, lessonId])
+  @@map("lesson_completions")
+}
+
+model Badge {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  description String
+  icon        String
+  category    BadgeCategory
+  requirement Json
+  xpBonus     Int      @default(0)
+  isSecret    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  users UserBadge[]
+
+  @@map("badges")
+}
+
+enum BadgeCategory {
+  progress
+  streak
+  completion
+  mastery
+  special
+}
+
+model UserBadge {
+  id        String   @id @default(cuid())
+  userId    String
+  badgeId   String
+  earnedAt  DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  badge Badge @relation(fields: [badgeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, badgeId])
+  @@map("user_badges")
+}
+
+model StreakLog {
+  id        String   @id @default(cuid())
+  userId    String
+  date      DateTime @db.Date
+  checkedIn Boolean  @default(true)
+  bonusXp   Int      @default(0)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+  @@map("streak_logs")
+}

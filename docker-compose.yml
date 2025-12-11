@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: llmengineer-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: llmengineer
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    container_name: llmengineer-api
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/llmengineer?schema=public
+      JWT_SECRET: ${JWT_SECRET:-development-secret-change-in-production}
+      JWT_EXPIRES_IN: 7d
+      PORT: 3001
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:8081}
+      NODE_ENV: ${NODE_ENV:-development}
+    ports:
+      - '3001:3001'
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./apps/api:/app/apps/api
+      - ./packages:/app/packages
+      - /app/node_modules
+      - /app/apps/api/node_modules
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    container_name: llmengineer-web
+    environment:
+      EXPO_PUBLIC_API_URL: http://localhost:3001
+    ports:
+      - '8081:8081'
+    depends_on:
+      - api
+    volumes:
+      - ./apps/web:/app/apps/web
+      - ./packages:/app/packages
+      - /app/node_modules
+      - /app/apps/web/node_modules
+
+volumes:
+  postgres_data:

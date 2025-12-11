@@ -1,0 +1,56 @@
+{
+  "name": "llmengineer-platform",
+  "version": "0.1.0",
+  "private": true,
+  "description": "LLM Engineer Platform - Plataforma educativa gamificada para aprender LLM Engineering",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspaces --if-present",
+    "dev:web": "npm run dev -w @llmengineer/web",
+    "dev:api": "npm run dev -w @llmengineer/api",
+    "build": "npm run build --workspaces --if-present",
+    "build:web": "npm run build -w @llmengineer/web",
+    "build:api": "npm run build -w @llmengineer/api",
+    "test": "npm run test --workspaces --if-present",
+    "test:web": "npm run test -w @llmengineer/web",
+    "test:api": "npm run test -w @llmengineer/api",
+    "lint": "npm run lint --workspaces --if-present",
+    "lint:fix": "npm run lint:fix --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "db:generate": "npm run db:generate -w @llmengineer/api",
+    "db:migrate": "npm run db:migrate -w @llmengineer/api",
+    "db:seed": "npm run db:seed -w @llmengineer/api",
+    "db:studio": "npm run db:studio -w @llmengineer/api",
+    "docker:up": "docker-compose -f infra/docker-compose.yml up -d",
+    "docker:down": "docker-compose -f infra/docker-compose.yml down",
+    "docker:logs": "docker-compose -f infra/docker-compose.yml logs -f",
+    "prepare": "husky install"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.1.0",
+    "husky": "^9.0.0",
+    "lint-staged": "^15.2.0",
+    "prettier": "^3.2.0",
+    "typescript": "^5.3.0"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md}": [
+      "prettier --write"
+    ]
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=10.0.0"
+  }
+}
