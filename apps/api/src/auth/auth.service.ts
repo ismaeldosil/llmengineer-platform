@@ -23,6 +23,9 @@ export class AuthService {
       throw new UnauthorizedException('Credenciales inválidas');
     }
 
+    // Update lastActiveAt
+    await this.usersService.updateLastActive(user.id);
+
     const payload = { sub: user.id, email: user.email };
     const accessToken = this.jwtService.sign(payload);
 

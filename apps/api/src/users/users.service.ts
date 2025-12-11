@@ -89,6 +89,15 @@ export class UsersService {
     };
   }
 
+  async updateLastActive(userId: string) {
+    return this.prisma.userProgress.update({
+      where: { userId },
+      data: {
+        lastActiveAt: new Date(),
+      },
+    });
+  }
+
   async addXp(userId: string, xp: number) {
     const progress = await this.prisma.userProgress.findUnique({
       where: { userId },

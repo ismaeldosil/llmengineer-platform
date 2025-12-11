@@ -32,6 +32,7 @@ describe('AuthService', () => {
     findByEmail: jest.fn(),
     findById: jest.fn(),
     create: jest.fn(),
+    updateLastActive: jest.fn(),
   };
 
   const mockJwtService = {
@@ -241,6 +242,36 @@ describe('AuthService', () => {
       await authService.login(loginDto);
 
       expect(bcrypt.compare).toHaveBeenCalledWith(loginDto.password, mockUser.password);
+    });
+
+    it('should update lastActiveAt on successful login', async () => {
+      mockUsersService.findByEmail.mockResolvedValue(mockUser);
+      mockUsersService.updateLastActive.mockResolvedValue({});
+      mockJwtService.sign.mockReturnValue('test-token');
+
+      (bcrypt.compare as jest.Mock).mockResolvedValue(true);
+
+      await authService.login(loginDto);
+
+      expect(usersService.updateLastActive).toHaveBeenCalledWith(mockUser.id);
+    });
+
+    it('should not update lastActiveAt if user not found', async () => {
+      mockUsersService.findByEmail.mockResolvedValue(null);
+
+      await expect(authService.login(loginDto)).rejects.toThrow(UnauthorizedException);
+
+      expect(usersService.updateLastActive).not.toHaveBeenCalled();
+    });
+
+    it('should not update lastActiveAt if password is invalid', async () => {
+      mockUsersService.findByEmail.mockResolvedValue(mockUser);
+
+      (bcrypt.compare as jest.Mock).mockResolvedValue(false);
+
+      await expect(authService.login(loginDto)).rejects.toThrow(UnauthorizedException);
+
+      expect(usersService.updateLastActive).not.toHaveBeenCalled();
     });
   });
 
