@@ -25,11 +25,7 @@ export function PasswordInput({ label, error, style, ...props }: PasswordInputPr
           {...props}
         />
         <Pressable style={styles.iconButton} onPress={toggleVisibility}>
-          <Ionicons
-            name={isVisible ? 'eye-off' : 'eye'}
-            size={20}
-            color="#9CA3AF"
-          />
+          <Ionicons name={isVisible ? 'eye-off' : 'eye'} size={20} color="#9CA3AF" />
         </Pressable>
       </View>
       {error && <Text style={styles.error}>{error}</Text>}

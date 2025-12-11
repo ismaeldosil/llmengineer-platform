@@ -66,13 +66,7 @@ describe('MultipleChoice', () => {
     const parisOption = getByText('Paris');
     fireEvent.press(parisOption);
 
-    rerender(
-      <MultipleChoice
-        question={mockQuestion}
-        onAnswer={mockOnAnswer}
-        selectedAnswer="b"
-      />
-    );
+    rerender(<MultipleChoice question={mockQuestion} onAnswer={mockOnAnswer} selectedAnswer="b" />);
 
     // The component should show the selected state
     expect(mockOnAnswer).toHaveBeenCalledWith('b');
@@ -80,11 +74,7 @@ describe('MultipleChoice', () => {
 
   it('should not call onAnswer when disabled', () => {
     const { getByText } = render(
-      <MultipleChoice
-        question={mockQuestion}
-        onAnswer={mockOnAnswer}
-        disabled={true}
-      />
+      <MultipleChoice question={mockQuestion} onAnswer={mockOnAnswer} disabled={true} />
     );
 
     const parisOption = getByText('Paris');
@@ -209,20 +199,10 @@ describe('MultipleChoice', () => {
 
   it('should maintain selected state across renders', () => {
     const { getByText, rerender } = render(
-      <MultipleChoice
-        question={mockQuestion}
-        onAnswer={mockOnAnswer}
-        selectedAnswer="b"
-      />
+      <MultipleChoice question={mockQuestion} onAnswer={mockOnAnswer} selectedAnswer="b" />
     );
 
-    rerender(
-      <MultipleChoice
-        question={mockQuestion}
-        onAnswer={mockOnAnswer}
-        selectedAnswer="b"
-      />
-    );
+    rerender(<MultipleChoice question={mockQuestion} onAnswer={mockOnAnswer} selectedAnswer="b" />);
 
     // Component should maintain the selected state
     expect(getByText('Paris')).toBeTruthy();
@@ -244,11 +224,7 @@ describe('MultipleChoice', () => {
 
   it('should render with preselected answer', () => {
     const { getByText } = render(
-      <MultipleChoice
-        question={mockQuestion}
-        onAnswer={mockOnAnswer}
-        selectedAnswer="c"
-      />
+      <MultipleChoice question={mockQuestion} onAnswer={mockOnAnswer} selectedAnswer="c" />
     );
 
     expect(getByText('Berlin')).toBeTruthy();

@@ -149,7 +149,7 @@ describe('BadgesService', () => {
           id: 'badge-2',
           slug: 'streak-3',
           requirement: { streak: 3 },
-        }),
+        })
       );
     });
 
@@ -186,7 +186,7 @@ describe('BadgesService', () => {
       expect(prismaService.badge.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
           where: { isSecret: false },
-        }),
+        })
       );
     });
 
@@ -200,7 +200,7 @@ describe('BadgesService', () => {
       expect(prismaService.userBadge.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
           orderBy: { earnedAt: 'desc' },
-        }),
+        })
       );
     });
 

@@ -8,7 +8,11 @@ import { useGetProgressQuery, useGetBadgesQuery } from '@/services/api';
 export default function ProfileScreen() {
   const dispatch = useDispatch();
   const user = useSelector((state: RootState) => state.auth.user);
-  const { data: progress, isLoading: progressLoading, isError: progressError } = useGetProgressQuery();
+  const {
+    data: progress,
+    isLoading: progressLoading,
+    isError: progressError,
+  } = useGetProgressQuery();
   const { data: badges, isLoading: badgesLoading, isError: badgesError } = useGetBadgesQuery();
 
   const handleLogout = () => {
@@ -79,8 +83,11 @@ export default function ProfileScreen() {
         {/* Current Streak Display */}
         <View style={styles.streakContainer}>
           <Text style={styles.streakEmoji}>
-            {progress?.currentStreak && progress.currentStreak >= 7 ? '🔥' :
-             progress?.currentStreak && progress.currentStreak >= 3 ? '⚡' : '✨'}
+            {progress?.currentStreak && progress.currentStreak >= 7
+              ? '🔥'
+              : progress?.currentStreak && progress.currentStreak >= 3
+                ? '⚡'
+                : '✨'}
           </Text>
           <View style={styles.streakInfo}>
             <Text style={styles.streakCount}>{progress?.currentStreak || 0} días</Text>

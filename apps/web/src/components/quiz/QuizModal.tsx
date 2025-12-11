@@ -15,7 +15,10 @@ import { TrueFalse } from './TrueFalse';
 interface QuizModalProps {
   visible: boolean;
   questions: QuizQuestion[];
-  onComplete: (score: number, answers: Array<{ questionId: string; selectedAnswer: string }>) => void;
+  onComplete: (
+    score: number,
+    answers: Array<{ questionId: string; selectedAnswer: string }>
+  ) => void;
   onClose: () => void;
   isSubmitting?: boolean;
 }
@@ -66,9 +69,7 @@ export function QuizModal({
     setAnswers((prev) => {
       const existing = prev.find((a) => a.questionId === currentQuestion.id);
       if (existing) {
-        return prev.map((a) =>
-          a.questionId === currentQuestion.id ? newAnswer : a
-        );
+        return prev.map((a) => (a.questionId === currentQuestion.id ? newAnswer : a));
       }
       return [...prev, newAnswer];
     });
@@ -157,20 +158,14 @@ export function QuizModal({
           </View>
         </View>
 
-        <ScrollView
-          style={styles.content}
-          contentContainerStyle={styles.contentContainer}
-        >
+        <ScrollView style={styles.content} contentContainerStyle={styles.contentContainer}>
           {renderQuestion()}
         </ScrollView>
 
         <View style={styles.footer}>
           <View style={styles.navigationButtons}>
             <Pressable
-              style={[
-                styles.navButton,
-                currentQuestionIndex === 0 && styles.navButtonDisabled,
-              ]}
+              style={[styles.navButton, currentQuestionIndex === 0 && styles.navButtonDisabled]}
               onPress={handlePrevious}
               disabled={currentQuestionIndex === 0 || isSubmitting}
             >

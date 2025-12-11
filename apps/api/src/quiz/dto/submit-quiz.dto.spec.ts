@@ -70,7 +70,7 @@ describe('SubmitQuizDto', () => {
 
       const errors = await validate(dto, {
         whitelist: true,
-        forbidNonWhitelisted: true
+        forbidNonWhitelisted: true,
       });
       expect(errors).toHaveLength(0);
       expect(dto.answers).toHaveLength(2);
@@ -107,7 +107,7 @@ describe('SubmitQuizDto', () => {
 
       const errors = await validate(dto, {
         whitelist: true,
-        forbidNonWhitelisted: true
+        forbidNonWhitelisted: true,
       });
       expect(errors.length).toBeGreaterThan(0);
     });
@@ -122,14 +122,12 @@ describe('SubmitQuizDto', () => {
 
     it('should accept single answer in array', async () => {
       const dto = plainToInstance(SubmitQuizDto, {
-        answers: [
-          { questionId: 'q1', selectedAnswer: 'opt1' },
-        ],
+        answers: [{ questionId: 'q1', selectedAnswer: 'opt1' }],
       });
 
       const errors = await validate(dto, {
         whitelist: true,
-        forbidNonWhitelisted: true
+        forbidNonWhitelisted: true,
       });
       expect(errors).toHaveLength(0);
       expect(dto.answers).toHaveLength(1);
@@ -148,7 +146,7 @@ describe('SubmitQuizDto', () => {
 
       const errors = await validate(dto, {
         whitelist: true,
-        forbidNonWhitelisted: true
+        forbidNonWhitelisted: true,
       });
       expect(errors).toHaveLength(0);
       expect(dto.answers).toHaveLength(5);

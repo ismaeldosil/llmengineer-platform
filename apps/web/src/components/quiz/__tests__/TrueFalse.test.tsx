@@ -25,26 +25,20 @@ describe('TrueFalse', () => {
   });
 
   it('should render question text correctly', () => {
-    const { getByText } = render(
-      <TrueFalse question={mockTrueQuestion} onAnswer={mockOnAnswer} />
-    );
+    const { getByText } = render(<TrueFalse question={mockTrueQuestion} onAnswer={mockOnAnswer} />);
 
     expect(getByText('React Native uses JavaScript for mobile development.')).toBeTruthy();
   });
 
   it('should render True and False buttons', () => {
-    const { getByText } = render(
-      <TrueFalse question={mockTrueQuestion} onAnswer={mockOnAnswer} />
-    );
+    const { getByText } = render(<TrueFalse question={mockTrueQuestion} onAnswer={mockOnAnswer} />);
 
     expect(getByText('True')).toBeTruthy();
     expect(getByText('False')).toBeTruthy();
   });
 
   it('should call onAnswer with "true" when True button is pressed', () => {
-    const { getByText } = render(
-      <TrueFalse question={mockTrueQuestion} onAnswer={mockOnAnswer} />
-    );
+    const { getByText } = render(<TrueFalse question={mockTrueQuestion} onAnswer={mockOnAnswer} />);
 
     const trueButton = getByText('True');
     fireEvent.press(trueButton);
@@ -54,9 +48,7 @@ describe('TrueFalse', () => {
   });
 
   it('should call onAnswer with "false" when False button is pressed', () => {
-    const { getByText } = render(
-      <TrueFalse question={mockTrueQuestion} onAnswer={mockOnAnswer} />
-    );
+    const { getByText } = render(<TrueFalse question={mockTrueQuestion} onAnswer={mockOnAnswer} />);
 
     const falseButton = getByText('False');
     fireEvent.press(falseButton);
@@ -67,11 +59,7 @@ describe('TrueFalse', () => {
 
   it('should not call onAnswer when disabled', () => {
     const { getByText } = render(
-      <TrueFalse
-        question={mockTrueQuestion}
-        onAnswer={mockOnAnswer}
-        disabled={true}
-      />
+      <TrueFalse question={mockTrueQuestion} onAnswer={mockOnAnswer} disabled={true} />
     );
 
     const trueButton = getByText('True');
@@ -137,9 +125,7 @@ describe('TrueFalse', () => {
   });
 
   it('should allow changing answer when not disabled', () => {
-    const { getByText } = render(
-      <TrueFalse question={mockTrueQuestion} onAnswer={mockOnAnswer} />
-    );
+    const { getByText } = render(<TrueFalse question={mockTrueQuestion} onAnswer={mockOnAnswer} />);
 
     const trueButton = getByText('True');
     fireEvent.press(trueButton);
@@ -161,11 +147,7 @@ describe('TrueFalse', () => {
     fireEvent.press(trueButton);
 
     rerender(
-      <TrueFalse
-        question={mockTrueQuestion}
-        onAnswer={mockOnAnswer}
-        selectedAnswer="true"
-      />
+      <TrueFalse question={mockTrueQuestion} onAnswer={mockOnAnswer} selectedAnswer="true" />
     );
 
     expect(mockOnAnswer).toHaveBeenCalledWith('true');
@@ -197,28 +179,18 @@ describe('TrueFalse', () => {
 
   it('should maintain selected state across renders', () => {
     const { getByText, rerender } = render(
-      <TrueFalse
-        question={mockTrueQuestion}
-        onAnswer={mockOnAnswer}
-        selectedAnswer="true"
-      />
+      <TrueFalse question={mockTrueQuestion} onAnswer={mockOnAnswer} selectedAnswer="true" />
     );
 
     rerender(
-      <TrueFalse
-        question={mockTrueQuestion}
-        onAnswer={mockOnAnswer}
-        selectedAnswer="true"
-      />
+      <TrueFalse question={mockTrueQuestion} onAnswer={mockOnAnswer} selectedAnswer="true" />
     );
 
     expect(getByText('True')).toBeTruthy();
   });
 
   it('should handle rapid button presses', () => {
-    const { getByText } = render(
-      <TrueFalse question={mockTrueQuestion} onAnswer={mockOnAnswer} />
-    );
+    const { getByText } = render(<TrueFalse question={mockTrueQuestion} onAnswer={mockOnAnswer} />);
 
     fireEvent.press(getByText('True'));
     fireEvent.press(getByText('False'));
@@ -230,11 +202,7 @@ describe('TrueFalse', () => {
 
   it('should render with preselected answer', () => {
     const { getByText } = render(
-      <TrueFalse
-        question={mockTrueQuestion}
-        onAnswer={mockOnAnswer}
-        selectedAnswer="false"
-      />
+      <TrueFalse question={mockTrueQuestion} onAnswer={mockOnAnswer} selectedAnswer="false" />
     );
 
     expect(getByText('False')).toBeTruthy();
@@ -278,9 +246,7 @@ describe('TrueFalse', () => {
         'This is a very long question that tests whether the component can handle lengthy text without breaking the layout or causing display issues.',
     };
 
-    const { getByText } = render(
-      <TrueFalse question={longQuestion} onAnswer={mockOnAnswer} />
-    );
+    const { getByText } = render(<TrueFalse question={longQuestion} onAnswer={mockOnAnswer} />);
 
     expect(getByText(/This is a very long question/)).toBeTruthy();
     expect(getByText('True')).toBeTruthy();

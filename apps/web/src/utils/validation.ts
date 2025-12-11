@@ -56,7 +56,10 @@ export const validateDisplayName = (name: string): ValidationResult => {
   return { isValid: true };
 };
 
-export const validatePasswordMatch = (password: string, confirmPassword: string): ValidationResult => {
+export const validatePasswordMatch = (
+  password: string,
+  confirmPassword: string
+): ValidationResult => {
   if (password !== confirmPassword) {
     return { isValid: false, error: 'Las contraseñas no coinciden' };
   }

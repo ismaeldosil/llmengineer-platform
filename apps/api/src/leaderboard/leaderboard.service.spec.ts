@@ -42,15 +42,14 @@ describe('LeaderboardService', () => {
 
   describe('getLeaderboard', () => {
     it('should call getGlobalLeaderboard when type is global', async () => {
-      const spy = jest
-        .spyOn(service as any, 'getGlobalLeaderboard')
-        .mockResolvedValue({
-          entries: [],
-          currentUserRank: 0,
-          currentUserEntry: null,
-          total: 0,
-          offset: 0,
-        });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const spy = jest.spyOn(service as any, 'getGlobalLeaderboard').mockResolvedValue({
+        entries: [],
+        currentUserRank: 0,
+        currentUserEntry: null,
+        total: 0,
+        offset: 0,
+      });
 
       await service.getLeaderboard('user-1', LeaderboardType.GLOBAL, 50, 0);
 
@@ -58,15 +57,14 @@ describe('LeaderboardService', () => {
     });
 
     it('should call getWeeklyLeaderboard when type is weekly', async () => {
-      const spy = jest
-        .spyOn(service as any, 'getWeeklyLeaderboard')
-        .mockResolvedValue({
-          entries: [],
-          currentUserRank: 0,
-          currentUserEntry: null,
-          total: 0,
-          offset: 0,
-        });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const spy = jest.spyOn(service as any, 'getWeeklyLeaderboard').mockResolvedValue({
+        entries: [],
+        currentUserRank: 0,
+        currentUserEntry: null,
+        total: 0,
+        offset: 0,
+      });
 
       await service.getLeaderboard('user-1', LeaderboardType.WEEKLY, 50, 0);
 
@@ -102,12 +100,7 @@ describe('LeaderboardService', () => {
     it('should return global leaderboard with top users', async () => {
       mockPrismaService.userProgress.findMany.mockResolvedValue(mockUsers);
 
-      const result = await service.getLeaderboard(
-        'user-4',
-        LeaderboardType.GLOBAL,
-        50,
-        0,
-      );
+      const result = await service.getLeaderboard('user-4', LeaderboardType.GLOBAL, 50, 0);
 
       expect(prisma.userProgress.findMany).toHaveBeenCalledWith({
         orderBy: { totalXp: 'desc' },
@@ -139,12 +132,7 @@ describe('LeaderboardService', () => {
     it('should mark current user in the list', async () => {
       mockPrismaService.userProgress.findMany.mockResolvedValue(mockUsers);
 
-      const result = await service.getLeaderboard(
-        'user-2',
-        LeaderboardType.GLOBAL,
-        50,
-        0,
-      );
+      const result = await service.getLeaderboard('user-2', LeaderboardType.GLOBAL, 50, 0);
 
       expect(result.entries[1].isCurrentUser).toBe(true);
       expect(result.currentUserRank).toBe(2);
@@ -155,18 +143,13 @@ describe('LeaderboardService', () => {
       const paginatedUsers = [mockUsers[2]];
       mockPrismaService.userProgress.findMany.mockResolvedValue(paginatedUsers);
 
-      const result = await service.getLeaderboard(
-        'user-4',
-        LeaderboardType.GLOBAL,
-        50,
-        2,
-      );
+      const result = await service.getLeaderboard('user-4', LeaderboardType.GLOBAL, 50, 2);
 
       expect(prisma.userProgress.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
           skip: 2,
           take: 50,
-        }),
+        })
       );
 
       expect(result.entries[0].rank).toBe(3); // offset 2 + index 0 + 1
@@ -184,12 +167,7 @@ describe('LeaderboardService', () => {
       });
       mockPrismaService.userProgress.count.mockResolvedValue(3);
 
-      const result = await service.getLeaderboard(
-        'user-4',
-        LeaderboardType.GLOBAL,
-        50,
-        0,
-      );
+      const result = await service.getLeaderboard('user-4', LeaderboardType.GLOBAL, 50, 0);
 
       expect(result.currentUserRank).toBe(4);
       expect(result.currentUserEntry).toMatchObject({
@@ -206,12 +184,7 @@ describe('LeaderboardService', () => {
       mockPrismaService.userProgress.findMany.mockResolvedValue(mockUsers);
       mockPrismaService.userProgress.findUnique.mockResolvedValue(null);
 
-      const result = await service.getLeaderboard(
-        'new-user',
-        LeaderboardType.GLOBAL,
-        50,
-        0,
-      );
+      const result = await service.getLeaderboard('new-user', LeaderboardType.GLOBAL, 50, 0);
 
       expect(result.currentUserRank).toBe(0);
       expect(result.currentUserEntry).toBeNull();
@@ -221,12 +194,7 @@ describe('LeaderboardService', () => {
       mockPrismaService.userProgress.findMany.mockResolvedValue([]);
       mockPrismaService.userProgress.findUnique.mockResolvedValue(null);
 
-      const result = await service.getLeaderboard(
-        'user-1',
-        LeaderboardType.GLOBAL,
-        50,
-        0,
-      );
+      const result = await service.getLeaderboard('user-1', LeaderboardType.GLOBAL, 50, 0);
 
       expect(result.entries).toHaveLength(0);
       expect(result.currentUserRank).toBe(0);
@@ -253,12 +221,7 @@ describe('LeaderboardService', () => {
 
       mockPrismaService.userProgress.findMany.mockResolvedValue(usersWithTies);
 
-      const result = await service.getLeaderboard(
-        'user-3',
-        LeaderboardType.GLOBAL,
-        50,
-        0,
-      );
+      const result = await service.getLeaderboard('user-3', LeaderboardType.GLOBAL, 50, 0);
 
       expect(result.entries[0].rank).toBe(1);
       expect(result.entries[1].rank).toBe(2);
@@ -300,20 +263,13 @@ describe('LeaderboardService', () => {
     });
 
     it('should return weekly leaderboard with top users', async () => {
-      mockPrismaService.lessonCompletion.groupBy.mockResolvedValue(
-        mockWeeklyXp,
-      );
+      mockPrismaService.lessonCompletion.groupBy.mockResolvedValue(mockWeeklyXp);
       mockPrismaService.user.findMany.mockResolvedValue(mockUsers);
       mockPrismaService.lessonCompletion.aggregate.mockResolvedValue({
         _sum: { xpEarned: 0 },
       });
 
-      const result = await service.getLeaderboard(
-        'user-4',
-        LeaderboardType.WEEKLY,
-        50,
-        0,
-      );
+      const result = await service.getLeaderboard('user-4', LeaderboardType.WEEKLY, 50, 0);
 
       expect(prisma.lessonCompletion.groupBy).toHaveBeenCalledWith({
         by: ['userId'],
@@ -338,37 +294,23 @@ describe('LeaderboardService', () => {
     });
 
     it('should mark current user in weekly list', async () => {
-      mockPrismaService.lessonCompletion.groupBy.mockResolvedValue(
-        mockWeeklyXp,
-      );
+      mockPrismaService.lessonCompletion.groupBy.mockResolvedValue(mockWeeklyXp);
       mockPrismaService.user.findMany.mockResolvedValue(mockUsers);
 
-      const result = await service.getLeaderboard(
-        'user-2',
-        LeaderboardType.WEEKLY,
-        50,
-        0,
-      );
+      const result = await service.getLeaderboard('user-2', LeaderboardType.WEEKLY, 50, 0);
 
       expect(result.entries[1].isCurrentUser).toBe(true);
       expect(result.currentUserRank).toBe(2);
     });
 
     it('should handle pagination in weekly leaderboard', async () => {
-      mockPrismaService.lessonCompletion.groupBy.mockResolvedValue(
-        mockWeeklyXp,
-      );
+      mockPrismaService.lessonCompletion.groupBy.mockResolvedValue(mockWeeklyXp);
       mockPrismaService.user.findMany.mockResolvedValue([mockUsers[2]]);
       mockPrismaService.lessonCompletion.aggregate.mockResolvedValue({
         _sum: { xpEarned: 0 },
       });
 
-      const result = await service.getLeaderboard(
-        'user-4',
-        LeaderboardType.WEEKLY,
-        50,
-        2,
-      );
+      const result = await service.getLeaderboard('user-4', LeaderboardType.WEEKLY, 50, 2);
 
       expect(result.entries).toHaveLength(1);
       expect(result.entries[0].rank).toBe(3);
@@ -377,14 +319,9 @@ describe('LeaderboardService', () => {
 
     it('should get current user weekly rank when not in the list', async () => {
       // Include user-4 in the full weeklyXp data but exclude from paginated results
-      const extendedWeeklyXp = [
-        ...mockWeeklyXp,
-        { userId: 'user-4', _sum: { xpEarned: 200 } },
-      ];
+      const extendedWeeklyXp = [...mockWeeklyXp, { userId: 'user-4', _sum: { xpEarned: 200 } }];
 
-      mockPrismaService.lessonCompletion.groupBy.mockResolvedValue(
-        extendedWeeklyXp,
-      );
+      mockPrismaService.lessonCompletion.groupBy.mockResolvedValue(extendedWeeklyXp);
       mockPrismaService.user.findMany.mockResolvedValue(mockUsers);
       mockPrismaService.lessonCompletion.aggregate.mockResolvedValue({
         _sum: { xpEarned: 200 },
@@ -395,12 +332,7 @@ describe('LeaderboardService', () => {
         progress: { level: 2 },
       });
 
-      const result = await service.getLeaderboard(
-        'user-4',
-        LeaderboardType.WEEKLY,
-        3,
-        0,
-      );
+      const result = await service.getLeaderboard('user-4', LeaderboardType.WEEKLY, 3, 0);
 
       expect(result.currentUserRank).toBe(4);
       expect(result.currentUserEntry).toMatchObject({
@@ -414,20 +346,13 @@ describe('LeaderboardService', () => {
     });
 
     it('should handle user with no weekly XP', async () => {
-      mockPrismaService.lessonCompletion.groupBy.mockResolvedValue(
-        mockWeeklyXp,
-      );
+      mockPrismaService.lessonCompletion.groupBy.mockResolvedValue(mockWeeklyXp);
       mockPrismaService.user.findMany.mockResolvedValue(mockUsers);
       mockPrismaService.lessonCompletion.aggregate.mockResolvedValue({
         _sum: { xpEarned: 0 },
       });
 
-      const result = await service.getLeaderboard(
-        'user-5',
-        LeaderboardType.WEEKLY,
-        50,
-        0,
-      );
+      const result = await service.getLeaderboard('user-5', LeaderboardType.WEEKLY, 50, 0);
 
       expect(result.currentUserRank).toBe(0);
       expect(result.currentUserEntry).toBeNull();
@@ -440,12 +365,7 @@ describe('LeaderboardService', () => {
         _sum: { xpEarned: 0 },
       });
 
-      const result = await service.getLeaderboard(
-        'user-1',
-        LeaderboardType.WEEKLY,
-        50,
-        0,
-      );
+      const result = await service.getLeaderboard('user-1', LeaderboardType.WEEKLY, 50, 0);
 
       expect(result.entries).toHaveLength(0);
       expect(result.currentUserRank).toBe(0);
@@ -453,37 +373,21 @@ describe('LeaderboardService', () => {
     });
 
     it('should handle null weekly XP sum', async () => {
-      const mockWeeklyXpWithNull = [
-        { userId: 'user-1', _sum: { xpEarned: null } },
-      ];
+      const mockWeeklyXpWithNull = [{ userId: 'user-1', _sum: { xpEarned: null } }];
 
-      mockPrismaService.lessonCompletion.groupBy.mockResolvedValue(
-        mockWeeklyXpWithNull,
-      );
+      mockPrismaService.lessonCompletion.groupBy.mockResolvedValue(mockWeeklyXpWithNull);
       mockPrismaService.user.findMany.mockResolvedValue([mockUsers[0]]);
 
-      const result = await service.getLeaderboard(
-        'user-2',
-        LeaderboardType.WEEKLY,
-        50,
-        0,
-      );
+      const result = await service.getLeaderboard('user-2', LeaderboardType.WEEKLY, 50, 0);
 
       expect(result.entries[0].totalXp).toBe(0);
     });
 
     it('should handle missing user data gracefully', async () => {
-      mockPrismaService.lessonCompletion.groupBy.mockResolvedValue(
-        mockWeeklyXp,
-      );
+      mockPrismaService.lessonCompletion.groupBy.mockResolvedValue(mockWeeklyXp);
       mockPrismaService.user.findMany.mockResolvedValue([]);
 
-      const result = await service.getLeaderboard(
-        'user-4',
-        LeaderboardType.WEEKLY,
-        50,
-        0,
-      );
+      const result = await service.getLeaderboard('user-4', LeaderboardType.WEEKLY, 50, 0);
 
       expect(result.entries[0].displayName).toBe('Unknown');
       expect(result.entries[0].userId).toBe('');
@@ -496,6 +400,7 @@ describe('LeaderboardService', () => {
       // Thursday, Dec 11, 2025 at 15:30:45
       jest.setSystemTime(new Date('2025-12-11T15:30:45Z'));
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const startOfWeek = (service as any).getStartOfWeek();
 
       // Verify it's a Sunday
@@ -514,6 +419,7 @@ describe('LeaderboardService', () => {
       // Sunday, Dec 7, 2025 at 10:00:00
       jest.setSystemTime(new Date('2025-12-07T10:00:00Z'));
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const startOfWeek = (service as any).getStartOfWeek();
 
       // Should be the same Sunday at 00:00:00
@@ -530,6 +436,7 @@ describe('LeaderboardService', () => {
       // Saturday, Dec 13, 2025 at 23:59:59
       jest.setSystemTime(new Date('2025-12-13T23:59:59Z'));
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const startOfWeek = (service as any).getStartOfWeek();
 
       // Should be Sunday (day before Saturday in the same week)
@@ -551,7 +458,7 @@ describe('LeaderboardService', () => {
       expect(prisma.userProgress.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
           take: 100,
-        }),
+        })
       );
     });
 
@@ -563,7 +470,7 @@ describe('LeaderboardService', () => {
       expect(prisma.userProgress.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
           skip: 1000,
-        }),
+        })
       );
     });
 
@@ -580,12 +487,7 @@ describe('LeaderboardService', () => {
 
       mockPrismaService.userProgress.findMany.mockResolvedValue(mockUsers);
 
-      const result = await service.getLeaderboard(
-        'user-1',
-        LeaderboardType.GLOBAL,
-        50,
-        0,
-      );
+      const result = await service.getLeaderboard('user-1', LeaderboardType.GLOBAL, 50, 0);
 
       expect(result.entries[0].avatarUrl).toBeNull();
     });

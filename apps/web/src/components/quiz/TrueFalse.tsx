@@ -91,9 +91,7 @@ export function TrueFalse({
           onPress={() => handlePress('true')}
           disabled={disabled}
         >
-          <Text style={[styles.buttonText, getButtonTextStyle('true')]}>
-            True
-          </Text>
+          <Text style={[styles.buttonText, getButtonTextStyle('true')]}>True</Text>
         </Pressable>
 
         <Pressable
@@ -101,9 +99,7 @@ export function TrueFalse({
           onPress={() => handlePress('false')}
           disabled={disabled}
         >
-          <Text style={[styles.buttonText, getButtonTextStyle('false')]}>
-            False
-          </Text>
+          <Text style={[styles.buttonText, getButtonTextStyle('false')]}>False</Text>
         </Pressable>
       </View>
 

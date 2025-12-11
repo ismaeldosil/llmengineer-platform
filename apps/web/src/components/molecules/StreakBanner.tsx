@@ -5,7 +5,6 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
   withSequence,
-  withTiming,
 } from 'react-native-reanimated';
 
 type StreakState = 'active' | 'at-risk' | 'lost';
@@ -32,7 +31,7 @@ const MILESTONE_THRESHOLDS = [7, 30, 100];
 export function StreakBanner({
   currentStreak,
   streakState = 'active',
-  lastCheckin,
+  lastCheckin: _lastCheckin,
   onCheckin,
 }: StreakBannerProps) {
   const getStreakEmoji = () => {
@@ -87,9 +86,7 @@ export function StreakBanner({
   return (
     <View style={[styles.container, { borderColor: getBorderColor() }]}>
       <View style={styles.streakInfo}>
-        <Animated.Text style={[styles.emoji, animatedEmojiStyle]}>
-          {getStreakEmoji()}
-        </Animated.Text>
+        <Animated.Text style={[styles.emoji, animatedEmojiStyle]}>{getStreakEmoji()}</Animated.Text>
         <View style={styles.textContainer}>
           <Text style={[styles.streakCount, { color: getStreakColor() }]}>
             {currentStreak} días
@@ -100,10 +97,7 @@ export function StreakBanner({
 
       {onCheckin && (
         <Pressable
-          style={[
-            styles.checkinButton,
-            streakState === 'lost' && styles.checkinButtonLost,
-          ]}
+          style={[styles.checkinButton, streakState === 'lost' && styles.checkinButtonLost]}
           onPress={onCheckin}
         >
           <Text style={styles.checkinText}>

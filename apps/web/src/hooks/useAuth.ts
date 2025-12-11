@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { router } from 'expo-router';
 import type { RootState } from '@/store';

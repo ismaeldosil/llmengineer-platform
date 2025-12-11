@@ -8,7 +8,11 @@ interface SpinnerProps {
   fullScreen?: boolean;
 }
 
-export function Spinner({ size = 'large', color = colors.primary[500], fullScreen = false }: SpinnerProps) {
+export function Spinner({
+  size = 'large',
+  color = colors.primary[500],
+  fullScreen = false,
+}: SpinnerProps) {
   if (fullScreen) {
     return (
       <View style={styles.fullScreen}>

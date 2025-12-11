@@ -1,9 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react';
-import { render, fireEvent, waitFor } from '@testing-library/react-native';
+import { render, fireEvent } from '@testing-library/react-native';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import ProfileScreen from '../index';
-import authReducer, { logout } from '@/store/slices/authSlice';
+import authReducer from '@/store/slices/authSlice';
 import progressReducer from '@/store/slices/progressSlice';
 import { apiSlice } from '@/services/api';
 import type { User, UserProgress, Badge } from '@llmengineer/shared';
@@ -12,7 +13,7 @@ import type { User, UserProgress, Badge } from '@llmengineer/shared';
 const mockReplace = jest.fn();
 jest.mock('expo-router', () => ({
   Stack: {
-    Screen: ({ options }: any) => null,
+    Screen: ({ options: _options }: any) => null,
   },
   router: {
     replace: (path: string) => mockReplace(path),
@@ -78,8 +79,8 @@ const mockBadges: { earned: Badge[]; locked: Badge[] } = {
 };
 
 // Mock API hooks
-let mockGetProgressQuery = jest.fn();
-let mockGetBadgesQuery = jest.fn();
+const mockGetProgressQuery = jest.fn();
+const mockGetBadgesQuery = jest.fn();
 
 jest.mock('@/services/api', () => {
   const actual = jest.requireActual('@/services/api');
@@ -105,8 +106,7 @@ const createMockStore = (user: User | null = mockUser) => {
         isLoading: false,
       },
     },
-    middleware: (getDefaultMiddleware) =>
-      getDefaultMiddleware().concat(apiSlice.middleware),
+    middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(apiSlice.middleware),
   });
 
   return store;

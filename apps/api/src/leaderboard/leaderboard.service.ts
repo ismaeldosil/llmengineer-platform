@@ -1,10 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import {
-  LeaderboardType,
-  LeaderboardResponseDto,
-  LeaderboardEntryDto,
-} from './dto';
+import { LeaderboardType, LeaderboardResponseDto, LeaderboardEntryDto } from './dto';
 
 @Injectable()
 export class LeaderboardService {
@@ -14,7 +10,7 @@ export class LeaderboardService {
     userId: string,
     type: LeaderboardType,
     limit: number = 50,
-    offset: number = 0,
+    offset: number = 0
   ): Promise<LeaderboardResponseDto> {
     if (type === LeaderboardType.GLOBAL) {
       return this.getGlobalLeaderboard(userId, limit, offset);
@@ -26,7 +22,7 @@ export class LeaderboardService {
   private async getGlobalLeaderboard(
     userId: string,
     limit: number,
-    offset: number,
+    offset: number
   ): Promise<LeaderboardResponseDto> {
     // Get top users with pagination
     const topUsers = await this.prisma.userProgress.findMany({
@@ -106,7 +102,7 @@ export class LeaderboardService {
   private async getWeeklyLeaderboard(
     userId: string,
     limit: number,
-    offset: number,
+    offset: number
   ): Promise<LeaderboardResponseDto> {
     const startOfWeek = this.getStartOfWeek();
 

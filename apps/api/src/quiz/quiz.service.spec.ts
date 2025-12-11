@@ -7,46 +7,46 @@ import { SubmitQuizDto } from './dto/submit-quiz.dto';
 
 describe('QuizService', () => {
   let service: QuizService;
-  let prismaService: PrismaService;
+  let _prismaService: PrismaService;
 
   const mockQuiz: Quiz = {
     questions: [
       {
         id: 'q1',
         type: 'multiple-choice',
-        question: '¿Qué es un prompt?',
+        question: 'ï¿½Quï¿½ es un prompt?',
         options: [
-          { id: 'opt1', text: 'Una instrucción para la IA' },
-          { id: 'opt2', text: 'Un lenguaje de programación' },
+          { id: 'opt1', text: 'Una instrucciï¿½n para la IA' },
+          { id: 'opt2', text: 'Un lenguaje de programaciï¿½n' },
           { id: 'opt3', text: 'Un tipo de dato' },
         ],
         correctAnswer: 'opt1',
-        explanation: 'Un prompt es una instrucción que le das a la IA',
+        explanation: 'Un prompt es una instrucciï¿½n que le das a la IA',
       },
       {
         id: 'q2',
         type: 'multiple-choice',
-        question: '¿Qué hace la ingeniería de prompts?',
+        question: 'ï¿½Quï¿½ hace la ingenierï¿½a de prompts?',
         options: [
           { id: 'opt1', text: 'Optimiza las respuestas de IA' },
           { id: 'opt2', text: 'Crea bases de datos' },
         ],
         correctAnswer: 'opt1',
-        explanation: 'La ingeniería de prompts optimiza las respuestas',
+        explanation: 'La ingenierï¿½a de prompts optimiza las respuestas',
       },
       {
         id: 'q3',
         type: 'true-false',
-        question: '¿Los prompts pueden ser complejos?',
+        question: 'ï¿½Los prompts pueden ser complejos?',
         correctAnswer: 'true',
-        explanation: 'Sí, los prompts pueden ser muy complejos',
+        explanation: 'Sï¿½, los prompts pueden ser muy complejos',
       },
       {
         id: 'q4',
         type: 'multiple-choice',
-        question: '¿Cuál es la mejor práctica?',
+        question: 'ï¿½Cuï¿½l es la mejor prï¿½ctica?',
         options: [
-          { id: 'opt1', text: 'Ser específico' },
+          { id: 'opt1', text: 'Ser especï¿½fico' },
           { id: 'opt2', text: 'Ser vago' },
         ],
         correctAnswer: 'opt1',
@@ -54,9 +54,9 @@ describe('QuizService', () => {
       {
         id: 'q5',
         type: 'multiple-choice',
-        question: '¿Qué es el contexto?',
+        question: 'ï¿½Quï¿½ es el contexto?',
         options: [
-          { id: 'opt1', text: 'Información de fondo' },
+          { id: 'opt1', text: 'Informaciï¿½n de fondo' },
           { id: 'opt2', text: 'Un error' },
         ],
         correctAnswer: 'opt1',
@@ -68,7 +68,7 @@ describe('QuizService', () => {
   const mockLesson = {
     id: 'lesson-1',
     slug: 'intro-to-prompts',
-    title: 'Introducción a Prompts',
+    title: 'Introducciï¿½n a Prompts',
     description: 'Aprende sobre prompts',
     week: 1,
     order: 1,
@@ -101,7 +101,7 @@ describe('QuizService', () => {
     }).compile();
 
     service = module.get<QuizService>(QuizService);
-    prismaService = module.get<PrismaService>(PrismaService);
+    _prismaService = module.get<PrismaService>(PrismaService);
   });
 
   afterEach(() => {
@@ -117,14 +117,12 @@ describe('QuizService', () => {
       mockPrismaService.lesson.findUnique.mockResolvedValue(null);
 
       const dto: SubmitQuizDto = {
-        answers: [
-          { questionId: 'q1', selectedAnswer: 'opt1' },
-        ],
+        answers: [{ questionId: 'q1', selectedAnswer: 'opt1' }],
       };
 
-      await expect(
-        service.submitQuiz('non-existent-id', 'user-1', dto)
-      ).rejects.toThrow(NotFoundException);
+      await expect(service.submitQuiz('non-existent-id', 'user-1', dto)).rejects.toThrow(
+        NotFoundException
+      );
 
       expect(mockPrismaService.lesson.findUnique).toHaveBeenCalledWith({
         where: { id: 'non-existent-id' },
@@ -136,23 +134,21 @@ describe('QuizService', () => {
       mockPrismaService.lesson.findUnique.mockResolvedValue(lessonWithoutQuiz);
 
       const dto: SubmitQuizDto = {
-        answers: [
-          { questionId: 'q1', selectedAnswer: 'opt1' },
-        ],
+        answers: [{ questionId: 'q1', selectedAnswer: 'opt1' }],
       };
 
-      await expect(
-        service.submitQuiz('lesson-1', 'user-1', dto)
-      ).rejects.toThrow(BadRequestException);
-      await expect(
-        service.submitQuiz('lesson-1', 'user-1', dto)
-      ).rejects.toThrow('Esta lección no tiene un quiz');
+      await expect(service.submitQuiz('lesson-1', 'user-1', dto)).rejects.toThrow(
+        BadRequestException
+      );
+      await expect(service.submitQuiz('lesson-1', 'user-1', dto)).rejects.toThrow(
+        'Esta lecciï¿½n no tiene un quiz'
+      );
     });
 
     it('should throw BadRequestException if quiz has no questions', async () => {
       const lessonWithEmptyQuiz = {
         ...mockLesson,
-        quiz: { questions: [], passingScore: 70 }
+        quiz: { questions: [], passingScore: 70 },
       };
       mockPrismaService.lesson.findUnique.mockResolvedValue(lessonWithEmptyQuiz);
 
@@ -160,12 +156,12 @@ describe('QuizService', () => {
         answers: [],
       };
 
-      await expect(
-        service.submitQuiz('lesson-1', 'user-1', dto)
-      ).rejects.toThrow(BadRequestException);
-      await expect(
-        service.submitQuiz('lesson-1', 'user-1', dto)
-      ).rejects.toThrow('El quiz no tiene preguntas');
+      await expect(service.submitQuiz('lesson-1', 'user-1', dto)).rejects.toThrow(
+        BadRequestException
+      );
+      await expect(service.submitQuiz('lesson-1', 'user-1', dto)).rejects.toThrow(
+        'El quiz no tiene preguntas'
+      );
     });
 
     it('should throw BadRequestException if not all questions are answered', async () => {
@@ -178,12 +174,12 @@ describe('QuizService', () => {
         ],
       };
 
-      await expect(
-        service.submitQuiz('lesson-1', 'user-1', dto)
-      ).rejects.toThrow(BadRequestException);
-      await expect(
-        service.submitQuiz('lesson-1', 'user-1', dto)
-      ).rejects.toThrow('Debes responder todas las preguntas');
+      await expect(service.submitQuiz('lesson-1', 'user-1', dto)).rejects.toThrow(
+        BadRequestException
+      );
+      await expect(service.submitQuiz('lesson-1', 'user-1', dto)).rejects.toThrow(
+        'Debes responder todas las preguntas'
+      );
     });
 
     it('should throw BadRequestException if answer contains invalid question ID', async () => {
@@ -199,12 +195,12 @@ describe('QuizService', () => {
         ],
       };
 
-      await expect(
-        service.submitQuiz('lesson-1', 'user-1', dto)
-      ).rejects.toThrow(BadRequestException);
-      await expect(
-        service.submitQuiz('lesson-1', 'user-1', dto)
-      ).rejects.toThrow('Pregunta no encontrada: invalid-id');
+      await expect(service.submitQuiz('lesson-1', 'user-1', dto)).rejects.toThrow(
+        BadRequestException
+      );
+      await expect(service.submitQuiz('lesson-1', 'user-1', dto)).rejects.toThrow(
+        'Pregunta no encontrada: invalid-id'
+      );
     });
 
     it('should return correct result for perfect score (100%)', async () => {
@@ -232,7 +228,7 @@ describe('QuizService', () => {
       expect(result.results[0].questionId).toBe('q1');
       expect(result.results[0].selectedAnswer).toBe('opt1');
       expect(result.results[0].correctAnswer).toBe('opt1');
-      expect(result.results[0].explanation).toBe('Un prompt es una instrucción que le das a la IA');
+      expect(result.results[0].explanation).toBe('Un prompt es una instrucciï¿½n que le das a la IA');
     });
 
     it('should return correct result for excellent score (90%)', async () => {
@@ -281,8 +277,8 @@ describe('QuizService', () => {
       expect(result.correctAnswers).toBe(3);
       expect(result.xpBonus).toBe(0); // No bonus for failing
 
-      const correctResults = result.results.filter(r => r.isCorrect);
-      const incorrectResults = result.results.filter(r => !r.isCorrect);
+      const correctResults = result.results.filter((r) => r.isCorrect);
+      const incorrectResults = result.results.filter((r) => !r.isCorrect);
       expect(correctResults).toHaveLength(3);
       expect(incorrectResults).toHaveLength(2);
     });
@@ -311,11 +307,41 @@ describe('QuizService', () => {
       const quizWith10Questions: Quiz = {
         questions: [
           ...mockQuiz.questions,
-          { id: 'q6', type: 'multiple-choice', question: 'Q6?', correctAnswer: 'opt1', options: [{ id: 'opt1', text: 'A' }] },
-          { id: 'q7', type: 'multiple-choice', question: 'Q7?', correctAnswer: 'opt1', options: [{ id: 'opt1', text: 'A' }] },
-          { id: 'q8', type: 'multiple-choice', question: 'Q8?', correctAnswer: 'opt1', options: [{ id: 'opt1', text: 'A' }] },
-          { id: 'q9', type: 'multiple-choice', question: 'Q9?', correctAnswer: 'opt1', options: [{ id: 'opt1', text: 'A' }] },
-          { id: 'q10', type: 'multiple-choice', question: 'Q10?', correctAnswer: 'opt1', options: [{ id: 'opt1', text: 'A' }] },
+          {
+            id: 'q6',
+            type: 'multiple-choice',
+            question: 'Q6?',
+            correctAnswer: 'opt1',
+            options: [{ id: 'opt1', text: 'A' }],
+          },
+          {
+            id: 'q7',
+            type: 'multiple-choice',
+            question: 'Q7?',
+            correctAnswer: 'opt1',
+            options: [{ id: 'opt1', text: 'A' }],
+          },
+          {
+            id: 'q8',
+            type: 'multiple-choice',
+            question: 'Q8?',
+            correctAnswer: 'opt1',
+            options: [{ id: 'opt1', text: 'A' }],
+          },
+          {
+            id: 'q9',
+            type: 'multiple-choice',
+            question: 'Q9?',
+            correctAnswer: 'opt1',
+            options: [{ id: 'opt1', text: 'A' }],
+          },
+          {
+            id: 'q10',
+            type: 'multiple-choice',
+            question: 'Q10?',
+            correctAnswer: 'opt1',
+            options: [{ id: 'opt1', text: 'A' }],
+          },
         ],
         passingScore: 70,
       };
@@ -366,7 +392,7 @@ describe('QuizService', () => {
       expect(result.correctAnswers).toBe(0);
       expect(result.xpBonus).toBe(0);
 
-      result.results.forEach(questionResult => {
+      result.results.forEach((questionResult) => {
         expect(questionResult.isCorrect).toBe(false);
       });
     });
@@ -401,11 +427,41 @@ describe('QuizService', () => {
       const quizWith10Questions: Quiz = {
         questions: [
           ...mockQuiz.questions,
-          { id: 'q6', type: 'multiple-choice', question: 'Q6?', correctAnswer: 'opt1', options: [{ id: 'opt1', text: 'A' }] },
-          { id: 'q7', type: 'multiple-choice', question: 'Q7?', correctAnswer: 'opt1', options: [{ id: 'opt1', text: 'A' }] },
-          { id: 'q8', type: 'multiple-choice', question: 'Q8?', correctAnswer: 'opt1', options: [{ id: 'opt1', text: 'A' }] },
-          { id: 'q9', type: 'multiple-choice', question: 'Q9?', correctAnswer: 'opt1', options: [{ id: 'opt1', text: 'A' }] },
-          { id: 'q10', type: 'multiple-choice', question: 'Q10?', correctAnswer: 'opt1', options: [{ id: 'opt1', text: 'A' }] },
+          {
+            id: 'q6',
+            type: 'multiple-choice',
+            question: 'Q6?',
+            correctAnswer: 'opt1',
+            options: [{ id: 'opt1', text: 'A' }],
+          },
+          {
+            id: 'q7',
+            type: 'multiple-choice',
+            question: 'Q7?',
+            correctAnswer: 'opt1',
+            options: [{ id: 'opt1', text: 'A' }],
+          },
+          {
+            id: 'q8',
+            type: 'multiple-choice',
+            question: 'Q8?',
+            correctAnswer: 'opt1',
+            options: [{ id: 'opt1', text: 'A' }],
+          },
+          {
+            id: 'q9',
+            type: 'multiple-choice',
+            question: 'Q9?',
+            correctAnswer: 'opt1',
+            options: [{ id: 'opt1', text: 'A' }],
+          },
+          {
+            id: 'q10',
+            type: 'multiple-choice',
+            question: 'Q10?',
+            correctAnswer: 'opt1',
+            options: [{ id: 'opt1', text: 'A' }],
+          },
         ],
         passingScore: 70,
       };
@@ -451,7 +507,7 @@ describe('QuizService', () => {
       const result = await service.submitQuiz('lesson-1', 'user-1', dto);
 
       expect(result.results[0].explanation).toBeDefined();
-      expect(result.results[0].explanation).toBe('Un prompt es una instrucción que le das a la IA');
+      expect(result.results[0].explanation).toBe('Un prompt es una instrucciï¿½n que le das a la IA');
       expect(result.results[3].explanation).toBeUndefined(); // q4 has no explanation
     });
   });

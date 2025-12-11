@@ -1,11 +1,6 @@
 import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import { useEffect } from 'react';
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-  withSpring,
-} from 'react-native-reanimated';
+import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 import { XP_PER_LEVEL, getLevelTitle, getXpProgressInLevel } from '@llmengineer/shared';
 
 interface ProgressCardProps {
@@ -65,7 +60,8 @@ export function ProgressCard({
         <Animated.View style={[styles.progressBar, animatedProgressStyle]} />
       </View>
       <Text style={styles.progressText}>
-        {xpInCurrentLevel.toLocaleString()} / {XP_PER_LEVEL.toLocaleString()} XP para nivel {level + 1}
+        {xpInCurrentLevel.toLocaleString()} / {XP_PER_LEVEL.toLocaleString()} XP para nivel{' '}
+        {level + 1}
       </Text>
 
       <View style={styles.stats}>

@@ -25,11 +25,7 @@ export default function DashboardScreen() {
   const { logout } = useAuth();
   const [refreshing, setRefreshing] = useState(false);
 
-  const {
-    data: userData,
-    isLoading: userLoading,
-    refetch: refetchUser,
-  } = useGetMeQuery();
+  const { data: userData, isLoading: _userLoading, refetch: refetchUser } = useGetMeQuery();
   const {
     data: progress,
     isLoading: progressLoading,
@@ -122,10 +118,7 @@ export default function DashboardScreen() {
             />
           }
         >
-          <StreakBanner
-            currentStreak={progress?.currentStreak || 0}
-            onCheckin={handleCheckin}
-          />
+          <StreakBanner currentStreak={progress?.currentStreak || 0} onCheckin={handleCheckin} />
 
           <ProgressCard
             totalXp={progress?.totalXp || 0}

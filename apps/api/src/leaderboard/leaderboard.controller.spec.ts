@@ -1,11 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { LeaderboardController } from './leaderboard.controller';
 import { LeaderboardService } from './leaderboard.service';
-import {
-  LeaderboardQueryDto,
-  LeaderboardType,
-  LeaderboardResponseDto,
-} from './dto';
+import { LeaderboardQueryDto, LeaderboardType, LeaderboardResponseDto } from './dto';
 
 describe('LeaderboardController', () => {
   let controller: LeaderboardController;
@@ -67,9 +63,7 @@ describe('LeaderboardController', () => {
 
   describe('getLeaderboard', () => {
     it('should return global leaderboard with default parameters', async () => {
-      mockLeaderboardService.getLeaderboard.mockResolvedValue(
-        mockLeaderboardResponse,
-      );
+      mockLeaderboardService.getLeaderboard.mockResolvedValue(mockLeaderboardResponse);
 
       const query: LeaderboardQueryDto = {
         type: LeaderboardType.GLOBAL,
@@ -83,7 +77,7 @@ describe('LeaderboardController', () => {
         'test-user-id',
         LeaderboardType.GLOBAL,
         50,
-        0,
+        0
       );
       expect(result).toEqual(mockLeaderboardResponse);
     });
@@ -119,15 +113,13 @@ describe('LeaderboardController', () => {
         'test-user-id',
         LeaderboardType.WEEKLY,
         50,
-        0,
+        0
       );
       expect(result).toEqual(weeklyResponse);
     });
 
     it('should handle custom limit', async () => {
-      mockLeaderboardService.getLeaderboard.mockResolvedValue(
-        mockLeaderboardResponse,
-      );
+      mockLeaderboardService.getLeaderboard.mockResolvedValue(mockLeaderboardResponse);
 
       const query: LeaderboardQueryDto = {
         type: LeaderboardType.GLOBAL,
@@ -141,7 +133,7 @@ describe('LeaderboardController', () => {
         'test-user-id',
         LeaderboardType.GLOBAL,
         25,
-        0,
+        0
       );
     });
 
@@ -163,19 +155,17 @@ describe('LeaderboardController', () => {
         'test-user-id',
         LeaderboardType.GLOBAL,
         50,
-        50,
+        50
       );
     });
 
     it('should use default values when query parameters are undefined', async () => {
-      mockLeaderboardService.getLeaderboard.mockResolvedValue(
-        mockLeaderboardResponse,
-      );
+      mockLeaderboardService.getLeaderboard.mockResolvedValue(mockLeaderboardResponse);
 
       const query: LeaderboardQueryDto = {
-        type: undefined as any,
-        limit: undefined as any,
-        offset: undefined as any,
+        type: undefined as unknown as LeaderboardType,
+        limit: undefined as unknown as number,
+        offset: undefined as unknown as number,
       };
 
       await controller.getLeaderboard(query, mockUser);
@@ -184,14 +174,12 @@ describe('LeaderboardController', () => {
         'test-user-id',
         LeaderboardType.GLOBAL,
         50,
-        0,
+        0
       );
     });
 
     it('should handle maximum limit of 100', async () => {
-      mockLeaderboardService.getLeaderboard.mockResolvedValue(
-        mockLeaderboardResponse,
-      );
+      mockLeaderboardService.getLeaderboard.mockResolvedValue(mockLeaderboardResponse);
 
       const query: LeaderboardQueryDto = {
         type: LeaderboardType.GLOBAL,
@@ -205,7 +193,7 @@ describe('LeaderboardController', () => {
         'test-user-id',
         LeaderboardType.GLOBAL,
         100,
-        0,
+        0
       );
     });
 
@@ -228,7 +216,7 @@ describe('LeaderboardController', () => {
         'test-user-id',
         LeaderboardType.GLOBAL,
         1,
-        0,
+        0
       );
     });
 
@@ -259,9 +247,7 @@ describe('LeaderboardController', () => {
         offset: 0,
       };
 
-      mockLeaderboardService.getLeaderboard.mockResolvedValue(
-        responseWithUserOutsideTop,
-      );
+      mockLeaderboardService.getLeaderboard.mockResolvedValue(responseWithUserOutsideTop);
 
       const query: LeaderboardQueryDto = {
         type: LeaderboardType.GLOBAL,
@@ -301,9 +287,7 @@ describe('LeaderboardController', () => {
     });
 
     it('should extract user id from current user decorator', async () => {
-      mockLeaderboardService.getLeaderboard.mockResolvedValue(
-        mockLeaderboardResponse,
-      );
+      mockLeaderboardService.getLeaderboard.mockResolvedValue(mockLeaderboardResponse);
 
       const differentUser = { id: 'different-user-id' };
       const query: LeaderboardQueryDto = {
@@ -318,7 +302,7 @@ describe('LeaderboardController', () => {
         'different-user-id',
         LeaderboardType.GLOBAL,
         50,
-        0,
+        0
       );
     });
 
@@ -342,7 +326,7 @@ describe('LeaderboardController', () => {
         'test-user-id',
         LeaderboardType.GLOBAL,
         50,
-        500,
+        500
       );
       expect(result.offset).toBe(500);
     });
@@ -365,14 +349,12 @@ describe('LeaderboardController', () => {
         'test-user-id',
         LeaderboardType.WEEKLY,
         20,
-        10,
+        10
       );
     });
 
     it('should properly type the response as LeaderboardResponseDto', async () => {
-      mockLeaderboardService.getLeaderboard.mockResolvedValue(
-        mockLeaderboardResponse,
-      );
+      mockLeaderboardService.getLeaderboard.mockResolvedValue(mockLeaderboardResponse);
 
       const query: LeaderboardQueryDto = {
         type: LeaderboardType.GLOBAL,
@@ -391,9 +373,7 @@ describe('LeaderboardController', () => {
     });
 
     it('should call service exactly once per request', async () => {
-      mockLeaderboardService.getLeaderboard.mockResolvedValue(
-        mockLeaderboardResponse,
-      );
+      mockLeaderboardService.getLeaderboard.mockResolvedValue(mockLeaderboardResponse);
 
       const query: LeaderboardQueryDto = {
         type: LeaderboardType.GLOBAL,
@@ -409,9 +389,7 @@ describe('LeaderboardController', () => {
 
   describe('query validation', () => {
     it('should accept valid global type', async () => {
-      mockLeaderboardService.getLeaderboard.mockResolvedValue(
-        mockLeaderboardResponse,
-      );
+      mockLeaderboardService.getLeaderboard.mockResolvedValue(mockLeaderboardResponse);
 
       const query: LeaderboardQueryDto = {
         type: LeaderboardType.GLOBAL,
@@ -419,15 +397,11 @@ describe('LeaderboardController', () => {
         offset: 0,
       };
 
-      await expect(
-        controller.getLeaderboard(query, mockUser),
-      ).resolves.toBeDefined();
+      await expect(controller.getLeaderboard(query, mockUser)).resolves.toBeDefined();
     });
 
     it('should accept valid weekly type', async () => {
-      mockLeaderboardService.getLeaderboard.mockResolvedValue(
-        mockLeaderboardResponse,
-      );
+      mockLeaderboardService.getLeaderboard.mockResolvedValue(mockLeaderboardResponse);
 
       const query: LeaderboardQueryDto = {
         type: LeaderboardType.WEEKLY,
@@ -435,17 +409,13 @@ describe('LeaderboardController', () => {
         offset: 0,
       };
 
-      await expect(
-        controller.getLeaderboard(query, mockUser),
-      ).resolves.toBeDefined();
+      await expect(controller.getLeaderboard(query, mockUser)).resolves.toBeDefined();
     });
   });
 
   describe('response structure', () => {
     it('should return entries array', async () => {
-      mockLeaderboardService.getLeaderboard.mockResolvedValue(
-        mockLeaderboardResponse,
-      );
+      mockLeaderboardService.getLeaderboard.mockResolvedValue(mockLeaderboardResponse);
 
       const query: LeaderboardQueryDto = {
         type: LeaderboardType.GLOBAL,
@@ -460,9 +430,7 @@ describe('LeaderboardController', () => {
     });
 
     it('should return entries with correct structure', async () => {
-      mockLeaderboardService.getLeaderboard.mockResolvedValue(
-        mockLeaderboardResponse,
-      );
+      mockLeaderboardService.getLeaderboard.mockResolvedValue(mockLeaderboardResponse);
 
       const query: LeaderboardQueryDto = {
         type: LeaderboardType.GLOBAL,
@@ -483,9 +451,7 @@ describe('LeaderboardController', () => {
     });
 
     it('should return numeric currentUserRank', async () => {
-      mockLeaderboardService.getLeaderboard.mockResolvedValue(
-        mockLeaderboardResponse,
-      );
+      mockLeaderboardService.getLeaderboard.mockResolvedValue(mockLeaderboardResponse);
 
       const query: LeaderboardQueryDto = {
         type: LeaderboardType.GLOBAL,

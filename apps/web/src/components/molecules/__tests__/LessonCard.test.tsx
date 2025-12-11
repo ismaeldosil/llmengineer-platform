@@ -26,9 +26,7 @@ describe('LessonCard', () => {
   });
 
   it('should render lesson information correctly', () => {
-    const { getByText } = render(
-      <LessonCard lesson={mockLesson} onPress={mockOnPress} />
-    );
+    const { getByText } = render(<LessonCard lesson={mockLesson} onPress={mockOnPress} />);
 
     expect(getByText('Introduction to Prompts')).toBeTruthy();
     expect(getByText(/Learn the basics of prompt engineering/)).toBeTruthy();
@@ -38,17 +36,13 @@ describe('LessonCard', () => {
   });
 
   it('should display difficulty badge with correct color', () => {
-    const { getByText } = render(
-      <LessonCard lesson={mockLesson} onPress={mockOnPress} />
-    );
+    const { getByText } = render(<LessonCard lesson={mockLesson} onPress={mockOnPress} />);
 
     expect(getByText('beginner')).toBeTruthy();
   });
 
   it('should call onPress when card is pressed', () => {
-    const { getByText } = render(
-      <LessonCard lesson={mockLesson} onPress={mockOnPress} />
-    );
+    const { getByText } = render(<LessonCard lesson={mockLesson} onPress={mockOnPress} />);
 
     const card = getByText('Introduction to Prompts');
     fireEvent.press(card);
@@ -62,17 +56,13 @@ describe('LessonCard', () => {
       isCompleted: true,
     };
 
-    const { getByText } = render(
-      <LessonCard lesson={completedLesson} onPress={mockOnPress} />
-    );
+    const { getByText } = render(<LessonCard lesson={completedLesson} onPress={mockOnPress} />);
 
     expect(getByText('✓')).toBeTruthy();
   });
 
   it('should not show completed overlay when lesson is not completed', () => {
-    const { queryByText } = render(
-      <LessonCard lesson={mockLesson} onPress={mockOnPress} />
-    );
+    const { queryByText } = render(<LessonCard lesson={mockLesson} onPress={mockOnPress} />);
 
     expect(queryByText('✓')).toBeNull();
   });
@@ -83,9 +73,7 @@ describe('LessonCard', () => {
       difficulty: 'intermediate',
     };
 
-    const { getByText } = render(
-      <LessonCard lesson={intermediateLesson} onPress={mockOnPress} />
-    );
+    const { getByText } = render(<LessonCard lesson={intermediateLesson} onPress={mockOnPress} />);
 
     expect(getByText('intermediate')).toBeTruthy();
   });
@@ -96,9 +84,7 @@ describe('LessonCard', () => {
       difficulty: 'advanced',
     };
 
-    const { getByText } = render(
-      <LessonCard lesson={advancedLesson} onPress={mockOnPress} />
-    );
+    const { getByText } = render(<LessonCard lesson={advancedLesson} onPress={mockOnPress} />);
 
     expect(getByText('advanced')).toBeTruthy();
   });
@@ -110,13 +96,9 @@ describe('LessonCard', () => {
         'This is a very long description that should be truncated after two lines to prevent the card from becoming too tall and affecting the overall layout',
     };
 
-    const { getByText } = render(
-      <LessonCard lesson={longDescLesson} onPress={mockOnPress} />
-    );
+    const { getByText } = render(<LessonCard lesson={longDescLesson} onPress={mockOnPress} />);
 
-    expect(
-      getByText(/This is a very long description that should be truncated/)
-    ).toBeTruthy();
+    expect(getByText(/This is a very long description that should be truncated/)).toBeTruthy();
   });
 
   it('should display different week numbers', () => {
@@ -125,9 +107,7 @@ describe('LessonCard', () => {
       week: 5,
     };
 
-    const { getByText } = render(
-      <LessonCard lesson={weekFiveLesson} onPress={mockOnPress} />
-    );
+    const { getByText } = render(<LessonCard lesson={weekFiveLesson} onPress={mockOnPress} />);
 
     expect(getByText('Semana 5')).toBeTruthy();
   });
@@ -138,9 +118,7 @@ describe('LessonCard', () => {
       xpReward: 250,
     };
 
-    const { getByText } = render(
-      <LessonCard lesson={highXpLesson} onPress={mockOnPress} />
-    );
+    const { getByText } = render(<LessonCard lesson={highXpLesson} onPress={mockOnPress} />);
 
     expect(getByText('+250 XP')).toBeTruthy();
   });
@@ -151,17 +129,13 @@ describe('LessonCard', () => {
       estimatedMinutes: 45,
     };
 
-    const { getByText } = render(
-      <LessonCard lesson={longLesson} onPress={mockOnPress} />
-    );
+    const { getByText } = render(<LessonCard lesson={longLesson} onPress={mockOnPress} />);
 
     expect(getByText('45 min')).toBeTruthy();
   });
 
   it('should handle multiple presses', () => {
-    const { getByText } = render(
-      <LessonCard lesson={mockLesson} onPress={mockOnPress} />
-    );
+    const { getByText } = render(<LessonCard lesson={mockLesson} onPress={mockOnPress} />);
 
     const card = getByText('Introduction to Prompts');
     fireEvent.press(card);
@@ -171,9 +145,7 @@ describe('LessonCard', () => {
   });
 
   it('should render all lesson metadata', () => {
-    const { getByText } = render(
-      <LessonCard lesson={mockLesson} onPress={mockOnPress} />
-    );
+    const { getByText } = render(<LessonCard lesson={mockLesson} onPress={mockOnPress} />);
 
     expect(getByText('Semana 1')).toBeTruthy();
     expect(getByText('beginner')).toBeTruthy();

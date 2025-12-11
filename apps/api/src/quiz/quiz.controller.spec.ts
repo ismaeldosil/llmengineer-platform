@@ -232,17 +232,15 @@ describe('QuizController', () => {
       const lessonId = 'lesson-4';
       const userId = 'user-4';
       const dto: SubmitQuizDto = {
-        answers: [
-          { questionId: 'q1', selectedAnswer: 'opt1' },
-        ],
+        answers: [{ questionId: 'q1', selectedAnswer: 'opt1' }],
       };
 
       const error = new Error('Quiz service error');
       mockQuizService.submitQuiz.mockRejectedValue(error);
 
-      await expect(
-        controller.submitQuiz(lessonId, dto, { id: userId })
-      ).rejects.toThrow('Quiz service error');
+      await expect(controller.submitQuiz(lessonId, dto, { id: userId })).rejects.toThrow(
+        'Quiz service error'
+      );
 
       expect(quizService.submitQuiz).toHaveBeenCalledWith(lessonId, userId, dto);
     });
@@ -251,9 +249,7 @@ describe('QuizController', () => {
       const lessonId = 'lesson-5';
       const userId = 'user-12345';
       const dto: SubmitQuizDto = {
-        answers: [
-          { questionId: 'q1', selectedAnswer: 'opt1' },
-        ],
+        answers: [{ questionId: 'q1', selectedAnswer: 'opt1' }],
       };
 
       const expectedResult: QuizResult = {
@@ -276,11 +272,7 @@ describe('QuizController', () => {
 
       await controller.submitQuiz(lessonId, dto, { id: userId });
 
-      expect(quizService.submitQuiz).toHaveBeenCalledWith(
-        lessonId,
-        userId,
-        dto
-      );
+      expect(quizService.submitQuiz).toHaveBeenCalledWith(lessonId, userId, dto);
     });
 
     it('should handle empty answers array', async () => {
@@ -293,9 +285,9 @@ describe('QuizController', () => {
       const error = new Error('Debes responder todas las preguntas');
       mockQuizService.submitQuiz.mockRejectedValue(error);
 
-      await expect(
-        controller.submitQuiz(lessonId, dto, { id: userId })
-      ).rejects.toThrow('Debes responder todas las preguntas');
+      await expect(controller.submitQuiz(lessonId, dto, { id: userId })).rejects.toThrow(
+        'Debes responder todas las preguntas'
+      );
     });
 
     it('should return results with explanations', async () => {

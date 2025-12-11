@@ -13,7 +13,7 @@ import { UserBadgesResponseDto } from '../badges/dto/badge-response.dto';
 export class UsersController {
   constructor(
     private usersService: UsersService,
-    private badgesService: BadgesService,
+    private badgesService: BadgesService
   ) {}
 
   @Get('me')

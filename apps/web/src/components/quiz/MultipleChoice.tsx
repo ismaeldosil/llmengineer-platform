@@ -98,13 +98,13 @@ export function MultipleChoice({
           >
             <View style={styles.optionContent}>
               <View style={[styles.label, selected === option.id && styles.selectedLabel]}>
-                <Text style={[styles.labelText, selected === option.id && styles.selectedLabelText]}>
+                <Text
+                  style={[styles.labelText, selected === option.id && styles.selectedLabelText]}
+                >
                   {optionLabels[index]}
                 </Text>
               </View>
-              <Text style={[styles.optionText, getOptionTextStyle(option)]}>
-                {option.text}
-              </Text>
+              <Text style={[styles.optionText, getOptionTextStyle(option)]}>{option.text}</Text>
             </View>
           </Pressable>
         ))}

@@ -68,9 +68,7 @@ describe('QuickActionsGrid', () => {
       { id: 'test', icon: '🧪', label: 'Test', onPress: jest.fn() },
     ];
 
-    const { getByText, getByTestId } = render(
-      <QuickActionsGrid actions={singleAction} />
-    );
+    const { getByText, getByTestId } = render(<QuickActionsGrid actions={singleAction} />);
 
     expect(getByText('Test')).toBeTruthy();
     expect(getByText('🧪')).toBeTruthy();

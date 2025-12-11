@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-var-requires */
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
 import { LeaderboardWidget } from '../LeaderboardWidget';
@@ -55,9 +57,7 @@ describe('LeaderboardWidget', () => {
     const { getByText, UNSAFE_queryByType } = render(<LeaderboardWidget />);
 
     expect(getByText('Ranking Global')).toBeTruthy();
-    const activityIndicator = UNSAFE_queryByType(
-      require('react-native').ActivityIndicator
-    );
+    const activityIndicator = UNSAFE_queryByType(require('react-native').ActivityIndicator);
     expect(activityIndicator).toBeTruthy();
   });
 

@@ -13,7 +13,7 @@ export class QuizController {
   constructor(private quizService: QuizService) {}
 
   @Post(':id/quiz')
-  @ApiOperation({ summary: 'Enviar respuestas del quiz de una lección' })
+  @ApiOperation({ summary: 'Enviar respuestas del quiz de una lecciï¿½n' })
   @ApiResponse({
     status: 200,
     description: 'Quiz evaluado correctamente',
@@ -30,24 +30,24 @@ export class QuizController {
             isCorrect: true,
             selectedAnswer: 'opt1',
             correctAnswer: 'opt1',
-            explanation: 'Explicación de la respuesta'
-          }
-        ]
-      }
-    }
+            explanation: 'Explicaciï¿½n de la respuesta',
+          },
+        ],
+      },
+    },
   })
   @ApiResponse({
     status: 404,
-    description: 'Lección no encontrada'
+    description: 'Lecciï¿½n no encontrada',
   })
   @ApiResponse({
     status: 400,
-    description: 'Quiz inválido o incompleto'
+    description: 'Quiz invï¿½lido o incompleto',
   })
   async submitQuiz(
     @Param('id') id: string,
     @Body() dto: SubmitQuizDto,
-    @CurrentUser() user: { id: string },
+    @CurrentUser() user: { id: string }
   ) {
     return this.quizService.submitQuiz(id, user.id, dto);
   }

@@ -10,42 +10,32 @@ describe('StreakBanner', () => {
   });
 
   it('should render correctly with streak count', () => {
-    const { getByText } = render(
-      <StreakBanner currentStreak={5} onCheckin={mockOnCheckin} />
-    );
+    const { getByText } = render(<StreakBanner currentStreak={5} onCheckin={mockOnCheckin} />);
 
     expect(getByText('5 días')).toBeTruthy();
     expect(getByText('Check-in')).toBeTruthy();
   });
 
   it('should show sparkle emoji for streak less than 3', () => {
-    const { getByText } = render(
-      <StreakBanner currentStreak={2} onCheckin={mockOnCheckin} />
-    );
+    const { getByText } = render(<StreakBanner currentStreak={2} onCheckin={mockOnCheckin} />);
 
     expect(getByText('✨')).toBeTruthy();
   });
 
   it('should show lightning emoji for streak between 3 and 6', () => {
-    const { getByText } = render(
-      <StreakBanner currentStreak={5} onCheckin={mockOnCheckin} />
-    );
+    const { getByText } = render(<StreakBanner currentStreak={5} onCheckin={mockOnCheckin} />);
 
     expect(getByText('⚡')).toBeTruthy();
   });
 
   it('should show fire emoji for streak 7 or more', () => {
-    const { getByText } = render(
-      <StreakBanner currentStreak={10} onCheckin={mockOnCheckin} />
-    );
+    const { getByText } = render(<StreakBanner currentStreak={10} onCheckin={mockOnCheckin} />);
 
     expect(getByText('🔥')).toBeTruthy();
   });
 
   it('should call onCheckin when button is pressed', () => {
-    const { getByText } = render(
-      <StreakBanner currentStreak={3} onCheckin={mockOnCheckin} />
-    );
+    const { getByText } = render(<StreakBanner currentStreak={3} onCheckin={mockOnCheckin} />);
 
     const checkinButton = getByText('Check-in');
     fireEvent.press(checkinButton);
@@ -54,27 +44,21 @@ describe('StreakBanner', () => {
   });
 
   it('should handle zero streak', () => {
-    const { getByText } = render(
-      <StreakBanner currentStreak={0} onCheckin={mockOnCheckin} />
-    );
+    const { getByText } = render(<StreakBanner currentStreak={0} onCheckin={mockOnCheckin} />);
 
     expect(getByText('0 días')).toBeTruthy();
     expect(getByText('✨')).toBeTruthy();
   });
 
   it('should handle large streak numbers', () => {
-    const { getByText } = render(
-      <StreakBanner currentStreak={365} onCheckin={mockOnCheckin} />
-    );
+    const { getByText } = render(<StreakBanner currentStreak={365} onCheckin={mockOnCheckin} />);
 
     expect(getByText('365 días')).toBeTruthy();
     expect(getByText('🔥')).toBeTruthy();
   });
 
   it('should call onCheckin multiple times when pressed multiple times', () => {
-    const { getByText } = render(
-      <StreakBanner currentStreak={5} onCheckin={mockOnCheckin} />
-    );
+    const { getByText } = render(<StreakBanner currentStreak={5} onCheckin={mockOnCheckin} />);
 
     const checkinButton = getByText('Check-in');
     fireEvent.press(checkinButton);
@@ -97,9 +81,7 @@ describe('StreakBanner', () => {
   });
 
   it('should render single day streak', () => {
-    const { getByText } = render(
-      <StreakBanner currentStreak={1} onCheckin={mockOnCheckin} />
-    );
+    const { getByText } = render(<StreakBanner currentStreak={1} onCheckin={mockOnCheckin} />);
 
     expect(getByText('1 días')).toBeTruthy();
   });
@@ -125,42 +107,32 @@ describe('StreakBanner', () => {
   });
 
   it('should show motivational message for low streak', () => {
-    const { getByText } = render(
-      <StreakBanner currentStreak={0} onCheckin={mockOnCheckin} />
-    );
+    const { getByText } = render(<StreakBanner currentStreak={0} onCheckin={mockOnCheckin} />);
 
     expect(getByText('Buen comienzo, sigue así')).toBeTruthy();
   });
 
   it('should show building message for streak 1-2', () => {
-    const { getByText } = render(
-      <StreakBanner currentStreak={1} onCheckin={mockOnCheckin} />
-    );
+    const { getByText } = render(<StreakBanner currentStreak={1} onCheckin={mockOnCheckin} />);
 
     expect(getByText('Vas muy bien, mantén el ritmo')).toBeTruthy();
   });
 
   it('should show hot message for streak 3-6', () => {
-    const { getByText } = render(
-      <StreakBanner currentStreak={5} onCheckin={mockOnCheckin} />
-    );
+    const { getByText } = render(<StreakBanner currentStreak={5} onCheckin={mockOnCheckin} />);
 
     expect(getByText('Estás en llamas, sigue así')).toBeTruthy();
   });
 
   it('should show milestone message for 7 day streak', () => {
-    const { getByText } = render(
-      <StreakBanner currentStreak={7} onCheckin={mockOnCheckin} />
-    );
+    const { getByText } = render(<StreakBanner currentStreak={7} onCheckin={mockOnCheckin} />);
 
     expect(getByText('Increíble, 7 días seguidos')).toBeTruthy();
     expect(getByText('🔥')).toBeTruthy();
   });
 
   it('should show milestone message for 30 day streak', () => {
-    const { getByText } = render(
-      <StreakBanner currentStreak={30} onCheckin={mockOnCheckin} />
-    );
+    const { getByText } = render(<StreakBanner currentStreak={30} onCheckin={mockOnCheckin} />);
 
     expect(getByText('Eres una leyenda, 30 días de racha')).toBeTruthy();
     expect(getByText('🔥')).toBeTruthy();
@@ -173,9 +145,7 @@ describe('StreakBanner', () => {
   });
 
   it('should render check-in button when onCheckin is provided', () => {
-    const { getByText } = render(
-      <StreakBanner currentStreak={5} onCheckin={mockOnCheckin} />
-    );
+    const { getByText } = render(<StreakBanner currentStreak={5} onCheckin={mockOnCheckin} />);
 
     expect(getByText('Check-in')).toBeTruthy();
   });

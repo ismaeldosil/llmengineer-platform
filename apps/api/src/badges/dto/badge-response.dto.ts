@@ -44,7 +44,7 @@ export class LockedBadgeDto extends BadgeDto {
     example: { lessonsCompleted: 1 },
     description: 'Requisitos para obtener la insignia',
   })
-  requirement: Record<string, any>;
+  requirement: Record<string, unknown>;
 }
 
 export class AllBadgesResponseDto {

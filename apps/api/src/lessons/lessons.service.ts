@@ -9,7 +9,7 @@ export class LessonsService {
   constructor(
     private prisma: PrismaService,
     private usersService: UsersService,
-    private badgesService: BadgesService,
+    private badgesService: BadgesService
   ) {}
 
   async findAll(userId: string) {
@@ -35,10 +35,7 @@ export class LessonsService {
     // Try to find by ID first, then by slug
     const lesson = await this.prisma.lesson.findFirst({
       where: {
-        OR: [
-          { id: idOrSlug },
-          { slug: idOrSlug },
-        ],
+        OR: [{ id: idOrSlug }, { slug: idOrSlug }],
       },
     });
 
@@ -58,12 +55,7 @@ export class LessonsService {
     };
   }
 
-  async complete(
-    lessonId: string,
-    userId: string,
-    timeSpentSeconds: number,
-    quizScore?: number
-  ) {
+  async complete(lessonId: string, userId: string, timeSpentSeconds: number, quizScore?: number) {
     const lesson = await this.prisma.lesson.findUnique({
       where: { id: lessonId },
     });

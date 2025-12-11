@@ -1,5 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-var-requires */
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
+import { ActivityIndicator, FlatList } from 'react-native';
 import LeaderboardScreen from '../index';
 import { useGetLeaderboardQuery } from '@/services/api';
 
@@ -57,10 +60,8 @@ describe('LeaderboardScreen', () => {
       refetch: jest.fn(),
     } as any);
 
-    const { getByTestId, UNSAFE_queryByType } = render(<LeaderboardScreen />);
-    const activityIndicator = UNSAFE_queryByType(
-      require('react-native').ActivityIndicator
-    );
+    const { UNSAFE_queryByType } = render(<LeaderboardScreen />);
+    const activityIndicator = UNSAFE_queryByType(ActivityIndicator);
     expect(activityIndicator).toBeTruthy();
   });
 
@@ -189,7 +190,7 @@ describe('LeaderboardScreen', () => {
     } as any);
 
     const { UNSAFE_getByType } = render(<LeaderboardScreen />);
-    const flatList = UNSAFE_getByType(require('react-native').FlatList);
+    const flatList = UNSAFE_getByType(FlatList);
 
     const refreshControl = flatList.props.refreshControl;
     await refreshControl.props.onRefresh();
@@ -236,7 +237,7 @@ describe('LeaderboardScreen', () => {
     } as any);
 
     const { UNSAFE_getByType } = render(<LeaderboardScreen />);
-    const flatList = UNSAFE_getByType(require('react-native').FlatList);
+    const flatList = UNSAFE_getByType(FlatList);
 
     const keyExtractor = flatList.props.keyExtractor;
     const item = mockLeaderboardData.entries[0];
@@ -267,7 +268,7 @@ describe('LeaderboardScreen', () => {
     } as any);
 
     const { UNSAFE_getByType } = render(<LeaderboardScreen />);
-    const flatList = UNSAFE_getByType(require('react-native').FlatList);
+    const flatList = UNSAFE_getByType(FlatList);
     expect(flatList.props.data).toEqual([]);
   });
 
@@ -307,7 +308,7 @@ describe('LeaderboardScreen', () => {
 
     const { UNSAFE_queryByType } = render(<LeaderboardScreen />);
 
-    const flatList = UNSAFE_queryByType(require('react-native').FlatList);
+    const flatList = UNSAFE_queryByType(FlatList);
 
     expect(flatList).toBeTruthy();
   });
@@ -324,16 +325,13 @@ describe('LeaderboardScreen', () => {
     const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
 
     const { UNSAFE_getByType } = render(<LeaderboardScreen />);
-    const flatList = UNSAFE_getByType(require('react-native').FlatList);
+    const flatList = UNSAFE_getByType(FlatList);
 
     const refreshControl = flatList.props.refreshControl;
     await refreshControl.props.onRefresh();
 
     await waitFor(() => {
-      expect(consoleSpy).toHaveBeenCalledWith(
-        'Refresh failed:',
-        expect.any(Error)
-      );
+      expect(consoleSpy).toHaveBeenCalledWith('Refresh failed:', expect.any(Error));
     });
 
     consoleSpy.mockRestore();

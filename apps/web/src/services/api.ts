@@ -29,14 +29,20 @@ export const apiSlice = createApi({
   tagTypes: ['User', 'Progress', 'Lessons', 'Badges', 'Leaderboard', 'Quiz'],
   endpoints: (builder) => ({
     // Auth
-    login: builder.mutation<{ user: User; accessToken: string }, { email: string; password: string }>({
+    login: builder.mutation<
+      { user: User; accessToken: string },
+      { email: string; password: string }
+    >({
       query: (credentials) => ({
         url: '/auth/login',
         method: 'POST',
         body: credentials,
       }),
     }),
-    register: builder.mutation<{ user: User; accessToken: string }, { email: string; password: string; displayName: string }>({
+    register: builder.mutation<
+      { user: User; accessToken: string },
+      { email: string; password: string; displayName: string }
+    >({
       query: (data) => ({
         url: '/auth/register',
         method: 'POST',
@@ -67,7 +73,10 @@ export const apiSlice = createApi({
       query: (id) => `/lessons/${id}`,
       providesTags: (_result, _error, id) => [{ type: 'Lessons', id }],
     }),
-    completeLesson: builder.mutation<LessonCompletion, { lessonId: string; timeSpentSeconds: number }>({
+    completeLesson: builder.mutation<
+      LessonCompletion,
+      { lessonId: string; timeSpentSeconds: number }
+    >({
       query: ({ lessonId, ...body }) => ({
         url: `/lessons/${lessonId}/complete`,
         method: 'POST',
@@ -83,7 +92,10 @@ export const apiSlice = createApi({
     }),
 
     // Leaderboard
-    getLeaderboard: builder.query<{ entries: LeaderboardEntry[]; userRank: number }, { type: 'global' | 'weekly'; limit?: number }>({
+    getLeaderboard: builder.query<
+      { entries: LeaderboardEntry[]; userRank: number },
+      { type: 'global' | 'weekly'; limit?: number }
+    >({
       query: ({ type, limit = 10 }) => `/leaderboard?type=${type}&limit=${limit}`,
       providesTags: ['Leaderboard'],
     }),

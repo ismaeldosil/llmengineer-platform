@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { Badge, UserBadge } from '@prisma/client';
+import { Badge } from '@prisma/client';
 
 export interface BadgeWithEarnedAt extends Badge {
   earnedAt: Date;
@@ -92,7 +92,7 @@ export class BadgesService {
     for (const badge of badges) {
       if (earnedBadgeIds.includes(badge.id)) continue;
 
-      const requirement = badge.requirement as Record<string, any>;
+      const requirement = badge.requirement as Record<string, unknown>;
       const earned = this.checkBadgeRequirement(requirement, progress);
 
       if (earned) {
@@ -119,13 +119,13 @@ export class BadgesService {
    * @private
    */
   private checkBadgeRequirement(
-    requirement: Record<string, any>,
+    requirement: Record<string, unknown>,
     progress: {
       lessonsCompleted: number;
       currentStreak: number;
       level: number;
       totalXp: number;
-    },
+    }
   ): boolean {
     // Check lessons completed requirement
     if (

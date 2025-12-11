@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, fireEvent, waitFor } from '@testing-library/react-native';
+import { render, fireEvent } from '@testing-library/react-native';
 import { QuizModal } from '../QuizModal';
 import type { QuizQuestion } from '@llmengineer/shared';
 
@@ -504,9 +504,7 @@ describe('QuizModal', () => {
     expect(mockOnComplete).toHaveBeenCalled();
     const callArgs = mockOnComplete.mock.calls[0];
     expect(callArgs[0]).toBe(3); // score - all correct
-    expect(callArgs[1]).toEqual(
-      expect.arrayContaining([{ questionId: '1', selectedAnswer: 'b' }])
-    );
+    expect(callArgs[1]).toEqual(expect.arrayContaining([{ questionId: '1', selectedAnswer: 'b' }]));
   });
 
   it('should clear feedback when navigating between questions', () => {

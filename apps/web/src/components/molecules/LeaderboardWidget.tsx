@@ -54,7 +54,7 @@ export function LeaderboardWidget({ onViewMore }: LeaderboardWidgetProps) {
       </View>
 
       <View style={styles.topThreeContainer}>
-        {topThree.map((entry, index) => (
+        {topThree.map((entry, _index) => (
           <View
             key={entry.userId}
             testID={`leaderboard-entry-${entry.userId}`}

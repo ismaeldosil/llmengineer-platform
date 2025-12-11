@@ -1,8 +1,15 @@
 import { useState, useCallback } from 'react';
-import { View, Text, StyleSheet, FlatList, Pressable, ActivityIndicator, RefreshControl } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  Pressable,
+  ActivityIndicator,
+  RefreshControl,
+} from 'react-native';
 import { Stack } from 'expo-router';
 import { useGetLeaderboardQuery } from '@/services/api';
-import type { LeaderboardEntry } from '@llmengineer/shared';
 
 type LeaderboardType = 'global' | 'weekly';
 
@@ -69,17 +76,13 @@ export default function LeaderboardScreen() {
             style={[styles.tab, type === 'global' && styles.activeTab]}
             onPress={() => setType('global')}
           >
-            <Text style={[styles.tabText, type === 'global' && styles.activeTabText]}>
-              Global
-            </Text>
+            <Text style={[styles.tabText, type === 'global' && styles.activeTabText]}>Global</Text>
           </Pressable>
           <Pressable
             style={[styles.tab, type === 'weekly' && styles.activeTab]}
             onPress={() => setType('weekly')}
           >
-            <Text style={[styles.tabText, type === 'weekly' && styles.activeTabText]}>
-              Semanal
-            </Text>
+            <Text style={[styles.tabText, type === 'weekly' && styles.activeTabText]}>Semanal</Text>
           </Pressable>
         </View>
 
@@ -104,9 +107,7 @@ export default function LeaderboardScreen() {
                   <Text style={styles.rankText}>{getRankEmoji(item.rank)}</Text>
                 </View>
                 <View style={styles.avatarPlaceholder}>
-                  <Text style={styles.avatarText}>
-                    {item.displayName.charAt(0).toUpperCase()}
-                  </Text>
+                  <Text style={styles.avatarText}>{item.displayName.charAt(0).toUpperCase()}</Text>
                 </View>
                 <View style={styles.userInfo}>
                   <Text style={styles.userName}>{item.displayName}</Text>

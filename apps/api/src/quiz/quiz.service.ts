@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { Quiz, QuizQuestion, QuizQuestionResult, QuizResult } from '@llmengineer/shared/types/quiz';
+import { Quiz, QuizQuestionResult, QuizResult } from '@llmengineer/shared/types/quiz';
 import { QUIZ_BONUSES } from '@llmengineer/shared/constants/xp';
 import { SubmitQuizDto } from './dto/submit-quiz.dto';
 
@@ -9,18 +9,18 @@ export class QuizService {
   constructor(private prisma: PrismaService) {}
 
   async submitQuiz(lessonId: string, userId: string, dto: SubmitQuizDto): Promise<QuizResult> {
-    // Obtener la lección
+    // Obtener la lecciï¿½n
     const lesson = await this.prisma.lesson.findUnique({
       where: { id: lessonId },
     });
 
     if (!lesson) {
-      throw new NotFoundException('Lección no encontrada');
+      throw new NotFoundException('Lecciï¿½n no encontrada');
     }
 
-    // Verificar que la lección tiene un quiz
+    // Verificar que la lecciï¿½n tiene un quiz
     if (!lesson.quiz) {
-      throw new BadRequestException('Esta lección no tiene un quiz');
+      throw new BadRequestException('Esta lecciï¿½n no tiene un quiz');
     }
 
     // Parsear el quiz desde JSON
@@ -31,8 +31,8 @@ export class QuizService {
     }
 
     // Validar que todas las preguntas fueron respondidas
-    const questionIds = new Set(quiz.questions.map(q => q.id));
-    const answeredIds = new Set(dto.answers.map(a => a.questionId));
+    const questionIds = new Set(quiz.questions.map((q) => q.id));
+    const answeredIds = new Set(dto.answers.map((a) => a.questionId));
 
     if (questionIds.size !== answeredIds.size) {
       throw new BadRequestException('Debes responder todas las preguntas');
@@ -50,7 +50,7 @@ export class QuizService {
     let correctAnswers = 0;
 
     for (const answer of dto.answers) {
-      const question = quiz.questions.find(q => q.id === answer.questionId);
+      const question = quiz.questions.find((q) => q.id === answer.questionId);
       if (!question) continue;
 
       const isCorrect = answer.selectedAnswer === question.correctAnswer;
@@ -71,11 +71,11 @@ export class QuizService {
     const totalQuestions = quiz.questions.length;
     const score = Math.round((correctAnswers / totalQuestions) * 100);
 
-    // Determinar si pasó (70% o más)
+    // Determinar si pasï¿½ (70% o mï¿½s)
     const passingScore = quiz.passingScore || 70;
     const passed = score >= passingScore;
 
-    // Calcular bonus de XP si pasó
+    // Calcular bonus de XP si pasï¿½
     let xpBonus = 0;
     if (passed) {
       if (score === 100) {

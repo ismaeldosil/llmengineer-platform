@@ -1,18 +1,9 @@
 import { Controller, Get, Query, UseGuards } from '@nestjs/common';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiBearerAuth,
-  ApiResponse,
-} from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
 import { LeaderboardService } from './leaderboard.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
-import {
-  LeaderboardQueryDto,
-  LeaderboardResponseDto,
-  LeaderboardType,
-} from './dto';
+import { LeaderboardQueryDto, LeaderboardResponseDto, LeaderboardType } from './dto';
 
 @ApiTags('leaderboard')
 @ApiBearerAuth()
@@ -35,13 +26,13 @@ export class LeaderboardController {
   @ApiResponse({ status: 401, description: 'No autorizado' })
   async getLeaderboard(
     @Query() query: LeaderboardQueryDto,
-    @CurrentUser() user: { id: string },
+    @CurrentUser() user: { id: string }
   ): Promise<LeaderboardResponseDto> {
     return this.leaderboardService.getLeaderboard(
       user.id,
       query.type || LeaderboardType.GLOBAL,
       query.limit || 50,
-      query.offset || 0,
+      query.offset || 0
     );
   }
 }
