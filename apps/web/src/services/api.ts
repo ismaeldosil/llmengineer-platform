@@ -56,6 +56,10 @@ export const apiSlice = createApi({
       query: () => '/lessons',
       providesTags: ['Lessons'],
     }),
+    getNextLesson: builder.query<Lesson | null, void>({
+      query: () => '/lessons/next',
+      providesTags: ['Lessons'],
+    }),
     getLesson: builder.query<Lesson, string>({
       query: (id) => `/lessons/${id}`,
       providesTags: (_result, _error, id) => [{ type: 'Lessons', id }],
@@ -98,6 +102,7 @@ export const {
   useGetMeQuery,
   useGetProgressQuery,
   useGetLessonsQuery,
+  useGetNextLessonQuery,
   useGetLessonQuery,
   useCompleteLessonMutation,
   useGetBadgesQuery,
