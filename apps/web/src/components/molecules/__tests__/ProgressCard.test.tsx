@@ -8,16 +8,18 @@ describe('ProgressCard', () => {
       <ProgressCard
         totalXp={1500}
         level={3}
-        levelTitle="Prompt Apprentice"
         lessonsCompleted={15}
+        currentStreak={5}
       />
     );
 
     expect(getByText('3')).toBeTruthy();
-    expect(getByText('Prompt Apprentice')).toBeTruthy();
+    expect(getByText('Token Tinkerer')).toBeTruthy();
     expect(getByText('1,500 XP')).toBeTruthy();
     expect(getByText('15')).toBeTruthy();
     expect(getByText('Lecciones')).toBeTruthy();
+    expect(getByText('5')).toBeTruthy();
+    expect(getByText('Racha')).toBeTruthy();
   });
 
   it('should show loading state', () => {
@@ -25,7 +27,6 @@ describe('ProgressCard', () => {
       <ProgressCard
         totalXp={0}
         level={1}
-        levelTitle="Prompt Curious"
         lessonsCompleted={0}
         isLoading={true}
       />
@@ -39,7 +40,6 @@ describe('ProgressCard', () => {
       <ProgressCard
         totalXp={250}
         level={1}
-        levelTitle="Prompt Curious"
         lessonsCompleted={5}
       />
     );
@@ -52,7 +52,6 @@ describe('ProgressCard', () => {
       <ProgressCard
         totalXp={1000}
         level={2}
-        levelTitle="Prompt Apprentice"
         lessonsCompleted={10}
       />
     );
@@ -65,7 +64,6 @@ describe('ProgressCard', () => {
       <ProgressCard
         totalXp={15750}
         level={31}
-        levelTitle="Prompt Master"
         lessonsCompleted={150}
       />
     );
@@ -78,13 +76,15 @@ describe('ProgressCard', () => {
       <ProgressCard
         totalXp={5000}
         level={10}
-        levelTitle="Prompt Expert"
         lessonsCompleted={50}
+        currentStreak={12}
       />
     );
 
     expect(getByText('50')).toBeTruthy();
     expect(getByText('Lecciones')).toBeTruthy();
+    expect(getByText('12')).toBeTruthy();
+    expect(getByText('Racha')).toBeTruthy();
     expect(getByText('5,000')).toBeTruthy();
     expect(getByText('XP Total')).toBeTruthy();
   });
@@ -94,7 +94,6 @@ describe('ProgressCard', () => {
       <ProgressCard
         totalXp={0}
         level={1}
-        levelTitle="Prompt Curious"
         lessonsCompleted={0}
       />
     );
@@ -109,7 +108,6 @@ describe('ProgressCard', () => {
       <ProgressCard
         totalXp={1250}
         level={2}
-        levelTitle="Prompt Apprentice"
         lessonsCompleted={12}
       />
     );
@@ -122,7 +120,6 @@ describe('ProgressCard', () => {
       <ProgressCard
         totalXp={500}
         level={5}
-        levelTitle="Prompt Enthusiast"
         lessonsCompleted={25}
       />
     );
@@ -135,7 +132,6 @@ describe('ProgressCard', () => {
       <ProgressCard
         totalXp={100}
         level={1}
-        levelTitle="Prompt Curious"
         lessonsCompleted={1}
       />
     );
@@ -150,7 +146,6 @@ describe('ProgressCard', () => {
       <ProgressCard
         totalXp={100}
         level={1}
-        levelTitle="Prompt Curious"
         lessonsCompleted={1}
       />
     );
@@ -160,10 +155,57 @@ describe('ProgressCard', () => {
       <ProgressCard
         totalXp={2100}
         level={5}
-        levelTitle="Prompt Enthusiast"
         lessonsCompleted={20}
       />
     );
     expect(getByTextLevel5('100 / 500 XP para nivel 6')).toBeTruthy();
+  });
+
+  it('should use correct level titles from shared constants', () => {
+    const { getByText: getByText1 } = render(
+      <ProgressCard totalXp={0} level={1} lessonsCompleted={0} />
+    );
+    expect(getByText1('Prompt Curious')).toBeTruthy();
+
+    const { getByText: getByText5 } = render(
+      <ProgressCard totalXp={2000} level={5} lessonsCompleted={10} />
+    );
+    expect(getByText5('Embedding Explorer')).toBeTruthy();
+
+    const { getByText: getByText10 } = render(
+      <ProgressCard totalXp={4500} level={10} lessonsCompleted={40} />
+    );
+    expect(getByText10('LLM Engineer')).toBeTruthy();
+  });
+
+  it('should display current streak when provided', () => {
+    const { getByText } = render(
+      <ProgressCard
+        totalXp={1000}
+        level={2}
+        lessonsCompleted={10}
+        currentStreak={15}
+      />
+    );
+
+    expect(getByText('15')).toBeTruthy();
+    expect(getByText('Racha')).toBeTruthy();
+  });
+
+  it('should show streak as 0 when not provided', () => {
+    const { getAllByText } = render(
+      <ProgressCard totalXp={500} level={1} lessonsCompleted={5} />
+    );
+
+    const zeroElements = getAllByText('0');
+    expect(zeroElements.length).toBeGreaterThan(0);
+  });
+
+  it('should show LLM Master for levels above 10', () => {
+    const { getByText } = render(
+      <ProgressCard totalXp={6000} level={12} lessonsCompleted={60} />
+    );
+
+    expect(getByText('LLM Master')).toBeTruthy();
   });
 });

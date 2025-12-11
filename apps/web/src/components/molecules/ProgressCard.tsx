@@ -1,18 +1,26 @@
 import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
+import { useEffect } from 'react';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  withSpring,
+} from 'react-native-reanimated';
+import { XP_PER_LEVEL, getLevelTitle, getXpProgressInLevel } from '@llmengineer/shared';
 
 interface ProgressCardProps {
   totalXp: number;
   level: number;
-  levelTitle: string;
   lessonsCompleted: number;
+  currentStreak?: number;
   isLoading?: boolean;
 }
 
 export function ProgressCard({
   totalXp,
   level,
-  levelTitle,
   lessonsCompleted,
+  currentStreak = 0,
   isLoading,
 }: ProgressCardProps) {
   if (isLoading) {
@@ -23,8 +31,23 @@ export function ProgressCard({
     );
   }
 
-  const xpForNextLevel = level * 500;
-  const xpProgress = (totalXp % 500) / 500;
+  const levelTitle = getLevelTitle(level);
+  const xpInCurrentLevel = getXpProgressInLevel(totalXp);
+  const xpProgress = xpInCurrentLevel / XP_PER_LEVEL;
+
+  // Animated progress bar
+  const progressWidth = useSharedValue(0);
+
+  useEffect(() => {
+    progressWidth.value = withSpring(xpProgress * 100, {
+      damping: 15,
+      stiffness: 100,
+    });
+  }, [xpProgress]);
+
+  const animatedProgressStyle = useAnimatedStyle(() => ({
+    width: `${progressWidth.value}%`,
+  }));
 
   return (
     <View style={styles.container}>
@@ -39,16 +62,21 @@ export function ProgressCard({
       </View>
 
       <View style={styles.progressBarContainer}>
-        <View style={[styles.progressBar, { width: `${xpProgress * 100}%` }]} />
+        <Animated.View style={[styles.progressBar, animatedProgressStyle]} />
       </View>
       <Text style={styles.progressText}>
-        {(totalXp % 500).toLocaleString()} / 500 XP para nivel {level + 1}
+        {xpInCurrentLevel.toLocaleString()} / {XP_PER_LEVEL.toLocaleString()} XP para nivel {level + 1}
       </Text>
 
       <View style={styles.stats}>
         <View style={styles.stat}>
           <Text style={styles.statValue}>{lessonsCompleted}</Text>
           <Text style={styles.statLabel}>Lecciones</Text>
+        </View>
+        <View style={styles.statDivider} />
+        <View style={styles.stat}>
+          <Text style={styles.statValue}>{currentStreak}</Text>
+          <Text style={styles.statLabel}>Racha</Text>
         </View>
         <View style={styles.statDivider} />
         <View style={styles.stat}>

@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Pressable, ActivityIndicator } from 'react-native';
 import { Stack, router } from 'expo-router';
 import { useSelector, useDispatch } from 'react-redux';
 import type { RootState } from '@/store';
@@ -8,13 +8,46 @@ import { useGetProgressQuery, useGetBadgesQuery } from '@/services/api';
 export default function ProfileScreen() {
   const dispatch = useDispatch();
   const user = useSelector((state: RootState) => state.auth.user);
-  const { data: progress } = useGetProgressQuery();
-  const { data: badges } = useGetBadgesQuery();
+  const { data: progress, isLoading: progressLoading, isError: progressError } = useGetProgressQuery();
+  const { data: badges, isLoading: badgesLoading, isError: badgesError } = useGetBadgesQuery();
 
   const handleLogout = () => {
     dispatch(logout());
     router.replace('/');
   };
+
+  const handleEditProfile = () => {
+    // Placeholder for future implementation
+    console.log('Edit profile - to be implemented');
+  };
+
+  const isLoading = progressLoading || badgesLoading;
+  const hasError = progressError || badgesError;
+
+  if (isLoading) {
+    return (
+      <>
+        <Stack.Screen options={{ title: 'Perfil' }} />
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#3B82F6" />
+          <Text style={styles.loadingText}>Cargando perfil...</Text>
+        </View>
+      </>
+    );
+  }
+
+  if (hasError) {
+    return (
+      <>
+        <Stack.Screen options={{ title: 'Perfil' }} />
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorEmoji}>⚠️</Text>
+          <Text style={styles.errorText}>Error al cargar el perfil</Text>
+          <Text style={styles.errorSubtext}>Por favor, intenta nuevamente</Text>
+        </View>
+      </>
+    );
+  }
 
   return (
     <>
@@ -32,6 +65,26 @@ export default function ProfileScreen() {
             <Text style={styles.levelText}>
               Nivel {progress?.level || 1} • {progress?.levelTitle || 'Prompt Curious'}
             </Text>
+          </View>
+          <Pressable
+            style={styles.editButton}
+            onPress={handleEditProfile}
+            accessibilityLabel="Editar perfil"
+            accessibilityRole="button"
+          >
+            <Text style={styles.editButtonText}>Editar Perfil</Text>
+          </Pressable>
+        </View>
+
+        {/* Current Streak Display */}
+        <View style={styles.streakContainer}>
+          <Text style={styles.streakEmoji}>
+            {progress?.currentStreak && progress.currentStreak >= 7 ? '🔥' :
+             progress?.currentStreak && progress.currentStreak >= 3 ? '⚡' : '✨'}
+          </Text>
+          <View style={styles.streakInfo}>
+            <Text style={styles.streakCount}>{progress?.currentStreak || 0} días</Text>
+            <Text style={styles.streakLabel}>Racha actual</Text>
           </View>
         </View>
 
@@ -79,9 +132,17 @@ export default function ProfileScreen() {
           </View>
         </View>
 
-        <Pressable style={styles.logoutButton} onPress={handleLogout}>
-          <Text style={styles.logoutText}>Cerrar Sesión</Text>
-        </Pressable>
+        <View style={styles.settingsSection}>
+          <Text style={styles.sectionTitle}>Configuración</Text>
+          <Pressable
+            style={styles.logoutButton}
+            onPress={handleLogout}
+            accessibilityLabel="Cerrar sesión"
+            accessibilityRole="button"
+          >
+            <Text style={styles.logoutText}>Cerrar Sesión</Text>
+          </Pressable>
+        </View>
       </ScrollView>
     </>
   );
@@ -91,6 +152,39 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#111827',
+  },
+  loadingContainer: {
+    flex: 1,
+    backgroundColor: '#111827',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 16,
+  },
+  loadingText: {
+    fontSize: 16,
+    color: '#9CA3AF',
+  },
+  errorContainer: {
+    flex: 1,
+    backgroundColor: '#111827',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 24,
+  },
+  errorEmoji: {
+    fontSize: 48,
+    marginBottom: 16,
+  },
+  errorText: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#F9FAFB',
+    marginBottom: 8,
+  },
+  errorSubtext: {
+    fontSize: 14,
+    color: '#9CA3AF',
+    textAlign: 'center',
   },
   header: {
     alignItems: 'center',
@@ -133,6 +227,45 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '500',
     color: '#3B82F6',
+  },
+  editButton: {
+    marginTop: 16,
+    paddingHorizontal: 24,
+    paddingVertical: 10,
+    backgroundColor: '#3B82F6',
+    borderRadius: 8,
+  },
+  editButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#FFFFFF',
+  },
+  streakContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#1F2937',
+    marginHorizontal: 24,
+    marginTop: 16,
+    padding: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#F59E0B40',
+  },
+  streakEmoji: {
+    fontSize: 32,
+    marginRight: 12,
+  },
+  streakInfo: {
+    flex: 1,
+  },
+  streakCount: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#F59E0B',
+  },
+  streakLabel: {
+    fontSize: 14,
+    color: '#9CA3AF',
   },
   stats: {
     flexDirection: 'row',
@@ -198,8 +331,10 @@ const styles = StyleSheet.create({
     color: '#9CA3AF',
     fontStyle: 'italic',
   },
+  settingsSection: {
+    padding: 24,
+  },
   logoutButton: {
-    margin: 24,
     paddingVertical: 16,
     borderRadius: 8,
     borderWidth: 1,

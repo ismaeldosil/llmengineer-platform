@@ -7,6 +7,9 @@ import type {
   LessonCompletion,
   Badge,
   LeaderboardEntry,
+  Quiz,
+  QuizResult,
+  SubmitQuizRequest,
 } from '@llmengineer/shared';
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3001';
@@ -23,7 +26,7 @@ export const apiSlice = createApi({
       return headers;
     },
   }),
-  tagTypes: ['User', 'Progress', 'Lessons', 'Badges', 'Leaderboard'],
+  tagTypes: ['User', 'Progress', 'Lessons', 'Badges', 'Leaderboard', 'Quiz'],
   endpoints: (builder) => ({
     // Auth
     login: builder.mutation<{ user: User; accessToken: string }, { email: string; password: string }>({
@@ -93,6 +96,20 @@ export const apiSlice = createApi({
       }),
       invalidatesTags: ['Progress'],
     }),
+
+    // Quiz
+    getLessonQuiz: builder.query<Quiz, string>({
+      query: (lessonId) => `/lessons/${lessonId}/quiz`,
+      providesTags: (_result, _error, lessonId) => [{ type: 'Quiz', id: lessonId }],
+    }),
+    submitQuiz: builder.mutation<QuizResult, { lessonId: string } & SubmitQuizRequest>({
+      query: ({ lessonId, ...body }) => ({
+        url: `/lessons/${lessonId}/quiz/submit`,
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['Progress', 'Lessons', 'Badges'],
+    }),
   }),
 });
 
@@ -108,4 +125,6 @@ export const {
   useGetBadgesQuery,
   useGetLeaderboardQuery,
   useCheckinMutation,
+  useGetLessonQuizQuery,
+  useSubmitQuizMutation,
 } = apiSlice;

@@ -1,13 +1,26 @@
-import { useState } from 'react';
-import { View, Text, StyleSheet, FlatList, Pressable, ActivityIndicator } from 'react-native';
+import { useState, useCallback } from 'react';
+import { View, Text, StyleSheet, FlatList, Pressable, ActivityIndicator, RefreshControl } from 'react-native';
 import { Stack } from 'expo-router';
 import { useGetLeaderboardQuery } from '@/services/api';
+import type { LeaderboardEntry } from '@llmengineer/shared';
 
 type LeaderboardType = 'global' | 'weekly';
 
 export default function LeaderboardScreen() {
   const [type, setType] = useState<LeaderboardType>('global');
-  const { data, isLoading, error } = useGetLeaderboardQuery({ type, limit: 50 });
+  const { data, isLoading, error, refetch } = useGetLeaderboardQuery({ type, limit: 50 });
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      await refetch();
+    } catch (error) {
+      console.error('Refresh failed:', error);
+    } finally {
+      setRefreshing(false);
+    }
+  }, [refetch]);
 
   const getRankStyle = (rank: number) => {
     if (rank === 1) return styles.goldRank;
@@ -21,6 +34,30 @@ export default function LeaderboardScreen() {
     if (rank === 2) return '🥈';
     if (rank === 3) return '🥉';
     return `${rank}`;
+  };
+
+  const renderUserRankFooter = () => {
+    if (!data?.userRank || !data?.entries) return null;
+
+    const userInList = data.entries.some((entry) => entry.isCurrentUser);
+
+    if (!userInList && data.userRank > 50) {
+      return (
+        <View style={styles.footerRankContainer}>
+          <View style={styles.footerDivider} />
+          <View style={styles.entry}>
+            <View style={styles.rankBadge}>
+              <Text style={styles.rankText}>#{data.userRank}</Text>
+            </View>
+            <View style={styles.userInfo}>
+              <Text style={styles.userName}>Tu posición</Text>
+              <Text style={styles.userLevel}>Sigue mejorando</Text>
+            </View>
+          </View>
+        </View>
+      );
+    }
+    return null;
   };
 
   return (
@@ -46,13 +83,7 @@ export default function LeaderboardScreen() {
           </Pressable>
         </View>
 
-        {data?.userRank && (
-          <View style={styles.userRankBanner}>
-            <Text style={styles.userRankText}>Tu posición: #{data.userRank}</Text>
-          </View>
-        )}
-
-        {isLoading ? (
+        {isLoading && !refreshing ? (
           <View style={styles.centered}>
             <ActivityIndicator size="large" color="#3B82F6" />
           </View>
@@ -63,11 +94,19 @@ export default function LeaderboardScreen() {
         ) : (
           <FlatList
             data={data?.entries}
-            keyExtractor={(item) => item.rank.toString()}
+            keyExtractor={(item) => `${item.userId}-${item.rank}`}
             renderItem={({ item }) => (
-              <View style={[styles.entry, item.isCurrentUser && styles.currentUserEntry]}>
+              <View
+                testID={`leaderboard-entry-${item.userId}`}
+                style={[styles.entry, item.isCurrentUser && styles.currentUserEntry]}
+              >
                 <View style={[styles.rankBadge, getRankStyle(item.rank)]}>
                   <Text style={styles.rankText}>{getRankEmoji(item.rank)}</Text>
+                </View>
+                <View style={styles.avatarPlaceholder}>
+                  <Text style={styles.avatarText}>
+                    {item.displayName.charAt(0).toUpperCase()}
+                  </Text>
                 </View>
                 <View style={styles.userInfo}>
                   <Text style={styles.userName}>{item.displayName}</Text>
@@ -80,6 +119,15 @@ export default function LeaderboardScreen() {
               </View>
             )}
             contentContainerStyle={styles.list}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+                tintColor="#3B82F6"
+                colors={['#3B82F6']}
+              />
+            }
+            ListFooterComponent={renderUserRankFooter}
           />
         )}
       </View>
@@ -176,6 +224,20 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#F9FAFB',
   },
+  avatarPlaceholder: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#3B82F6',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 12,
+  },
+  avatarText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+  },
   userInfo: {
     flex: 1,
     marginLeft: 12,
@@ -200,5 +262,14 @@ const styles = StyleSheet.create({
   xpLabel: {
     fontSize: 12,
     color: '#9CA3AF',
+  },
+  footerRankContainer: {
+    marginTop: 16,
+    paddingTop: 16,
+  },
+  footerDivider: {
+    height: 1,
+    backgroundColor: '#374151',
+    marginBottom: 16,
   },
 });

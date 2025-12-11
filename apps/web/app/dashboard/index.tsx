@@ -16,6 +16,7 @@ import {
   DashboardHeader,
   QuickActionsGrid,
   NextLessonWidget,
+  LeaderboardWidget,
   type QuickAction,
 } from '@/components/molecules';
 
@@ -129,8 +130,8 @@ export default function DashboardScreen() {
           <ProgressCard
             totalXp={progress?.totalXp || 0}
             level={progress?.level || 1}
-            levelTitle={progress?.levelTitle || 'Prompt Curious'}
             lessonsCompleted={progress?.lessonsCompleted || 0}
+            currentStreak={progress?.currentStreak || 0}
             isLoading={progressLoading}
           />
 
@@ -140,6 +141,8 @@ export default function DashboardScreen() {
             onPress={() => nextLesson && router.push(`/lessons/${nextLesson.id}`)}
             onViewAll={() => router.push('/lessons')}
           />
+
+          <LeaderboardWidget onViewMore={() => router.push('/leaderboard')} />
 
           <QuickActionsGrid actions={quickActions} />
         </ScrollView>
