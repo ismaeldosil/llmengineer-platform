@@ -2,23 +2,14 @@ import { PrismaClient, Difficulty } from '@prisma/client';
 import * as fs from 'fs';
 import * as path from 'path';
 
-const prisma = new PrismaClient();
-
-// Ruta al repositorio de contenido
-const CONTENT_REPO_PATH = path.resolve(
-  __dirname,
-  '../../../..',
-  'llmengineer-content'
-);
-
-interface LessonSection {
+export interface LessonSection {
   title: string;
   content: string;
   keyPoints?: string[];
   codeExample?: string;
 }
 
-interface LessonJSON {
+export interface LessonJSON {
   slug: string;
   title: string;
   description: string;
@@ -34,7 +25,7 @@ interface LessonJSON {
   resources?: any[];
 }
 
-interface BadgeJSON {
+export interface BadgeJSON {
   slug: string;
   name: string;
   description: string;
@@ -45,171 +36,257 @@ interface BadgeJSON {
   isSecret?: boolean;
 }
 
-async function syncLessons() {
+// Default content repo path - can be overridden
+export const DEFAULT_CONTENT_PATH = path.resolve(
+  __dirname,
+  '../../../..',
+  'llmengineer-content'
+);
+
+export function validateLessonData(lesson: Partial<LessonJSON>): boolean {
+  return !!(lesson.slug && lesson.title && lesson.week);
+}
+
+export function validateBadgeData(badge: Partial<BadgeJSON>): boolean {
+  return !!(badge.slug && badge.name && badge.category);
+}
+
+export function normalizeDifficulty(
+  difficulty: string | undefined
+): Difficulty {
+  const validDifficulties = ['beginner', 'intermediate', 'advanced'];
+  if (difficulty && validDifficulties.includes(difficulty)) {
+    return difficulty as Difficulty;
+  }
+  return 'beginner';
+}
+
+export function getWeekDirectories(lessonsDir: string): string[] {
+  if (!fs.existsSync(lessonsDir)) {
+    return [];
+  }
+
+  return fs
+    .readdirSync(lessonsDir)
+    .filter((file) => {
+      const fullPath = path.join(lessonsDir, file);
+      return fs.statSync(fullPath).isDirectory() && file.startsWith('week-');
+    })
+    .sort();
+}
+
+export function getLessonFiles(weekDir: string): string[] {
+  if (!fs.existsSync(weekDir)) {
+    return [];
+  }
+
+  return fs.readdirSync(weekDir).filter((file) => file.endsWith('.json'));
+}
+
+export function readJsonFile<T>(filePath: string): T | null {
+  try {
+    if (!fs.existsSync(filePath)) {
+      return null;
+    }
+    const content = fs.readFileSync(filePath, 'utf-8');
+    return JSON.parse(content) as T;
+  } catch (error) {
+    console.warn(`Failed to read JSON file: ${filePath}`, error);
+    return null;
+  }
+}
+
+export async function syncLesson(
+  prisma: PrismaClient,
+  lessonData: LessonJSON
+): Promise<boolean> {
+  if (!validateLessonData(lessonData)) {
+    console.warn(`Skipping invalid lesson: ${JSON.stringify(lessonData)}`);
+    return false;
+  }
+
+  const difficulty = normalizeDifficulty(lessonData.difficulty);
+
+  await prisma.lesson.upsert({
+    where: { slug: lessonData.slug },
+    update: {
+      title: lessonData.title,
+      description: lessonData.description || '',
+      week: lessonData.week,
+      order: lessonData.order || 1,
+      difficulty,
+      xpReward: lessonData.xpReward || 100,
+      estimatedMinutes: lessonData.estimatedMinutes || 15,
+      sections: lessonData.sections || [],
+      isPublished: true,
+    },
+    create: {
+      slug: lessonData.slug,
+      title: lessonData.title,
+      description: lessonData.description || '',
+      week: lessonData.week,
+      order: lessonData.order || 1,
+      difficulty,
+      xpReward: lessonData.xpReward || 100,
+      estimatedMinutes: lessonData.estimatedMinutes || 15,
+      sections: lessonData.sections || [],
+      isPublished: true,
+    },
+  });
+
+  return true;
+}
+
+export async function syncBadge(
+  prisma: PrismaClient,
+  badge: BadgeJSON
+): Promise<boolean> {
+  if (!validateBadgeData(badge)) {
+    console.warn(`Skipping invalid badge: ${JSON.stringify(badge)}`);
+    return false;
+  }
+
+  await prisma.badge.upsert({
+    where: { slug: badge.slug },
+    update: {
+      name: badge.name,
+      description: badge.description || '',
+      icon: badge.icon || '🏆',
+      category: badge.category,
+      requirement: badge.requirement || {},
+      xpBonus: badge.xpBonus || 0,
+      isSecret: badge.isSecret || false,
+    },
+    create: {
+      slug: badge.slug,
+      name: badge.name,
+      description: badge.description || '',
+      icon: badge.icon || '🏆',
+      category: badge.category,
+      requirement: badge.requirement || {},
+      xpBonus: badge.xpBonus || 0,
+      isSecret: badge.isSecret || false,
+    },
+  });
+
+  return true;
+}
+
+export async function syncLessons(
+  prisma: PrismaClient,
+  contentPath: string
+): Promise<number> {
   console.log('Syncing lessons from content repository...');
 
-  const lessonsDir = path.join(CONTENT_REPO_PATH, 'lessons');
+  const lessonsDir = path.join(contentPath, 'lessons');
 
   if (!fs.existsSync(lessonsDir)) {
     throw new Error(
-      `Lessons directory not found: ${lessonsDir}\nMake sure llmengineer-content repository exists at: ${CONTENT_REPO_PATH}`
+      `Lessons directory not found: ${lessonsDir}\nMake sure llmengineer-content repository exists at: ${contentPath}`
     );
   }
 
   let totalLessons = 0;
-
-  // Leer todas las semanas
-  const weekDirs = fs
-    .readdirSync(lessonsDir)
-    .filter(
-      (file) =>
-        fs.statSync(path.join(lessonsDir, file)).isDirectory() &&
-        file.startsWith('week-')
-    )
-    .sort();
+  const weekDirs = getWeekDirectories(lessonsDir);
 
   for (const weekDir of weekDirs) {
     const weekPath = path.join(lessonsDir, weekDir);
-    const lessonFiles = fs
-      .readdirSync(weekPath)
-      .filter((file) => file.endsWith('.json'));
+    const lessonFiles = getLessonFiles(weekPath);
 
     console.log(`\nProcessing ${weekDir} (${lessonFiles.length} lessons)...`);
 
     for (const lessonFile of lessonFiles) {
       const lessonPath = path.join(weekPath, lessonFile);
-      const lessonData: LessonJSON = JSON.parse(
-        fs.readFileSync(lessonPath, 'utf-8')
-      );
+      const lessonData = readJsonFile<LessonJSON>(lessonPath);
 
-      // Validar datos requeridos
-      if (!lessonData.slug || !lessonData.title || !lessonData.week) {
-        console.warn(`⚠ Skipping invalid lesson file: ${lessonFile}`);
-        continue;
+      if (lessonData) {
+        const success = await syncLesson(prisma, lessonData);
+        if (success) {
+          console.log(`  ✓ Synced: ${lessonData.slug}`);
+          totalLessons++;
+        }
       }
-
-      // Mapear dificultad
-      const difficulty = lessonData.difficulty || 'beginner';
-      if (!['beginner', 'intermediate', 'advanced'].includes(difficulty)) {
-        console.warn(
-          `⚠ Invalid difficulty for ${lessonData.slug}, using 'beginner'`
-        );
-      }
-
-      // Upsert en base de datos
-      await prisma.lesson.upsert({
-        where: { slug: lessonData.slug },
-        update: {
-          title: lessonData.title,
-          description: lessonData.description || '',
-          week: lessonData.week,
-          order: lessonData.order || 1,
-          difficulty: difficulty as Difficulty,
-          xpReward: lessonData.xpReward || 100,
-          estimatedMinutes: lessonData.estimatedMinutes || 15,
-          sections: lessonData.sections || [],
-          isPublished: true,
-        },
-        create: {
-          slug: lessonData.slug,
-          title: lessonData.title,
-          description: lessonData.description || '',
-          week: lessonData.week,
-          order: lessonData.order || 1,
-          difficulty: difficulty as Difficulty,
-          xpReward: lessonData.xpReward || 100,
-          estimatedMinutes: lessonData.estimatedMinutes || 15,
-          sections: lessonData.sections || [],
-          isPublished: true,
-        },
-      });
-
-      console.log(`  ✓ Synced: ${lessonData.slug}`);
-      totalLessons++;
     }
   }
 
   console.log(`\n✓ Successfully synced ${totalLessons} lessons`);
+  return totalLessons;
 }
 
-async function syncBadges() {
+export async function syncBadges(
+  prisma: PrismaClient,
+  contentPath: string
+): Promise<number> {
   console.log('\nSyncing badges from content repository...');
 
-  const badgesFile = path.join(CONTENT_REPO_PATH, 'badges', 'badges.json');
+  const badgesFile = path.join(contentPath, 'badges', 'badges.json');
 
   if (!fs.existsSync(badgesFile)) {
     throw new Error(`Badges file not found: ${badgesFile}`);
   }
 
-  const badgesData = JSON.parse(fs.readFileSync(badgesFile, 'utf-8'));
-  const badges: BadgeJSON[] = badgesData.badges || [];
+  const badgesData = readJsonFile<{ badges: BadgeJSON[] }>(badgesFile);
 
-  for (const badge of badges) {
-    // Validar datos requeridos
-    if (!badge.slug || !badge.name || !badge.category) {
-      console.warn(`⚠ Skipping invalid badge: ${JSON.stringify(badge)}`);
-      continue;
-    }
-
-    await prisma.badge.upsert({
-      where: { slug: badge.slug },
-      update: {
-        name: badge.name,
-        description: badge.description || '',
-        icon: badge.icon || '🏆',
-        category: badge.category,
-        requirement: badge.requirement || {},
-        xpBonus: badge.xpBonus || 0,
-        isSecret: badge.isSecret || false,
-      },
-      create: {
-        slug: badge.slug,
-        name: badge.name,
-        description: badge.description || '',
-        icon: badge.icon || '🏆',
-        category: badge.category,
-        requirement: badge.requirement || {},
-        xpBonus: badge.xpBonus || 0,
-        isSecret: badge.isSecret || false,
-      },
-    });
-
-    console.log(`  ✓ Synced: ${badge.slug}`);
+  if (!badgesData || !badgesData.badges) {
+    throw new Error(`Invalid badges file format: ${badgesFile}`);
   }
 
-  console.log(`\n✓ Successfully synced ${badges.length} badges`);
+  let syncedCount = 0;
+
+  for (const badge of badgesData.badges) {
+    const success = await syncBadge(prisma, badge);
+    if (success) {
+      console.log(`  ✓ Synced: ${badge.slug}`);
+      syncedCount++;
+    }
+  }
+
+  console.log(`\n✓ Successfully synced ${syncedCount} badges`);
+  return syncedCount;
 }
 
-async function main() {
+export async function syncContent(
+  prisma: PrismaClient,
+  contentPath: string = DEFAULT_CONTENT_PATH
+): Promise<{ lessons: number; badges: number }> {
+  console.log('='.repeat(60));
+  console.log('Content Synchronization Script');
+  console.log('='.repeat(60));
+  console.log(`Content Repository: ${contentPath}\n`);
+
+  if (!fs.existsSync(contentPath)) {
+    throw new Error(
+      `Content repository not found at: ${contentPath}\n` +
+        `Please clone llmengineer-content repository to the parent directory.`
+    );
+  }
+
+  const badges = await syncBadges(prisma, contentPath);
+  const lessons = await syncLessons(prisma, contentPath);
+
+  console.log('\n' + '='.repeat(60));
+  console.log('✓ Content synchronization completed successfully!');
+  console.log('='.repeat(60));
+
+  return { lessons, badges };
+}
+
+// Main CLI function - exported for testing
+export async function main(): Promise<void> {
+  const prisma = new PrismaClient();
+
   try {
-    console.log('='.repeat(60));
-    console.log('Content Synchronization Script');
-    console.log('='.repeat(60));
-    console.log(`Content Repository: ${CONTENT_REPO_PATH}\n`);
-
-    // Verificar que el repositorio de contenido existe
-    if (!fs.existsSync(CONTENT_REPO_PATH)) {
-      throw new Error(
-        `Content repository not found at: ${CONTENT_REPO_PATH}\n` +
-          `Please clone llmengineer-content repository to the parent directory.`
-      );
-    }
-
-    // Sincronizar badges
-    await syncBadges();
-
-    // Sincronizar lecciones
-    await syncLessons();
-
-    console.log('\n' + '='.repeat(60));
-    console.log('✓ Content synchronization completed successfully!');
-    console.log('='.repeat(60));
+    await syncContent(prisma);
   } catch (error) {
     console.error('\n❌ Error during content sync:', error);
-    process.exit(1);
+    throw error;
   } finally {
     await prisma.$disconnect();
   }
 }
 
-main();
+// Only run main when executed directly
+/* istanbul ignore next */
+if (require.main === module) {
+  main().catch(() => process.exit(1));
+}
