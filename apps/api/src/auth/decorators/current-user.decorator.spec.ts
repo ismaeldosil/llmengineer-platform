@@ -114,7 +114,7 @@ describe('CurrentUser Decorator', () => {
 
     (mockExecutionContext.switchToHttp as jest.Mock).mockReturnValue(mockHttpContext);
 
-    const result = decoratorFunction(undefined, mockExecutionContext);
+    const result = decoratorFunction(undefined, mockExecutionContext) as typeof mockUser;
 
     expect(result).toEqual(mockUser);
     expect(result.id).toBe('user-456');

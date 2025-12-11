@@ -47,7 +47,7 @@ export class BadgesService {
           description: b.description,
           icon: b.icon,
           category: b.category,
-          requirement: b.requirement,
+          requirement: b.requirement as Record<string, unknown>,
         })),
     };
   }
@@ -130,23 +130,23 @@ export class BadgesService {
     // Check lessons completed requirement
     if (
       requirement.lessonsCompleted !== undefined &&
-      progress.lessonsCompleted >= requirement.lessonsCompleted
+      progress.lessonsCompleted >= (requirement.lessonsCompleted as number)
     ) {
       return true;
     }
 
     // Check streak requirement
-    if (requirement.streak !== undefined && progress.currentStreak >= requirement.streak) {
+    if (requirement.streak !== undefined && progress.currentStreak >= (requirement.streak as number)) {
       return true;
     }
 
     // Check level requirement
-    if (requirement.level !== undefined && progress.level >= requirement.level) {
+    if (requirement.level !== undefined && progress.level >= (requirement.level as number)) {
       return true;
     }
 
     // Check total XP requirement
-    if (requirement.totalXp !== undefined && progress.totalXp >= requirement.totalXp) {
+    if (requirement.totalXp !== undefined && progress.totalXp >= (requirement.totalXp as number)) {
       return true;
     }
 
