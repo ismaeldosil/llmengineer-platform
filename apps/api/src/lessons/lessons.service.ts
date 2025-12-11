@@ -30,9 +30,15 @@ export class LessonsService {
     }));
   }
 
-  async findOne(id: string, userId: string) {
-    const lesson = await this.prisma.lesson.findUnique({
-      where: { id },
+  async findOne(idOrSlug: string, userId: string) {
+    // Try to find by ID first, then by slug
+    const lesson = await this.prisma.lesson.findFirst({
+      where: {
+        OR: [
+          { id: idOrSlug },
+          { slug: idOrSlug },
+        ],
+      },
     });
 
     if (!lesson) {
@@ -41,7 +47,7 @@ export class LessonsService {
 
     const completion = await this.prisma.lessonCompletion.findUnique({
       where: {
-        userId_lessonId: { userId, lessonId: id },
+        userId_lessonId: { userId, lessonId: lesson.id },
       },
     });
 
