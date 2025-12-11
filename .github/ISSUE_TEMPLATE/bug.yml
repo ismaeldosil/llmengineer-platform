@@ -1,0 +1,74 @@
+name: Bug Report
+description: Report a bug to be fixed
+title: "[BUG]: "
+labels: ["type:bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Bug Report Template
+        Provide details about the bug to help agents fix it efficiently.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Descripción del Bug
+      description: What is happening vs what should happen?
+      placeholder: Describe the bug clearly
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Pasos para Reproducir
+      description: How to reproduce the bug
+      value: |
+        1. Go to...
+        2. Click on...
+        3. See error
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Comportamiento Esperado
+      description: What should happen instead?
+    validations:
+      required: true
+
+  - type: textarea
+    id: tasks
+    attributes:
+      label: Tareas para Fix
+      description: What needs to be done to fix it
+      value: |
+        - [ ] Investigate root cause
+        - [ ] Implement fix
+        - [ ] Add regression test
+
+  - type: dropdown
+    id: primary-agent
+    attributes:
+      label: Agente Principal
+      options:
+        - api-developer
+        - frontend-developer
+        - game-developer
+        - devops-engineer
+        - testing-engineer
+    validations:
+      required: true
+
+  - type: dropdown
+    id: complexity
+    attributes:
+      label: Complejidad
+      options:
+        - S (2h)
+        - M (4h)
+        - L (8h)
+        - XL (16h+)
+    validations:
+      required: true
