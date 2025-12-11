@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { calculateLevel, getLevelTitle } from '@llmengineer/shared/constants/levels';
+import { calculateLevel, getLevelTitle } from '@llmengineer/shared';
 
 interface CreateUserData {
   email: string;

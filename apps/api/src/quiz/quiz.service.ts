@@ -1,7 +1,6 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { Quiz, QuizQuestionResult, QuizResult } from '@llmengineer/shared/types/quiz';
-import { QUIZ_BONUSES } from '@llmengineer/shared/constants/xp';
+import { Quiz, QuizQuestionResult, QuizResult, QUIZ_BONUSES } from '@llmengineer/shared';
 import { SubmitQuizDto } from './dto/submit-quiz.dto';
 
 @Injectable()

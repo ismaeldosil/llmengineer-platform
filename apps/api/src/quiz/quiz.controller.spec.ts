@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { QuizController } from './quiz.controller';
 import { QuizService } from './quiz.service';
 import { SubmitQuizDto } from './dto/submit-quiz.dto';
-import { QuizResult } from '@llmengineer/shared/types/quiz';
+import { QuizResult } from '@llmengineer/shared';
 
 describe('QuizController', () => {
   let controller: QuizController;

@@ -2,7 +2,7 @@ import { Injectable, NotFoundException, ConflictException } from '@nestjs/common
 import { PrismaService } from '../prisma/prisma.service';
 import { UsersService } from '../users/users.service';
 import { BadgesService } from '../badges/badges.service';
-import { calculateLessonXpWithBonuses } from '@llmengineer/shared/constants/xp';
+import { calculateLessonXpWithBonuses } from '@llmengineer/shared';
 
 @Injectable()
 export class LessonsService {

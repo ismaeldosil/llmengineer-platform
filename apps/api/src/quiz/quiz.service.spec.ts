@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundException, BadRequestException } from '@nestjs/common';
 import { QuizService } from './quiz.service';
 import { PrismaService } from '../prisma/prisma.service';
-import { Quiz } from '@llmengineer/shared/types/quiz';
+import { Quiz } from '@llmengineer/shared';
 import { SubmitQuizDto } from './dto/submit-quiz.dto';
 
 describe('QuizService', () => {
