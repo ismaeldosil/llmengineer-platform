@@ -33,18 +33,18 @@ export const QUIZ_BONUSES = {
 };
 
 export function calculateStreakBonus(streak: number): number {
-  if (streak >= 30) return STREAK_BONUSES[30];
-  if (streak >= 14) return STREAK_BONUSES[14];
-  if (streak >= 7) return STREAK_BONUSES[7];
-  if (streak >= 3) return STREAK_BONUSES[3];
+  if (streak >= 30) return STREAK_BONUSES[30] ?? 100;
+  if (streak >= 14) return STREAK_BONUSES[14] ?? 50;
+  if (streak >= 7) return STREAK_BONUSES[7] ?? 25;
+  if (streak >= 3) return STREAK_BONUSES[3] ?? 10;
   return 5;
 }
 
 export function getStreakMultiplier(streak: number): number {
-  if (streak >= 30) return STREAK_MULTIPLIERS[30];
-  if (streak >= 14) return STREAK_MULTIPLIERS[14];
-  if (streak >= 7) return STREAK_MULTIPLIERS[7];
-  if (streak >= 3) return STREAK_MULTIPLIERS[3];
+  if (streak >= 30) return STREAK_MULTIPLIERS[30] ?? 1.5;
+  if (streak >= 14) return STREAK_MULTIPLIERS[14] ?? 1.3;
+  if (streak >= 7) return STREAK_MULTIPLIERS[7] ?? 1.2;
+  if (streak >= 3) return STREAK_MULTIPLIERS[3] ?? 1.1;
   return 1.0;
 }
 
