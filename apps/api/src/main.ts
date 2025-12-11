@@ -33,7 +33,6 @@ async function bootstrap() {
 
   const port = process.env.PORT || 3001;
   await app.listen(port);
-  // eslint-disable-next-line no-console
-  console.log(`🚀 API running on http://localhost:${port}`);
+  console.log(`🚀 API running on http://localhost:${port}`); // eslint-disable-line no-console
 }
 bootstrap();
