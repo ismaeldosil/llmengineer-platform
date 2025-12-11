@@ -24,9 +24,11 @@
     "db:migrate": "npm run db:migrate -w @llmengineer/api",
     "db:seed": "npm run db:seed -w @llmengineer/api",
     "db:studio": "npm run db:studio -w @llmengineer/api",
-    "docker:up": "docker-compose -f infra/docker-compose.yml up -d",
-    "docker:down": "docker-compose -f infra/docker-compose.yml down",
-    "docker:logs": "docker-compose -f infra/docker-compose.yml logs -f",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f",
+    "docker:build": "docker-compose build --no-cache",
+    "docker:db": "docker-compose up -d postgres",
     "prepare": "husky install"
   },
   "devDependencies": {

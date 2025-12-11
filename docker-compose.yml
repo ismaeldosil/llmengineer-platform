@@ -1,9 +1,8 @@
-version: '3.8'
-
 services:
   postgres:
     image: postgres:15-alpine
     container_name: llmengineer-db
+    restart: unless-stopped
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -17,12 +16,16 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    networks:
+      - llmengineer-network
 
   api:
     build:
       context: .
       dockerfile: apps/api/Dockerfile
+      target: base
     container_name: llmengineer-api
+    restart: unless-stopped
     environment:
       DATABASE_URL: postgresql://postgres:postgres@postgres:5432/llmengineer?schema=public
       JWT_SECRET: ${JWT_SECRET:-development-secret-change-in-production}
@@ -36,16 +39,23 @@ services:
       postgres:
         condition: service_healthy
     volumes:
-      - ./apps/api:/app/apps/api
-      - ./packages:/app/packages
+      # Mount source code for hot reload
+      - ./apps/api/src:/app/apps/api/src
+      - ./apps/api/prisma:/app/apps/api/prisma
+      - ./packages/shared/src:/app/packages/shared/src
+      # Exclude node_modules from mount
       - /app/node_modules
       - /app/apps/api/node_modules
+      - /app/packages/shared/node_modules
+    networks:
+      - llmengineer-network
 
   web:
     build:
       context: .
       dockerfile: apps/web/Dockerfile
     container_name: llmengineer-web
+    restart: unless-stopped
     environment:
       EXPO_PUBLIC_API_URL: http://localhost:3001
     ports:
@@ -53,10 +63,23 @@ services:
     depends_on:
       - api
     volumes:
-      - ./apps/web:/app/apps/web
-      - ./packages:/app/packages
+      # Mount source code for hot reload
+      - ./apps/web/app:/app/apps/web/app
+      - ./apps/web/src:/app/apps/web/src
+      - ./packages/shared/src:/app/packages/shared/src
+      - ./packages/ui/src:/app/packages/ui/src
+      # Exclude node_modules from mount
       - /app/node_modules
       - /app/apps/web/node_modules
+      - /app/packages/shared/node_modules
+      - /app/packages/ui/node_modules
+    networks:
+      - llmengineer-network
 
 volumes:
   postgres_data:
+    driver: local
+
+networks:
+  llmengineer-network:
+    driver: bridge
