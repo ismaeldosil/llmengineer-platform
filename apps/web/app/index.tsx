@@ -1,7 +1,18 @@
+import { useEffect } from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
-import { Link, Stack } from 'expo-router';
+import { Link, Stack, router } from 'expo-router';
+import { useSelector } from 'react-redux';
+import type { RootState } from '@/store';
 
 export default function Home() {
+  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.replace('/dashboard');
+    }
+  }, [isAuthenticated]);
+
   return (
     <>
       <Stack.Screen options={{ title: 'LLM Engineer' }} />

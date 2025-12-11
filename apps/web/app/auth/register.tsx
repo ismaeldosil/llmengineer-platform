@@ -1,111 +1,278 @@
-import { useState } from 'react';
-import { View, Text, TextInput, Pressable, StyleSheet, ActivityIndicator } from 'react-native';
+import { useState, useEffect } from 'react';
+import { View, Text, TextInput, Pressable, StyleSheet, ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { Stack, router } from 'expo-router';
 import { useDispatch } from 'react-redux';
 import { useRegisterMutation } from '@/services/api';
 import { setCredentials } from '@/store/slices/authSlice';
+import { PasswordInput } from '@/components/atoms/PasswordInput';
+import { PasswordStrengthIndicator } from '@/components/atoms/PasswordStrengthIndicator';
+import { validateEmail, validatePassword, validateDisplayName, validatePasswordMatch } from '@/utils/validation';
+import { storage } from '@/utils/storage';
 
 export default function RegisterScreen() {
   const [displayName, setDisplayName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [errors, setErrors] = useState({
+    displayName: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+  });
+  const [touched, setTouched] = useState({
+    displayName: false,
+    email: false,
+    password: false,
+    confirmPassword: false,
+  });
   const [register, { isLoading, error }] = useRegisterMutation();
   const dispatch = useDispatch();
 
+  // Real-time validation
+  useEffect(() => {
+    if (touched.displayName && displayName) {
+      const validation = validateDisplayName(displayName);
+      setErrors((prev) => ({
+        ...prev,
+        displayName: validation.isValid ? '' : validation.error || '',
+      }));
+    }
+  }, [displayName, touched.displayName]);
+
+  useEffect(() => {
+    if (touched.email && email) {
+      const validation = validateEmail(email);
+      setErrors((prev) => ({
+        ...prev,
+        email: validation.isValid ? '' : validation.error || '',
+      }));
+    }
+  }, [email, touched.email]);
+
+  useEffect(() => {
+    if (touched.password && password) {
+      const validation = validatePassword(password);
+      setErrors((prev) => ({
+        ...prev,
+        password: validation.isValid ? '' : validation.error || '',
+      }));
+    }
+  }, [password, touched.password]);
+
+  useEffect(() => {
+    if (touched.confirmPassword && confirmPassword) {
+      const validation = validatePasswordMatch(password, confirmPassword);
+      setErrors((prev) => ({
+        ...prev,
+        confirmPassword: validation.isValid ? '' : validation.error || '',
+      }));
+    }
+  }, [password, confirmPassword, touched.confirmPassword]);
+
+  const handleBlur = (field: keyof typeof touched) => {
+    setTouched((prev) => ({ ...prev, [field]: true }));
+  };
+
+  const isFormValid = () => {
+    const displayNameValid = validateDisplayName(displayName).isValid;
+    const emailValid = validateEmail(email).isValid;
+    const passwordValid = validatePassword(password).isValid;
+    const passwordMatchValid = validatePasswordMatch(password, confirmPassword).isValid;
+
+    return displayNameValid && emailValid && passwordValid && passwordMatchValid;
+  };
+
   const handleRegister = async () => {
-    if (password !== confirmPassword) {
+    // Mark all fields as touched
+    setTouched({
+      displayName: true,
+      email: true,
+      password: true,
+      confirmPassword: true,
+    });
+
+    // Validate all fields
+    const displayNameValidation = validateDisplayName(displayName);
+    const emailValidation = validateEmail(email);
+    const passwordValidation = validatePassword(password);
+    const passwordMatchValidation = validatePasswordMatch(password, confirmPassword);
+
+    setErrors({
+      displayName: displayNameValidation.isValid ? '' : displayNameValidation.error || '',
+      email: emailValidation.isValid ? '' : emailValidation.error || '',
+      password: passwordValidation.isValid ? '' : passwordValidation.error || '',
+      confirmPassword: passwordMatchValidation.isValid ? '' : passwordMatchValidation.error || '',
+    });
+
+    if (!isFormValid()) {
       return;
     }
 
     try {
       const result = await register({ email, password, displayName }).unwrap();
+
+      // Save to storage
+      await storage.saveToken(result.accessToken);
+      await storage.saveUser(result.user);
+
+      // Update Redux
       dispatch(setCredentials({ user: result.user, token: result.accessToken }));
+
+      // Navigate to dashboard
       router.replace('/dashboard');
     } catch (err) {
       console.error('Registration failed:', err);
     }
   };
 
+  const getErrorMessage = () => {
+    if (!error) return '';
+
+    if ('status' in error) {
+      if (error.status === 409) {
+        return 'Este email ya está registrado. Intenta iniciar sesión';
+      }
+      if (error.status === 400) {
+        return 'Datos inválidos. Por favor, verifica la información';
+      }
+      if ('data' in error && error.data && typeof error.data === 'object' && 'message' in error.data) {
+        return (error.data as { message: string }).message;
+      }
+    }
+
+    return 'Error al registrarse. Por favor, intenta de nuevo';
+  };
+
   return (
     <>
-      <Stack.Screen options={{ title: 'Registrarse' }} />
-      <View style={styles.container}>
-        <Text style={styles.title}>Crea tu cuenta</Text>
-        <Text style={styles.subtitle}>Comienza tu viaje en LLM Engineering</Text>
+      <Stack.Screen options={{ title: 'Registrarse', headerBackVisible: true }} />
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.keyboardView}
+      >
+        <ScrollView
+          contentContainerStyle={styles.scrollContainer}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={styles.container}>
+            <View style={styles.header}>
+              <Text style={styles.title}>Crea tu cuenta</Text>
+              <Text style={styles.subtitle}>Comienza tu viaje en LLM Engineering</Text>
+            </View>
 
-        <View style={styles.form}>
-          <TextInput
-            style={styles.input}
-            placeholder="Nombre de usuario"
-            placeholderTextColor="#6B7280"
-            value={displayName}
-            onChangeText={setDisplayName}
-            autoCapitalize="words"
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Email"
-            placeholderTextColor="#6B7280"
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
-            autoCapitalize="none"
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Contraseña"
-            placeholderTextColor="#6B7280"
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Confirmar contraseña"
-            placeholderTextColor="#6B7280"
-            value={confirmPassword}
-            onChangeText={setConfirmPassword}
-            secureTextEntry
-          />
+            <View style={styles.form}>
+              <View style={styles.inputGroup}>
+                <Text style={styles.label}>Nombre de usuario</Text>
+                <TextInput
+                  style={[styles.input, errors.displayName && styles.inputError]}
+                  placeholder="Tu nombre"
+                  placeholderTextColor="#6B7280"
+                  value={displayName}
+                  onChangeText={setDisplayName}
+                  onBlur={() => handleBlur('displayName')}
+                  autoCapitalize="words"
+                  autoCorrect={false}
+                  editable={!isLoading}
+                />
+                {errors.displayName && <Text style={styles.fieldError}>{errors.displayName}</Text>}
+              </View>
 
-          {password !== confirmPassword && confirmPassword.length > 0 && (
-            <Text style={styles.error}>Las contraseñas no coinciden</Text>
-          )}
+              <View style={styles.inputGroup}>
+                <Text style={styles.label}>Email</Text>
+                <TextInput
+                  style={[styles.input, errors.email && styles.inputError]}
+                  placeholder="tu@email.com"
+                  placeholderTextColor="#6B7280"
+                  value={email}
+                  onChangeText={setEmail}
+                  onBlur={() => handleBlur('email')}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  editable={!isLoading}
+                />
+                {errors.email && <Text style={styles.fieldError}>{errors.email}</Text>}
+              </View>
 
-          {error && (
-            <Text style={styles.error}>
-              {'data' in error ? (error.data as { message: string }).message : 'Error al registrarse'}
-            </Text>
-          )}
+              <View style={styles.inputGroup}>
+                <PasswordInput
+                  label="Contraseña"
+                  placeholder="Mínimo 8 caracteres"
+                  value={password}
+                  onChangeText={setPassword}
+                  onBlur={() => handleBlur('password')}
+                  error={errors.password}
+                  editable={!isLoading}
+                />
+                {password && !errors.password && (
+                  <View style={styles.strengthContainer}>
+                    <PasswordStrengthIndicator password={password} />
+                  </View>
+                )}
+              </View>
 
-          <Pressable
-            style={[styles.button, isLoading && styles.buttonDisabled]}
-            onPress={handleRegister}
-            disabled={isLoading || password !== confirmPassword}
-          >
-            {isLoading ? (
-              <ActivityIndicator color="#FFFFFF" />
-            ) : (
-              <Text style={styles.buttonText}>Crear Cuenta</Text>
-            )}
-          </Pressable>
-        </View>
+              <PasswordInput
+                label="Confirmar contraseña"
+                placeholder="Repite tu contraseña"
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
+                onBlur={() => handleBlur('confirmPassword')}
+                error={errors.confirmPassword}
+                editable={!isLoading}
+              />
 
-        <Pressable onPress={() => router.push('/auth/login')}>
-          <Text style={styles.link}>¿Ya tienes cuenta? Inicia sesión</Text>
-        </Pressable>
-      </View>
+              {error && (
+                <View style={styles.errorContainer}>
+                  <Text style={styles.error}>{getErrorMessage()}</Text>
+                </View>
+              )}
+
+              <Pressable
+                style={[
+                  styles.button,
+                  (isLoading || !isFormValid()) && styles.buttonDisabled
+                ]}
+                onPress={handleRegister}
+                disabled={isLoading || !isFormValid()}
+              >
+                {isLoading ? (
+                  <ActivityIndicator color="#FFFFFF" />
+                ) : (
+                  <Text style={styles.buttonText}>Crear Cuenta</Text>
+                )}
+              </Pressable>
+            </View>
+
+            <Pressable
+              onPress={() => router.push('/auth/login')}
+              disabled={isLoading}
+            >
+              <Text style={styles.link}>¿Ya tienes cuenta? Inicia sesión</Text>
+            </Pressable>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </>
   );
 }
 
 const styles = StyleSheet.create({
+  keyboardView: {
+    flex: 1,
+    backgroundColor: '#111827',
+  },
+  scrollContainer: {
+    flexGrow: 1,
+  },
   container: {
     flex: 1,
     padding: 24,
     backgroundColor: '#111827',
     justifyContent: 'center',
+  },
+  header: {
+    marginBottom: 32,
   },
   title: {
     fontSize: 28,
@@ -118,11 +285,19 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#9CA3AF',
     textAlign: 'center',
-    marginBottom: 32,
   },
   form: {
-    gap: 16,
+    gap: 20,
     marginBottom: 24,
+  },
+  inputGroup: {
+    width: '100%',
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#D1D5DB',
+    marginBottom: 8,
   },
   input: {
     backgroundColor: '#1F2937',
@@ -132,6 +307,29 @@ const styles = StyleSheet.create({
     color: '#F9FAFB',
     borderWidth: 1,
     borderColor: '#374151',
+  },
+  inputError: {
+    borderColor: '#EF4444',
+  },
+  fieldError: {
+    fontSize: 14,
+    color: '#EF4444',
+    marginTop: 8,
+  },
+  strengthContainer: {
+    marginTop: 12,
+  },
+  errorContainer: {
+    backgroundColor: '#7F1D1D',
+    borderRadius: 8,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: '#EF4444',
+  },
+  error: {
+    color: '#FCA5A5',
+    fontSize: 14,
+    textAlign: 'center',
   },
   button: {
     backgroundColor: '#3B82F6',
@@ -147,11 +345,6 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '600',
-  },
-  error: {
-    color: '#EF4444',
-    fontSize: 14,
-    textAlign: 'center',
   },
   link: {
     color: '#3B82F6',

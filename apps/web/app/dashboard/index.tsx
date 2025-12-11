@@ -1,14 +1,17 @@
-import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Pressable, Alert } from 'react-native';
 import { Stack, router } from 'expo-router';
 import { useSelector } from 'react-redux';
+import { Ionicons } from '@expo/vector-icons';
 import type { RootState } from '@/store';
 import { useGetProgressQuery, useGetLessonsQuery, useCheckinMutation } from '@/services/api';
+import { useAuth } from '@/hooks/useAuth';
 import { ProgressCard } from '@/components/molecules/ProgressCard';
 import { LessonCard } from '@/components/molecules/LessonCard';
 import { StreakBanner } from '@/components/molecules/StreakBanner';
 
 export default function DashboardScreen() {
   const user = useSelector((state: RootState) => state.auth.user);
+  const { logout } = useAuth();
   const { data: progress, isLoading: progressLoading } = useGetProgressQuery();
   const { data: lessons, isLoading: lessonsLoading } = useGetLessonsQuery();
   const [checkin] = useCheckinMutation();
@@ -23,13 +26,33 @@ export default function DashboardScreen() {
     }
   };
 
+  const handleLogout = () => {
+    Alert.alert(
+      'Cerrar Sesión',
+      '¿Estás seguro que deseas cerrar sesión?',
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Cerrar Sesión',
+          style: 'destructive',
+          onPress: logout,
+        },
+      ]
+    );
+  };
+
   return (
     <>
       <Stack.Screen options={{ title: 'Dashboard', headerShown: false }} />
       <ScrollView style={styles.container}>
         <View style={styles.header}>
-          <Text style={styles.greeting}>Hola, {user?.displayName || 'Estudiante'}</Text>
-          <Text style={styles.subtitle}>Continúa tu aprendizaje</Text>
+          <View>
+            <Text style={styles.greeting}>Hola, {user?.displayName || 'Estudiante'}</Text>
+            <Text style={styles.subtitle}>Continúa tu aprendizaje</Text>
+          </View>
+          <Pressable style={styles.logoutButton} onPress={handleLogout}>
+            <Ionicons name="log-out-outline" size={24} color="#EF4444" />
+          </Pressable>
         </View>
 
         <StreakBanner
@@ -90,6 +113,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#111827',
   },
   header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     padding: 24,
     paddingTop: 60,
   },
@@ -102,6 +128,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#9CA3AF',
     marginTop: 4,
+  },
+  logoutButton: {
+    padding: 8,
+    borderRadius: 8,
+    backgroundColor: '#7F1D1D',
   },
   section: {
     padding: 24,

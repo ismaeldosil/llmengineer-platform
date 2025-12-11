@@ -1,6 +1,17 @@
-import { Stack } from 'expo-router';
+import { useEffect } from 'react';
+import { Stack, router } from 'expo-router';
+import { useSelector } from 'react-redux';
+import type { RootState } from '@/store';
 
 export default function AuthLayout() {
+  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.replace('/dashboard');
+    }
+  }, [isAuthenticated]);
+
   return (
     <Stack
       screenOptions={{
