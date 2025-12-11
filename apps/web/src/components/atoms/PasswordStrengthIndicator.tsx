@@ -19,16 +19,11 @@ export function PasswordStrengthIndicator({ password }: PasswordStrengthIndicato
         {[0, 1, 2, 3, 4].map((index) => (
           <View
             key={index}
-            style={[
-              styles.bar,
-              index <= strength.score && { backgroundColor: strength.color },
-            ]}
+            style={[styles.bar, index <= strength.score && { backgroundColor: strength.color }]}
           />
         ))}
       </View>
-      <Text style={[styles.label, { color: strength.color }]}>
-        {strength.label}
-      </Text>
+      <Text style={[styles.label, { color: strength.color }]}>{strength.label}</Text>
     </View>
   );
 }

@@ -1,5 +1,4 @@
 import { ExecutionContext } from '@nestjs/common';
-import { Reflector } from '@nestjs/core';
 
 // Import the decorator factory function directly
 const createParamDecoratorMock = () => {
@@ -11,7 +10,7 @@ const createParamDecoratorMock = () => {
 
 describe('CurrentUser Decorator', () => {
   let mockExecutionContext: ExecutionContext;
-  let decoratorFunction: (data: unknown, ctx: ExecutionContext) => any;
+  let decoratorFunction: (data: unknown, ctx: ExecutionContext) => unknown;
 
   beforeEach(() => {
     decoratorFunction = createParamDecoratorMock();
@@ -115,7 +114,7 @@ describe('CurrentUser Decorator', () => {
 
     (mockExecutionContext.switchToHttp as jest.Mock).mockReturnValue(mockHttpContext);
 
-    const result = decoratorFunction(undefined, mockExecutionContext);
+    const result = decoratorFunction(undefined, mockExecutionContext) as typeof mockUser;
 
     expect(result).toEqual(mockUser);
     expect(result.id).toBe('user-456');

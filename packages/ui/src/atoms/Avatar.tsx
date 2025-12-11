@@ -39,12 +39,7 @@ export function Avatar({ name, source, size = 'md' }: AvatarProps) {
   ];
 
   if (source) {
-    return (
-      <Image
-        source={source}
-        style={[containerStyle, styles.image]}
-      />
-    );
+    return <Image source={source} style={[containerStyle, styles.image]} />;
   }
 
   return (

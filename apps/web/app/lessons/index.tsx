@@ -1,12 +1,5 @@
 import { useState, useCallback, useMemo } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  FlatList,
-  ActivityIndicator,
-  RefreshControl,
-} from 'react-native';
+import { View, Text, StyleSheet, FlatList, ActivityIndicator, RefreshControl } from 'react-native';
 import { Stack, router } from 'expo-router';
 import { useGetLessonsQuery } from '@/services/api';
 import { LessonCard } from '@/components/molecules/LessonCard';
@@ -87,10 +80,7 @@ export default function LessonsScreen() {
             </View>
             {item.lessons.map((lesson) => (
               <View key={lesson.id} style={styles.lessonItem}>
-                <LessonCard
-                  lesson={lesson}
-                  onPress={() => router.push(`/lessons/${lesson.id}`)}
-                />
+                <LessonCard lesson={lesson} onPress={() => router.push(`/lessons/${lesson.id}`)} />
               </View>
             ))}
           </View>

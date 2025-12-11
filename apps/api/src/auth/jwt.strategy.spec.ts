@@ -67,9 +67,7 @@ describe('JwtStrategy', () => {
 
       mockAuthService.validateUser.mockResolvedValue(null);
 
-      await expect(jwtStrategy.validate(payload)).rejects.toThrow(
-        UnauthorizedException,
-      );
+      await expect(jwtStrategy.validate(payload)).rejects.toThrow(UnauthorizedException);
       expect(authService.validateUser).toHaveBeenCalledWith(payload.sub);
     });
 

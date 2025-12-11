@@ -1,4 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react';
+import { View } from 'react-native';
 import { render } from '@testing-library/react-native';
 import { PasswordStrengthIndicator } from '../PasswordStrengthIndicator';
 
@@ -34,19 +36,15 @@ describe('PasswordStrengthIndicator', () => {
   });
 
   it('should show very strong for very strong password', () => {
-    const { getByText } = render(
-      <PasswordStrengthIndicator password="TestPass123!@#$%" />
-    );
+    const { getByText } = render(<PasswordStrengthIndicator password="TestPass123!@#$%" />);
 
     expect(getByText('Muy fuerte')).toBeTruthy();
   });
 
   it('should render 5 strength bars', () => {
-    const { UNSAFE_getAllByType } = render(
-      <PasswordStrengthIndicator password="TestPass123" />
-    );
+    const { UNSAFE_getAllByType } = render(<PasswordStrengthIndicator password="TestPass123" />);
 
-    const views = UNSAFE_getAllByType('View');
+    const views = UNSAFE_getAllByType(View);
     // Filter for bar views (they have specific styles)
     const bars = views.filter((view: any) => {
       const style = view.props.style;
@@ -57,9 +55,7 @@ describe('PasswordStrengthIndicator', () => {
   });
 
   it('should update when password changes', () => {
-    const { getByText, rerender } = render(
-      <PasswordStrengthIndicator password="test" />
-    );
+    const { getByText, rerender } = render(<PasswordStrengthIndicator password="test" />);
 
     expect(getByText('Muy débil')).toBeTruthy();
 

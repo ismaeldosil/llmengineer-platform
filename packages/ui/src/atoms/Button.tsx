@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pressable, Text, StyleSheet, ActivityIndicator, ViewStyle, TextStyle } from 'react-native';
+import { Pressable, Text, StyleSheet, ActivityIndicator, ViewStyle } from 'react-native';
 import { colors, spacing, typography } from '../theme';
 
 type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost';
@@ -35,18 +35,10 @@ export function Button({
     style,
   ];
 
-  const textStyle = [
-    styles.text,
-    styles[`text_${variant}`],
-    styles[`textSize_${size}`],
-  ];
+  const textStyle = [styles.text, styles[`text_${variant}`], styles[`textSize_${size}`]];
 
   return (
-    <Pressable
-      style={buttonStyle}
-      onPress={onPress}
-      disabled={disabled || loading}
-    >
+    <Pressable style={buttonStyle} onPress={onPress} disabled={disabled || loading}>
       {loading ? (
         <ActivityIndicator color={variant === 'primary' ? '#FFFFFF' : colors.primary[500]} />
       ) : (

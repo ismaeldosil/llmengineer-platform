@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable, ActivityIndicator } from 'react-native';
 import { Stack, useLocalSearchParams, router } from 'expo-router';
 import { useGetLessonQuery, useCompleteLessonMutation } from '@/services/api';

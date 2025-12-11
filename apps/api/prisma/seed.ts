@@ -4,25 +4,25 @@ import * as bcrypt from 'bcrypt';
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('Starting database seed...');
+  console.log('Starting database seed...'); // eslint-disable-line no-console
 
   // Seed Badges
-  console.log('Seeding badges...');
+  console.log('Seeding badges...'); // eslint-disable-line no-console
   await seedBadges();
 
   // Seed Lessons
-  console.log('Seeding lessons...');
+  console.log('Seeding lessons...'); // eslint-disable-line no-console
   await seedLessons();
 
   // Seed Test User
-  console.log('Seeding test user...');
+  console.log('Seeding test user...'); // eslint-disable-line no-console
   const testUser = await seedTestUser();
 
   // Seed Sample Completions
-  console.log('Seeding sample completions...');
+  console.log('Seeding sample completions...'); // eslint-disable-line no-console
   await seedSampleCompletions(testUser.id);
 
-  console.log('Database seed completed successfully!');
+  console.log('Database seed completed successfully!'); // eslint-disable-line no-console
 }
 
 async function seedBadges() {
@@ -187,7 +187,7 @@ async function seedBadges() {
     });
   }
 
-  console.log(`✓ Seeded ${badges.length} badges`);
+  console.log(`✓ Seeded ${badges.length} badges`); // eslint-disable-line no-console
 }
 
 async function seedLessons() {
@@ -343,7 +343,7 @@ async function seedLessons() {
     });
   }
 
-  console.log(`✓ Seeded ${lessons.length} lessons`);
+  console.log(`✓ Seeded ${lessons.length} lessons`); // eslint-disable-line no-console
 }
 
 async function seedTestUser() {
@@ -372,7 +372,7 @@ async function seedTestUser() {
     },
   });
 
-  console.log(`✓ Created test user: ${user.email}`);
+  console.log(`✓ Created test user: ${user.email}`); // eslint-disable-line no-console
   return user;
 }
 
@@ -440,13 +440,13 @@ async function seedSampleCompletions(userId: string) {
     },
   });
 
-  console.log(`✓ Created ${completions.length} sample completions`);
-  console.log(`✓ Created 2 streak log entries`);
+  console.log(`✓ Created ${completions.length} sample completions`); // eslint-disable-line no-console
+  console.log(`✓ Created 2 streak log entries`); // eslint-disable-line no-console
 }
 
 main()
   .catch((e) => {
-    console.error('Error during seed:', e);
+    console.error('Error during seed:', e); // eslint-disable-line no-console
     process.exit(1);
   })
   .finally(async () => {

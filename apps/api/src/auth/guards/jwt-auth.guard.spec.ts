@@ -32,7 +32,9 @@ describe('JwtAuthGuard', () => {
 
       // Mock the parent class canActivate method
       const superCanActivate = jest.fn().mockResolvedValue(true);
-      jest.spyOn(Object.getPrototypeOf(JwtAuthGuard.prototype), 'canActivate').mockImplementation(superCanActivate);
+      jest
+        .spyOn(Object.getPrototypeOf(JwtAuthGuard.prototype), 'canActivate')
+        .mockImplementation(superCanActivate);
 
       const result = await guard.canActivate(mockExecutionContext);
 
@@ -52,7 +54,9 @@ describe('JwtAuthGuard', () => {
 
       // Mock the parent class canActivate method to return false
       const superCanActivate = jest.fn().mockResolvedValue(false);
-      jest.spyOn(Object.getPrototypeOf(JwtAuthGuard.prototype), 'canActivate').mockImplementation(superCanActivate);
+      jest
+        .spyOn(Object.getPrototypeOf(JwtAuthGuard.prototype), 'canActivate')
+        .mockImplementation(superCanActivate);
 
       const result = await guard.canActivate(mockExecutionContext);
 
@@ -74,7 +78,9 @@ describe('JwtAuthGuard', () => {
 
       // Mock the parent class canActivate method to throw
       const superCanActivate = jest.fn().mockRejectedValue(new Error('Unauthorized'));
-      jest.spyOn(Object.getPrototypeOf(JwtAuthGuard.prototype), 'canActivate').mockImplementation(superCanActivate);
+      jest
+        .spyOn(Object.getPrototypeOf(JwtAuthGuard.prototype), 'canActivate')
+        .mockImplementation(superCanActivate);
 
       await expect(guard.canActivate(mockExecutionContext)).rejects.toThrow('Unauthorized');
     });

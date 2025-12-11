@@ -1,12 +1,27 @@
 import { useState, useEffect } from 'react';
-import { View, Text, TextInput, Pressable, StyleSheet, ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  Pressable,
+  StyleSheet,
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+} from 'react-native';
 import { Stack, router } from 'expo-router';
 import { useDispatch } from 'react-redux';
 import { useRegisterMutation } from '@/services/api';
 import { setCredentials } from '@/store/slices/authSlice';
 import { PasswordInput } from '@/components/atoms/PasswordInput';
 import { PasswordStrengthIndicator } from '@/components/atoms/PasswordStrengthIndicator';
-import { validateEmail, validatePassword, validateDisplayName, validatePasswordMatch } from '@/utils/validation';
+import {
+  validateEmail,
+  validatePassword,
+  validateDisplayName,
+  validatePasswordMatch,
+} from '@/utils/validation';
 import { storage } from '@/utils/storage';
 
 export default function RegisterScreen() {
@@ -136,7 +151,12 @@ export default function RegisterScreen() {
       if (error.status === 400) {
         return 'Datos inválidos. Por favor, verifica la información';
       }
-      if ('data' in error && error.data && typeof error.data === 'object' && 'message' in error.data) {
+      if (
+        'data' in error &&
+        error.data &&
+        typeof error.data === 'object' &&
+        'message' in error.data
+      ) {
         return (error.data as { message: string }).message;
       }
     }
@@ -165,7 +185,7 @@ export default function RegisterScreen() {
               <View style={styles.inputGroup}>
                 <Text style={styles.label}>Nombre de usuario</Text>
                 <TextInput
-                  style={[styles.input, errors.displayName && styles.inputError]}
+                  style={[styles.input, errors.displayName ? styles.inputError : null]}
                   placeholder="Tu nombre"
                   placeholderTextColor="#6B7280"
                   value={displayName}
@@ -181,7 +201,7 @@ export default function RegisterScreen() {
               <View style={styles.inputGroup}>
                 <Text style={styles.label}>Email</Text>
                 <TextInput
-                  style={[styles.input, errors.email && styles.inputError]}
+                  style={[styles.input, errors.email ? styles.inputError : null]}
                   placeholder="tu@email.com"
                   placeholderTextColor="#6B7280"
                   value={email}
@@ -229,10 +249,7 @@ export default function RegisterScreen() {
               )}
 
               <Pressable
-                style={[
-                  styles.button,
-                  (isLoading || !isFormValid()) && styles.buttonDisabled
-                ]}
+                style={[styles.button, (isLoading || !isFormValid()) && styles.buttonDisabled]}
                 onPress={handleRegister}
                 disabled={isLoading || !isFormValid()}
               >
@@ -244,10 +261,7 @@ export default function RegisterScreen() {
               </Pressable>
             </View>
 
-            <Pressable
-              onPress={() => router.push('/auth/login')}
-              disabled={isLoading}
-            >
+            <Pressable onPress={() => router.push('/auth/login')} disabled={isLoading}>
               <Text style={styles.link}>¿Ya tienes cuenta? Inicia sesión</Text>
             </Pressable>
           </View>

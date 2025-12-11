@@ -9,12 +9,7 @@ interface NextLessonWidgetProps {
   onViewAll: () => void;
 }
 
-export function NextLessonWidget({
-  lesson,
-  isLoading,
-  onPress,
-  onViewAll,
-}: NextLessonWidgetProps) {
+export function NextLessonWidget({ lesson, isLoading, onPress, onViewAll }: NextLessonWidgetProps) {
   return (
     <View style={styles.container}>
       <View style={styles.header}>

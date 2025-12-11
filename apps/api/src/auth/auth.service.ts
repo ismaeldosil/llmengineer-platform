@@ -9,7 +9,7 @@ import { RegisterDto } from './dto/register.dto';
 export class AuthService {
   constructor(
     private usersService: UsersService,
-    private jwtService: JwtService,
+    private jwtService: JwtService
   ) {}
 
   async login(loginDto: LoginDto) {

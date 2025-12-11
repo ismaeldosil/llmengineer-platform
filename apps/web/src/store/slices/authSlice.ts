@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import type { User } from '@llmengineer/shared';
 
-interface AuthState {
+export interface AuthState {
   user: User | null;
   token: string | null;
   isAuthenticated: boolean;
