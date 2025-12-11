@@ -61,6 +61,8 @@ export function QuizModal({
   }, [answers, questions]);
 
   const handleAnswer = (selectedAnswer: string) => {
+    if (!currentQuestion) return;
+
     const newAnswer: Answer = {
       questionId: currentQuestion.id,
       selectedAnswer,

@@ -104,7 +104,7 @@ export const getPasswordStrength = (password: string): PasswordStrength => {
 
   return {
     score,
-    label: labels[score],
-    color: colors[score],
+    label: labels[score] ?? 'Muy débil',
+    color: colors[score] ?? '#EF4444',
   };
 };

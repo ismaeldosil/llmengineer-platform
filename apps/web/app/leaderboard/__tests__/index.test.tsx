@@ -240,7 +240,7 @@ describe('LeaderboardScreen', () => {
     const flatList = UNSAFE_getByType(FlatList);
 
     const keyExtractor = flatList.props.keyExtractor;
-    const item = mockLeaderboardData.entries[0];
+    const item = mockLeaderboardData.entries[0]!;
     expect(keyExtractor(item)).toBe(`${item.userId}-${item.rank}`);
   });
 

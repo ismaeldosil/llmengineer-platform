@@ -5,6 +5,7 @@ import type { Lesson } from '@llmengineer/shared';
 
 const mockLesson: Lesson = {
   id: '1',
+  slug: 'introduction-to-prompts',
   title: 'Introduction to Prompts',
   description: 'Learn the basics of prompt engineering',
   week: 1,
@@ -14,8 +15,6 @@ const mockLesson: Lesson = {
   estimatedMinutes: 15,
   isCompleted: false,
   sections: [],
-  createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString(),
 };
 
 describe('NextLessonWidget', () => {

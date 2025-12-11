@@ -19,7 +19,7 @@ export function PasswordInput({ label, error, style, ...props }: PasswordInputPr
       {label && <Text style={styles.label}>{label}</Text>}
       <View style={styles.inputContainer}>
         <TextInput
-          style={[styles.input, error && styles.inputError, style]}
+          style={[styles.input, error ? styles.inputError : null, style]}
           placeholderTextColor="#6B7280"
           secureTextEntry={!isVisible}
           {...props}

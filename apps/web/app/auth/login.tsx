@@ -124,7 +124,7 @@ export default function LoginScreen() {
               <View style={styles.inputGroup}>
                 <Text style={styles.label}>Email</Text>
                 <TextInput
-                  style={[styles.input, emailError && styles.inputError]}
+                  style={[styles.input, emailError ? styles.inputError : null]}
                   placeholder="tu@email.com"
                   placeholderTextColor="#6B7280"
                   value={email}

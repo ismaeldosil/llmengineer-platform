@@ -455,7 +455,7 @@ describe('QuizModal', () => {
   });
 
   it('should handle single question quiz', () => {
-    const singleQuestion = [mockQuestions[0]];
+    const singleQuestion = [mockQuestions[0]!];
 
     const { getByText } = render(
       <QuizModal

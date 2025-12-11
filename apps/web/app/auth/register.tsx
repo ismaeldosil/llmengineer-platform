@@ -185,7 +185,7 @@ export default function RegisterScreen() {
               <View style={styles.inputGroup}>
                 <Text style={styles.label}>Nombre de usuario</Text>
                 <TextInput
-                  style={[styles.input, errors.displayName && styles.inputError]}
+                  style={[styles.input, errors.displayName ? styles.inputError : null]}
                   placeholder="Tu nombre"
                   placeholderTextColor="#6B7280"
                   value={displayName}
@@ -201,7 +201,7 @@ export default function RegisterScreen() {
               <View style={styles.inputGroup}>
                 <Text style={styles.label}>Email</Text>
                 <TextInput
-                  style={[styles.input, errors.email && styles.inputError]}
+                  style={[styles.input, errors.email ? styles.inputError : null]}
                   placeholder="tu@email.com"
                   placeholderTextColor="#6B7280"
                   value={email}
