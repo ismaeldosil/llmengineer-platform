@@ -18,7 +18,7 @@
 # - Repositorio ya creado en GitHub
 # =============================================================================
 
-set -e
+# No usar set -e para permitir que el script continúe si hay errores menores
 
 # Configuración
 OWNER="ismaeldosil"
