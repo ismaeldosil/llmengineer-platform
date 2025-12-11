@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { calculateLevel, getLevelTitle } from '@llmengineer/shared/constants/levels';
 
 interface CreateUserData {
   email: string;
@@ -107,11 +108,13 @@ export class UsersService {
       return null;
     }
 
+    const oldLevel = progress.level;
     const newTotalXp = progress.totalXp + xp;
-    const newLevel = this.calculateLevel(newTotalXp);
-    const newTitle = this.getLevelTitle(newLevel);
+    const newLevel = calculateLevel(newTotalXp);
+    const newTitle = getLevelTitle(newLevel);
+    const leveledUp = newLevel > oldLevel;
 
-    return this.prisma.userProgress.update({
+    const updatedProgress = await this.prisma.userProgress.update({
       where: { userId },
       data: {
         totalXp: newTotalXp,
@@ -120,25 +123,11 @@ export class UsersService {
         lastActiveAt: new Date(),
       },
     });
-  }
 
-  private calculateLevel(xp: number): number {
-    return Math.floor(xp / 500) + 1;
-  }
-
-  private getLevelTitle(level: number): string {
-    const titles: Record<number, string> = {
-      1: 'Prompt Curious',
-      2: 'Prompt Apprentice',
-      3: 'Token Tinkerer',
-      4: 'Context Crafter',
-      5: 'Embedding Explorer',
-      6: 'RAG Rookie',
-      7: 'Vector Voyager',
-      8: 'Pipeline Pioneer',
-      9: 'Agent Architect',
-      10: 'LLM Engineer',
+    return {
+      ...updatedProgress,
+      leveledUp,
+      xpAdded: xp,
     };
-    return titles[Math.min(level, 10)] || 'LLM Master';
   }
 }

@@ -17,6 +17,7 @@ module.exports = {
   testEnvironment: 'node',
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
+    '^@llmengineer/shared/(.*)$': '<rootDir>/../../packages/shared/src/$1',
   },
   coverageThreshold: {
     global: {

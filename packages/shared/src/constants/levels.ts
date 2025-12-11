@@ -18,7 +18,10 @@ export function calculateLevel(totalXp: number): number {
 }
 
 export function getLevelTitle(level: number): string {
-  return LEVEL_TITLES[Math.min(level, 10)] || 'LLM Master';
+  if (level > 10) {
+    return 'LLM Master';
+  }
+  return LEVEL_TITLES[level] || 'LLM Master';
 }
 
 export function getXpForNextLevel(level: number): number {
@@ -27,4 +30,9 @@ export function getXpForNextLevel(level: number): number {
 
 export function getXpProgressInLevel(totalXp: number): number {
   return totalXp % XP_PER_LEVEL;
+}
+
+export function getXpProgressPercent(currentXp: number): number {
+  const xpInCurrentLevel = getXpProgressInLevel(currentXp);
+  return Math.round((xpInCurrentLevel / XP_PER_LEVEL) * 100);
 }

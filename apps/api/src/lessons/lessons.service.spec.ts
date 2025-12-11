@@ -83,6 +83,7 @@ describe('LessonsService', () => {
       create: jest.fn(),
     },
     userProgress: {
+      findUnique: jest.fn(),
       update: jest.fn(),
     },
   };
@@ -121,6 +122,9 @@ describe('LessonsService', () => {
 
     // Reset all mocks before each test
     jest.clearAllMocks();
+
+    // Set default mock for userProgress.findUnique
+    mockPrismaService.userProgress.findUnique.mockResolvedValue({ currentStreak: 0 });
   });
 
   describe('findAll', () => {
@@ -301,7 +305,7 @@ describe('LessonsService', () => {
     it('should successfully complete a lesson', async () => {
       const userId = 'user-id-1';
       const lessonId = 'lesson-id-1';
-      const timeSpentSeconds = 300;
+      const timeSpentSeconds = 300; // 5 minutes = 33% of estimated 15 min -> speed bonus!
       mockPrismaService.lesson.findUnique.mockResolvedValue(mockLesson);
       mockPrismaService.lessonCompletion.findUnique.mockResolvedValue(null);
       mockPrismaService.lessonCompletion.create.mockResolvedValue(mockCompletion);
@@ -311,18 +315,22 @@ describe('LessonsService', () => {
 
       const result = await lessonsService.complete(lessonId, userId, timeSpentSeconds);
 
+      // 300s / (15min * 60s) = 0.33 < 0.8 -> speed bonus (+25 XP)
+      // Expected XP = 100 (base) + 25 (speed) = 125
       expect(prismaService.lessonCompletion.create).toHaveBeenCalledWith({
         data: {
           userId,
           lessonId,
           timeSpentSeconds,
-          xpEarned: mockLesson.xpReward,
+          xpEarned: 125,
         },
       });
-      expect(result).toEqual({
+      expect(result).toMatchObject({
         lessonId,
-        xpEarned: mockLesson.xpReward,
+        xpEarned: 125,
         completedAt: mockCompletion.completedAt,
+        xpBreakdown: expect.any(Object),
+        leveledUp: expect.any(Boolean),
       });
     });
 
@@ -350,7 +358,7 @@ describe('LessonsService', () => {
     it('should call addXp with correct XP amount', async () => {
       const userId = 'user-id-1';
       const lessonId = 'lesson-id-1';
-      const timeSpentSeconds = 300;
+      const timeSpentSeconds = 300; // < 80% of 15min -> speed bonus
       mockPrismaService.lesson.findUnique.mockResolvedValue(mockLesson);
       mockPrismaService.lessonCompletion.findUnique.mockResolvedValue(null);
       mockPrismaService.lessonCompletion.create.mockResolvedValue(mockCompletion);
@@ -360,7 +368,8 @@ describe('LessonsService', () => {
 
       await lessonsService.complete(lessonId, userId, timeSpentSeconds);
 
-      expect(usersService.addXp).toHaveBeenCalledWith(userId, mockLesson.xpReward);
+      // 100 (base) + 25 (speed bonus) = 125
+      expect(usersService.addXp).toHaveBeenCalledWith(userId, 125);
     });
 
     it('should check and award badges after completion', async () => {
@@ -465,12 +474,12 @@ describe('LessonsService', () => {
     it('should award correct XP based on lesson xpReward', async () => {
       const userId = 'user-id-1';
       const lessonId = 'lesson-id-2';
-      const timeSpentSeconds = 600;
+      const timeSpentSeconds = 600; // 10 min = 33% of 30 min -> speed bonus
       mockPrismaService.lesson.findUnique.mockResolvedValue(mockLesson2);
       mockPrismaService.lessonCompletion.findUnique.mockResolvedValue(null);
       mockPrismaService.lessonCompletion.create.mockResolvedValue({
         ...mockCompletion,
-        xpEarned: mockLesson2.xpReward,
+        xpEarned: 225,
       });
       mockPrismaService.userProgress.update.mockResolvedValue({});
       mockUsersService.addXp.mockResolvedValue({});
@@ -478,8 +487,9 @@ describe('LessonsService', () => {
 
       const result = await lessonsService.complete(lessonId, userId, timeSpentSeconds);
 
-      expect(result.xpEarned).toBe(200);
-      expect(usersService.addXp).toHaveBeenCalledWith(userId, 200);
+      // 200 (base) + 25 (speed bonus) = 225
+      expect(result.xpEarned).toBe(225);
+      expect(usersService.addXp).toHaveBeenCalledWith(userId, 225);
     });
 
     it('should execute operations in correct order', async () => {
@@ -528,7 +538,7 @@ describe('LessonsService', () => {
       mockPrismaService.lessonCompletion.findUnique.mockResolvedValue(null);
       mockPrismaService.lessonCompletion.create.mockResolvedValue({
         ...mockCompletion,
-        xpEarned: 0,
+        xpEarned: 25,
       });
       mockPrismaService.userProgress.update.mockResolvedValue({});
       mockUsersService.addXp.mockResolvedValue({});
@@ -536,8 +546,9 @@ describe('LessonsService', () => {
 
       const result = await lessonsService.complete(lessonId, userId, 300);
 
-      expect(result.xpEarned).toBe(0);
-      expect(usersService.addXp).toHaveBeenCalledWith(userId, 0);
+      // 0 (base) + 25 (speed bonus) = 25
+      expect(result.xpEarned).toBe(25);
+      expect(usersService.addXp).toHaveBeenCalledWith(userId, 25);
     });
 
     it('should handle lesson with 0 time spent', async () => {

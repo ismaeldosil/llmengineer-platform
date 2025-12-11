@@ -2,6 +2,7 @@ import { Injectable, NotFoundException, ConflictException } from '@nestjs/common
 import { PrismaService } from '../prisma/prisma.service';
 import { UsersService } from '../users/users.service';
 import { BadgesService } from '../badges/badges.service';
+import { calculateLessonXpWithBonuses } from '@llmengineer/shared/constants/xp';
 
 @Injectable()
 export class LessonsService {
@@ -57,7 +58,12 @@ export class LessonsService {
     };
   }
 
-  async complete(lessonId: string, userId: string, timeSpentSeconds: number) {
+  async complete(
+    lessonId: string,
+    userId: string,
+    timeSpentSeconds: number,
+    quizScore?: number
+  ) {
     const lesson = await this.prisma.lesson.findUnique({
       where: { id: lessonId },
     });
@@ -76,12 +82,28 @@ export class LessonsService {
       throw new ConflictException('Lección ya completada');
     }
 
+    // Obtener racha actual del usuario
+    const userProgress = await this.prisma.userProgress.findUnique({
+      where: { userId },
+    });
+
+    const currentStreak = userProgress?.currentStreak || 0;
+
+    // Calcular XP con bonificaciones
+    const xpResult = calculateLessonXpWithBonuses({
+      baseXp: lesson.xpReward,
+      timeSpentSeconds,
+      estimatedMinutes: lesson.estimatedMinutes,
+      quizScore,
+      currentStreak,
+    });
+
     const completion = await this.prisma.lessonCompletion.create({
       data: {
         userId,
         lessonId,
         timeSpentSeconds,
-        xpEarned: lesson.xpReward,
+        xpEarned: xpResult.totalXp,
       },
     });
 
@@ -92,14 +114,18 @@ export class LessonsService {
       },
     });
 
-    await this.usersService.addXp(userId, lesson.xpReward);
+    const addXpResult = await this.usersService.addXp(userId, xpResult.totalXp);
 
     await this.badgesService.checkAndAwardBadges(userId);
 
     return {
       lessonId,
-      xpEarned: lesson.xpReward,
+      xpEarned: xpResult.totalXp,
+      xpBreakdown: xpResult.breakdown,
       completedAt: completion.completedAt,
+      leveledUp: addXpResult?.leveledUp || false,
+      newLevel: addXpResult?.level,
+      newLevelTitle: addXpResult?.levelTitle,
     };
   }
 }
