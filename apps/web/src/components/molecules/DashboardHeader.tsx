@@ -24,11 +24,7 @@ export function DashboardHeader({
       </View>
 
       <View style={styles.rightSection}>
-        <Pressable
-          style={styles.avatarButton}
-          onPress={onProfilePress}
-          testID="avatar-button"
-        >
+        <Pressable style={styles.avatarButton} onPress={onProfilePress} testID="avatar-button">
           {avatarUrl ? (
             <Text style={styles.avatarText}>{displayName.charAt(0).toUpperCase()}</Text>
           ) : (
@@ -36,11 +32,7 @@ export function DashboardHeader({
           )}
         </Pressable>
 
-        <Pressable
-          style={styles.logoutButton}
-          onPress={onLogoutPress}
-          testID="logout-button"
-        >
+        <Pressable style={styles.logoutButton} onPress={onLogoutPress} testID="logout-button">
           <Ionicons name="log-out-outline" size={24} color="#EF4444" />
         </Pressable>
       </View>

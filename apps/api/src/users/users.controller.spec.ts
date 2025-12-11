@@ -1,14 +1,22 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
+import { BadgesService } from '../badges/badges.service';
 
 describe('UsersController', () => {
   let controller: UsersController;
   let service: UsersService;
+  let badgesService: BadgesService;
 
   const mockUsersService = {
     findById: jest.fn(),
     getProgress: jest.fn(),
+  };
+
+  const mockBadgesService = {
+    findUserBadges: jest.fn(),
+    findAll: jest.fn(),
+    checkAndAwardBadges: jest.fn(),
   };
 
   const mockUser = { id: 'user-123' };
@@ -51,11 +59,16 @@ describe('UsersController', () => {
           provide: UsersService,
           useValue: mockUsersService,
         },
+        {
+          provide: BadgesService,
+          useValue: mockBadgesService,
+        },
       ],
     }).compile();
 
     controller = module.get<UsersController>(UsersController);
     service = module.get<UsersService>(UsersService);
+    badgesService = module.get<BadgesService>(BadgesService);
 
     jest.clearAllMocks();
   });
@@ -289,6 +302,102 @@ describe('UsersController', () => {
 
       expect(result.lessonsCompleted).toBe(8);
       expect(typeof result.lessonsCompleted).toBe('number');
+    });
+  });
+
+  describe('GET /users/me/badges', () => {
+    const mockBadge1 = {
+      id: 'badge-1',
+      slug: 'first-lesson',
+      name: 'Primer Paso',
+      description: 'Completaste tu primera lección',
+      icon: '🎯',
+      category: 'progress',
+      requirement: { lessonsCompleted: 1 },
+      xpBonus: 50,
+      isSecret: false,
+      createdAt: new Date('2024-01-01'),
+      earnedAt: new Date('2024-02-01'),
+    };
+
+    const mockBadge2 = {
+      id: 'badge-2',
+      slug: 'streak-3',
+      name: 'En Racha',
+      description: '3 días consecutivos',
+      icon: '⚡',
+      category: 'streak',
+      requirement: { streak: 3 },
+      xpBonus: 25,
+      isSecret: false,
+      createdAt: new Date('2024-01-02'),
+      earnedAt: new Date('2024-02-05'),
+    };
+
+    it('should return user badges with total count', async () => {
+      mockBadgesService.findUserBadges.mockResolvedValue([mockBadge1, mockBadge2]);
+
+      const result = await controller.getUserBadges(mockUser);
+
+      expect(badgesService.findUserBadges).toHaveBeenCalledWith('user-123');
+      expect(result).toEqual({
+        badges: [mockBadge1, mockBadge2],
+        total: 2,
+      });
+    });
+
+    it('should return empty array when user has no badges', async () => {
+      mockBadgesService.findUserBadges.mockResolvedValue([]);
+
+      const result = await controller.getUserBadges(mockUser);
+
+      expect(result).toEqual({
+        badges: [],
+        total: 0,
+      });
+    });
+
+    it('should include earnedAt timestamp for each badge', async () => {
+      mockBadgesService.findUserBadges.mockResolvedValue([mockBadge1]);
+
+      const result = await controller.getUserBadges(mockUser);
+
+      expect(result.badges[0]).toHaveProperty('earnedAt');
+      expect(result.badges[0].earnedAt).toEqual(mockBadge1.earnedAt);
+    });
+
+    it('should call service with correct user id', async () => {
+      const differentUser = { id: 'user-456' };
+      mockBadgesService.findUserBadges.mockResolvedValue([]);
+
+      await controller.getUserBadges(differentUser);
+
+      expect(badgesService.findUserBadges).toHaveBeenCalledWith('user-456');
+    });
+
+    it('should return correct total count', async () => {
+      const threeBadges = [mockBadge1, mockBadge2, { ...mockBadge1, id: 'badge-3' }];
+      mockBadgesService.findUserBadges.mockResolvedValue(threeBadges);
+
+      const result = await controller.getUserBadges(mockUser);
+
+      expect(result.total).toBe(3);
+      expect(result.badges).toHaveLength(3);
+    });
+
+    it('should propagate service errors', async () => {
+      mockBadgesService.findUserBadges.mockRejectedValue(new Error('Database error'));
+
+      await expect(controller.getUserBadges(mockUser)).rejects.toThrow('Database error');
+    });
+
+    it('should return badges ordered by earnedAt', async () => {
+      mockBadgesService.findUserBadges.mockResolvedValue([mockBadge1, mockBadge2]);
+
+      const result = await controller.getUserBadges(mockUser);
+
+      expect(result.badges[0].earnedAt).toBeDefined();
+      expect(result.badges[1].earnedAt).toBeDefined();
     });
   });
 });

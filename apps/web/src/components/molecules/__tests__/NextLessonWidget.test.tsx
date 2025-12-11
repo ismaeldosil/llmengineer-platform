@@ -5,6 +5,7 @@ import type { Lesson } from '@llmengineer/shared';
 
 const mockLesson: Lesson = {
   id: '1',
+  slug: 'introduction-to-prompts',
   title: 'Introduction to Prompts',
   description: 'Learn the basics of prompt engineering',
   week: 1,
@@ -14,8 +15,6 @@ const mockLesson: Lesson = {
   estimatedMinutes: 15,
   isCompleted: false,
   sections: [],
-  createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString(),
 };
 
 describe('NextLessonWidget', () => {
@@ -28,11 +27,7 @@ describe('NextLessonWidget', () => {
 
   it('should render lesson when provided', () => {
     const { getByText } = render(
-      <NextLessonWidget
-        lesson={mockLesson}
-        onPress={mockOnPress}
-        onViewAll={mockOnViewAll}
-      />
+      <NextLessonWidget lesson={mockLesson} onPress={mockOnPress} onViewAll={mockOnViewAll} />
     );
 
     expect(getByText('Proxima Leccion')).toBeTruthy();
@@ -41,12 +36,8 @@ describe('NextLessonWidget', () => {
   });
 
   it('should show loading state', () => {
-    const { getByTestId, queryByText } = render(
-      <NextLessonWidget
-        isLoading={true}
-        onPress={mockOnPress}
-        onViewAll={mockOnViewAll}
-      />
+    const { queryByText } = render(
+      <NextLessonWidget isLoading={true} onPress={mockOnPress} onViewAll={mockOnViewAll} />
     );
 
     expect(queryByText('Introduction to Prompts')).toBeNull();
@@ -54,11 +45,7 @@ describe('NextLessonWidget', () => {
 
   it('should show empty state when no lesson', () => {
     const { getByText } = render(
-      <NextLessonWidget
-        lesson={null}
-        onPress={mockOnPress}
-        onViewAll={mockOnViewAll}
-      />
+      <NextLessonWidget lesson={null} onPress={mockOnPress} onViewAll={mockOnViewAll} />
     );
 
     expect(getByText('No hay lecciones pendientes')).toBeTruthy();
@@ -67,11 +54,7 @@ describe('NextLessonWidget', () => {
 
   it('should call onViewAll when "Ver todas" is pressed', () => {
     const { getByTestId } = render(
-      <NextLessonWidget
-        lesson={mockLesson}
-        onPress={mockOnPress}
-        onViewAll={mockOnViewAll}
-      />
+      <NextLessonWidget lesson={mockLesson} onPress={mockOnPress} onViewAll={mockOnViewAll} />
     );
 
     const viewAllButton = getByTestId('view-all-button');
@@ -82,11 +65,7 @@ describe('NextLessonWidget', () => {
 
   it('should call onPress when lesson card is pressed', () => {
     const { getByText } = render(
-      <NextLessonWidget
-        lesson={mockLesson}
-        onPress={mockOnPress}
-        onViewAll={mockOnViewAll}
-      />
+      <NextLessonWidget lesson={mockLesson} onPress={mockOnPress} onViewAll={mockOnViewAll} />
     );
 
     const lessonCard = getByText('Introduction to Prompts');
@@ -97,11 +76,7 @@ describe('NextLessonWidget', () => {
 
   it('should render with undefined lesson', () => {
     const { getByText } = render(
-      <NextLessonWidget
-        lesson={undefined}
-        onPress={mockOnPress}
-        onViewAll={mockOnViewAll}
-      />
+      <NextLessonWidget lesson={undefined} onPress={mockOnPress} onViewAll={mockOnViewAll} />
     );
 
     expect(getByText('No hay lecciones pendientes')).toBeTruthy();
@@ -123,21 +98,13 @@ describe('NextLessonWidget', () => {
 
   it('should always show header', () => {
     const { getByText: getByTextWithLesson } = render(
-      <NextLessonWidget
-        lesson={mockLesson}
-        onPress={mockOnPress}
-        onViewAll={mockOnViewAll}
-      />
+      <NextLessonWidget lesson={mockLesson} onPress={mockOnPress} onViewAll={mockOnViewAll} />
     );
 
     expect(getByTextWithLesson('Proxima Leccion')).toBeTruthy();
 
     const { getByText: getByTextEmpty } = render(
-      <NextLessonWidget
-        lesson={null}
-        onPress={mockOnPress}
-        onViewAll={mockOnViewAll}
-      />
+      <NextLessonWidget lesson={null} onPress={mockOnPress} onViewAll={mockOnViewAll} />
     );
 
     expect(getByTextEmpty('Proxima Leccion')).toBeTruthy();
@@ -150,11 +117,7 @@ describe('NextLessonWidget', () => {
     };
 
     const { getByText } = render(
-      <NextLessonWidget
-        lesson={completedLesson}
-        onPress={mockOnPress}
-        onViewAll={mockOnViewAll}
-      />
+      <NextLessonWidget lesson={completedLesson} onPress={mockOnPress} onViewAll={mockOnViewAll} />
     );
 
     expect(getByText('Introduction to Prompts')).toBeTruthy();

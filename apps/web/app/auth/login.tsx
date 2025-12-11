@@ -1,5 +1,15 @@
 import { useState, useEffect } from 'react';
-import { View, Text, TextInput, Pressable, StyleSheet, ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  Pressable,
+  StyleSheet,
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+} from 'react-native';
 import { Stack, router } from 'expo-router';
 import { useDispatch } from 'react-redux';
 import { useLoginMutation } from '@/services/api';
@@ -80,7 +90,12 @@ export default function LoginScreen() {
       if (error.status === 429) {
         return 'Demasiados intentos. Por favor, intenta más tarde';
       }
-      if ('data' in error && error.data && typeof error.data === 'object' && 'message' in error.data) {
+      if (
+        'data' in error &&
+        error.data &&
+        typeof error.data === 'object' &&
+        'message' in error.data
+      ) {
         return (error.data as { message: string }).message;
       }
     }
@@ -109,7 +124,7 @@ export default function LoginScreen() {
               <View style={styles.inputGroup}>
                 <Text style={styles.label}>Email</Text>
                 <TextInput
-                  style={[styles.input, emailError && styles.inputError]}
+                  style={[styles.input, emailError ? styles.inputError : null]}
                   placeholder="tu@email.com"
                   placeholderTextColor="#6B7280"
                   value={email}
@@ -140,10 +155,7 @@ export default function LoginScreen() {
               )}
 
               <Pressable
-                style={[
-                  styles.button,
-                  (isLoading || !isFormValid()) && styles.buttonDisabled
-                ]}
+                style={[styles.button, (isLoading || !isFormValid()) && styles.buttonDisabled]}
                 onPress={handleLogin}
                 disabled={isLoading || !isFormValid()}
               >
@@ -155,10 +167,7 @@ export default function LoginScreen() {
               </Pressable>
             </View>
 
-            <Pressable
-              onPress={() => router.push('/auth/register')}
-              disabled={isLoading}
-            >
+            <Pressable onPress={() => router.push('/auth/register')} disabled={isLoading}>
               <Text style={styles.link}>¿No tienes cuenta? Regístrate</Text>
             </Pressable>
           </View>

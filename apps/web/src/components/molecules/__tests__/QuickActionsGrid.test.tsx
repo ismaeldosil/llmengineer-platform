@@ -40,7 +40,7 @@ describe('QuickActionsGrid', () => {
     const lessonsButton = getByTestId('action-lessons');
     fireEvent.press(lessonsButton);
 
-    expect(mockActions[0].onPress).toHaveBeenCalledTimes(1);
+    expect(mockActions[0]!.onPress).toHaveBeenCalledTimes(1);
   });
 
   it('should handle multiple presses correctly', () => {
@@ -53,8 +53,8 @@ describe('QuickActionsGrid', () => {
     fireEvent.press(gamesButton);
     fireEvent.press(lessonsButton);
 
-    expect(mockActions[0].onPress).toHaveBeenCalledTimes(2);
-    expect(mockActions[1].onPress).toHaveBeenCalledTimes(1);
+    expect(mockActions[0]!.onPress).toHaveBeenCalledTimes(2);
+    expect(mockActions[1]!.onPress).toHaveBeenCalledTimes(1);
   });
 
   it('should render empty grid with no actions', () => {
@@ -68,9 +68,7 @@ describe('QuickActionsGrid', () => {
       { id: 'test', icon: '🧪', label: 'Test', onPress: jest.fn() },
     ];
 
-    const { getByText, getByTestId } = render(
-      <QuickActionsGrid actions={singleAction} />
-    );
+    const { getByText, getByTestId } = render(<QuickActionsGrid actions={singleAction} />);
 
     expect(getByText('Test')).toBeTruthy();
     expect(getByText('🧪')).toBeTruthy();
@@ -78,7 +76,7 @@ describe('QuickActionsGrid', () => {
     const button = getByTestId('action-test');
     fireEvent.press(button);
 
-    expect(singleAction[0].onPress).toHaveBeenCalledTimes(1);
+    expect(singleAction[0]!.onPress).toHaveBeenCalledTimes(1);
   });
 
   it('should render all actions with testIDs', () => {

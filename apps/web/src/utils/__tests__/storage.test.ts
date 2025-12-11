@@ -57,10 +57,7 @@ describe('storage utils', () => {
       const user = { id: '1', email: 'test@example.com', displayName: 'Test User' };
       await storage.saveUser(user);
 
-      expect(AsyncStorage.setItem).toHaveBeenCalledWith(
-        '@llmengineer/user',
-        JSON.stringify(user)
-      );
+      expect(AsyncStorage.setItem).toHaveBeenCalledWith('@llmengineer/user', JSON.stringify(user));
     });
 
     it('should throw error if save fails', async () => {

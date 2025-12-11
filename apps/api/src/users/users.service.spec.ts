@@ -372,7 +372,7 @@ describe('UsersService', () => {
           data: expect.objectContaining({
             lastActiveAt: expect.any(Date),
           }),
-        }),
+        })
       );
     });
 

@@ -6,7 +6,7 @@ import { BadgesService } from '../badges/badges.service';
 export class StreaksService {
   constructor(
     private prisma: PrismaService,
-    private badgesService: BadgesService,
+    private badgesService: BadgesService
   ) {}
 
   async checkin(userId: string) {

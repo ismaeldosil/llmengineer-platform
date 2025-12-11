@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import authReducer, { setCredentials, logout, setLoading } from '../authSlice';
 
 describe('authSlice', () => {
@@ -21,10 +22,7 @@ describe('authSlice', () => {
       };
       const token = 'test-token-123';
 
-      const actual = authReducer(
-        initialState,
-        setCredentials({ user: user as any, token })
-      );
+      const actual = authReducer(initialState, setCredentials({ user: user as any, token }));
 
       expect(actual.user).toEqual(user);
       expect(actual.token).toBe(token);

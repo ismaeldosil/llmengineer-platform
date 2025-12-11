@@ -19,17 +19,13 @@ export function PasswordInput({ label, error, style, ...props }: PasswordInputPr
       {label && <Text style={styles.label}>{label}</Text>}
       <View style={styles.inputContainer}>
         <TextInput
-          style={[styles.input, error && styles.inputError, style]}
+          style={[styles.input, error ? styles.inputError : null, style]}
           placeholderTextColor="#6B7280"
           secureTextEntry={!isVisible}
           {...props}
         />
         <Pressable style={styles.iconButton} onPress={toggleVisibility}>
-          <Ionicons
-            name={isVisible ? 'eye-off' : 'eye'}
-            size={20}
-            color="#9CA3AF"
-          />
+          <Ionicons name={isVisible ? 'eye-off' : 'eye'} size={20} color="#9CA3AF" />
         </Pressable>
       </View>
       {error && <Text style={styles.error}>{error}</Text>}

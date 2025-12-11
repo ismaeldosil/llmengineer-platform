@@ -56,7 +56,10 @@ export const validateDisplayName = (name: string): ValidationResult => {
   return { isValid: true };
 };
 
-export const validatePasswordMatch = (password: string, confirmPassword: string): ValidationResult => {
+export const validatePasswordMatch = (
+  password: string,
+  confirmPassword: string
+): ValidationResult => {
   if (password !== confirmPassword) {
     return { isValid: false, error: 'Las contraseñas no coinciden' };
   }
@@ -101,7 +104,7 @@ export const getPasswordStrength = (password: string): PasswordStrength => {
 
   return {
     score,
-    label: labels[score],
-    color: colors[score],
+    label: labels[score] ?? 'Muy débil',
+    color: colors[score] ?? '#EF4444',
   };
 };

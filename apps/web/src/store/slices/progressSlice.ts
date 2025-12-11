@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import type { UserProgress, Badge } from '@llmengineer/shared';
 
-interface ProgressState {
+export interface ProgressState {
   totalXp: number;
   level: number;
   levelTitle: string;

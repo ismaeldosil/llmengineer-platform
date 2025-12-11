@@ -33,7 +33,7 @@ export class AuthController {
   @ApiOperation({ summary: 'Obtener usuario actual' })
   @ApiResponse({ status: 200, description: 'Usuario obtenido exitosamente' })
   @ApiResponse({ status: 401, description: 'No autenticado' })
-  async getMe(@CurrentUser() user: any) {
+  async getMe(@CurrentUser() user: { id: string; email: string; displayName: string }) {
     return user;
   }
 }

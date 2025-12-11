@@ -24,12 +24,7 @@ export function LessonCard({ lesson, onPress }: LessonCardProps) {
               { backgroundColor: difficultyColors[lesson.difficulty] + '20' },
             ]}
           >
-            <Text
-              style={[
-                styles.difficultyText,
-                { color: difficultyColors[lesson.difficulty] },
-              ]}
-            >
+            <Text style={[styles.difficultyText, { color: difficultyColors[lesson.difficulty] }]}>
               {lesson.difficulty}
             </Text>
           </View>

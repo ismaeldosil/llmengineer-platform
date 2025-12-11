@@ -265,15 +265,13 @@ describe('StreaksService', () => {
         longestStreak: 20,
       };
 
-      mockPrismaService.streakLog.findUnique
-        .mockResolvedValueOnce(null)
-        .mockResolvedValueOnce({
-          id: 'log-1',
-          userId: mockUserId,
-          date: yesterday,
-          checkedIn: true,
-          bonusXp: 10,
-        });
+      mockPrismaService.streakLog.findUnique.mockResolvedValueOnce(null).mockResolvedValueOnce({
+        id: 'log-1',
+        userId: mockUserId,
+        date: yesterday,
+        checkedIn: true,
+        bonusXp: 10,
+      });
 
       mockPrismaService.userProgress.findUnique.mockResolvedValue(progressWithHigherLongest);
 
@@ -382,7 +380,9 @@ describe('StreaksService', () => {
       const today = new Date(midnight);
       today.setHours(0, 0, 0, 0);
 
-      mockPrismaService.streakLog.findUnique.mockResolvedValueOnce(null).mockResolvedValueOnce(null);
+      mockPrismaService.streakLog.findUnique
+        .mockResolvedValueOnce(null)
+        .mockResolvedValueOnce(null);
       mockPrismaService.userProgress.findUnique.mockResolvedValue(mockProgress);
 
       const updatedProgress = {
@@ -407,7 +407,9 @@ describe('StreaksService', () => {
       const today = new Date(endOfDay);
       today.setHours(0, 0, 0, 0);
 
-      mockPrismaService.streakLog.findUnique.mockResolvedValueOnce(null).mockResolvedValueOnce(null);
+      mockPrismaService.streakLog.findUnique
+        .mockResolvedValueOnce(null)
+        .mockResolvedValueOnce(null);
       mockPrismaService.userProgress.findUnique.mockResolvedValue(mockProgress);
 
       const updatedProgress = {
@@ -435,7 +437,9 @@ describe('StreaksService', () => {
       const today = new Date(baseDate);
       today.setHours(0, 0, 0, 0);
 
-      mockPrismaService.streakLog.findUnique.mockResolvedValueOnce(null).mockResolvedValueOnce(null);
+      mockPrismaService.streakLog.findUnique
+        .mockResolvedValueOnce(null)
+        .mockResolvedValueOnce(null);
       mockPrismaService.userProgress.findUnique.mockResolvedValue(mockProgress);
       mockPrismaService.userProgress.update.mockResolvedValue(mockProgress);
       mockBadgesService.checkAndAwardBadges.mockResolvedValue([]);
@@ -450,7 +454,9 @@ describe('StreaksService', () => {
       const today = new Date(baseDate);
       today.setHours(0, 0, 0, 0);
 
-      mockPrismaService.streakLog.findUnique.mockResolvedValueOnce(null).mockResolvedValueOnce(null);
+      mockPrismaService.streakLog.findUnique
+        .mockResolvedValueOnce(null)
+        .mockResolvedValueOnce(null);
       mockPrismaService.userProgress.findUnique.mockResolvedValue(mockProgress);
       mockPrismaService.userProgress.update.mockResolvedValue(mockProgress);
       mockBadgesService.checkAndAwardBadges.mockResolvedValue([]);
@@ -462,7 +468,7 @@ describe('StreaksService', () => {
           data: expect.objectContaining({
             lastActiveAt: expect.any(Date),
           }),
-        }),
+        })
       );
     });
 
@@ -477,7 +483,9 @@ describe('StreaksService', () => {
         totalXp: 0,
       };
 
-      mockPrismaService.streakLog.findUnique.mockResolvedValueOnce(null).mockResolvedValueOnce(null);
+      mockPrismaService.streakLog.findUnique
+        .mockResolvedValueOnce(null)
+        .mockResolvedValueOnce(null);
       mockPrismaService.userProgress.findUnique.mockResolvedValue(newUserProgress);
 
       const updatedProgress = {

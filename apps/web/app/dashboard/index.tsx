@@ -16,6 +16,7 @@ import {
   DashboardHeader,
   QuickActionsGrid,
   NextLessonWidget,
+  LeaderboardWidget,
   type QuickAction,
 } from '@/components/molecules';
 
@@ -24,11 +25,7 @@ export default function DashboardScreen() {
   const { logout } = useAuth();
   const [refreshing, setRefreshing] = useState(false);
 
-  const {
-    data: userData,
-    isLoading: userLoading,
-    refetch: refetchUser,
-  } = useGetMeQuery();
+  const { data: userData, isLoading: _userLoading, refetch: refetchUser } = useGetMeQuery();
   const {
     data: progress,
     isLoading: progressLoading,
@@ -121,16 +118,13 @@ export default function DashboardScreen() {
             />
           }
         >
-          <StreakBanner
-            currentStreak={progress?.currentStreak || 0}
-            onCheckin={handleCheckin}
-          />
+          <StreakBanner currentStreak={progress?.currentStreak || 0} onCheckin={handleCheckin} />
 
           <ProgressCard
             totalXp={progress?.totalXp || 0}
             level={progress?.level || 1}
-            levelTitle={progress?.levelTitle || 'Prompt Curious'}
             lessonsCompleted={progress?.lessonsCompleted || 0}
+            currentStreak={progress?.currentStreak || 0}
             isLoading={progressLoading}
           />
 
@@ -140,6 +134,8 @@ export default function DashboardScreen() {
             onPress={() => nextLesson && router.push(`/lessons/${nextLesson.id}`)}
             onViewAll={() => router.push('/lessons')}
           />
+
+          <LeaderboardWidget onViewMore={() => router.push('/leaderboard')} />
 
           <QuickActionsGrid actions={quickActions} />
         </ScrollView>

@@ -148,9 +148,7 @@ describe('LessonsService', () => {
     it('should mark completed lessons correctly', async () => {
       const userId = 'user-id-1';
       mockPrismaService.lesson.findMany.mockResolvedValue([mockLesson, mockLesson2]);
-      mockPrismaService.lessonCompletion.findMany.mockResolvedValue([
-        { lessonId: 'lesson-id-1' },
-      ]);
+      mockPrismaService.lessonCompletion.findMany.mockResolvedValue([{ lessonId: 'lesson-id-1' }]);
 
       const result = await lessonsService.findAll(userId);
 
@@ -184,7 +182,7 @@ describe('LessonsService', () => {
       expect(prismaService.lesson.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
           where: { isPublished: true },
-        }),
+        })
       );
     });
 
@@ -216,10 +214,7 @@ describe('LessonsService', () => {
 
       expect(prismaService.lesson.findFirst).toHaveBeenCalledWith({
         where: {
-          OR: [
-            { id: lessonId },
-            { slug: lessonId },
-          ],
+          OR: [{ id: lessonId }, { slug: lessonId }],
         },
       });
       expect(result).toEqual({ ...mockLesson, isCompleted: false });
@@ -235,10 +230,7 @@ describe('LessonsService', () => {
 
       expect(prismaService.lesson.findFirst).toHaveBeenCalledWith({
         where: {
-          OR: [
-            { id: slug },
-            { slug: slug },
-          ],
+          OR: [{ id: slug }, { slug: slug }],
         },
       });
       expect(result).toEqual({ ...mockLesson, isCompleted: false });
@@ -267,7 +259,7 @@ describe('LessonsService', () => {
 
       await expect(lessonsService.findOne(lessonId, userId)).rejects.toThrow(NotFoundException);
       await expect(lessonsService.findOne(lessonId, userId)).rejects.toThrow(
-        'Lección no encontrada',
+        'Lección no encontrada'
       );
     });
 
@@ -394,12 +386,12 @@ describe('LessonsService', () => {
       const timeSpentSeconds = 300;
       mockPrismaService.lesson.findUnique.mockResolvedValue(null);
 
-      await expect(
-        lessonsService.complete(lessonId, userId, timeSpentSeconds),
-      ).rejects.toThrow(NotFoundException);
-      await expect(
-        lessonsService.complete(lessonId, userId, timeSpentSeconds),
-      ).rejects.toThrow('Lección no encontrada');
+      await expect(lessonsService.complete(lessonId, userId, timeSpentSeconds)).rejects.toThrow(
+        NotFoundException
+      );
+      await expect(lessonsService.complete(lessonId, userId, timeSpentSeconds)).rejects.toThrow(
+        'Lección no encontrada'
+      );
     });
 
     it('should throw ConflictException when lesson is already completed', async () => {
@@ -409,12 +401,12 @@ describe('LessonsService', () => {
       mockPrismaService.lesson.findUnique.mockResolvedValue(mockLesson);
       mockPrismaService.lessonCompletion.findUnique.mockResolvedValue(mockCompletion);
 
-      await expect(
-        lessonsService.complete(lessonId, userId, timeSpentSeconds),
-      ).rejects.toThrow(ConflictException);
-      await expect(
-        lessonsService.complete(lessonId, userId, timeSpentSeconds),
-      ).rejects.toThrow('Lección ya completada');
+      await expect(lessonsService.complete(lessonId, userId, timeSpentSeconds)).rejects.toThrow(
+        ConflictException
+      );
+      await expect(lessonsService.complete(lessonId, userId, timeSpentSeconds)).rejects.toThrow(
+        'Lección ya completada'
+      );
 
       // Should not create duplicate completion
       expect(prismaService.lessonCompletion.create).not.toHaveBeenCalled();
@@ -427,9 +419,9 @@ describe('LessonsService', () => {
       mockPrismaService.lesson.findUnique.mockResolvedValue(mockLesson);
       mockPrismaService.lessonCompletion.findUnique.mockResolvedValue(mockCompletion);
 
-      await expect(
-        lessonsService.complete(lessonId, userId, timeSpentSeconds),
-      ).rejects.toThrow(ConflictException);
+      await expect(lessonsService.complete(lessonId, userId, timeSpentSeconds)).rejects.toThrow(
+        ConflictException
+      );
 
       expect(prismaService.userProgress.update).not.toHaveBeenCalled();
     });
@@ -441,9 +433,9 @@ describe('LessonsService', () => {
       mockPrismaService.lesson.findUnique.mockResolvedValue(mockLesson);
       mockPrismaService.lessonCompletion.findUnique.mockResolvedValue(mockCompletion);
 
-      await expect(
-        lessonsService.complete(lessonId, userId, timeSpentSeconds),
-      ).rejects.toThrow(ConflictException);
+      await expect(lessonsService.complete(lessonId, userId, timeSpentSeconds)).rejects.toThrow(
+        ConflictException
+      );
 
       expect(usersService.addXp).not.toHaveBeenCalled();
     });
@@ -520,12 +512,7 @@ describe('LessonsService', () => {
       await lessonsService.complete(lessonId, userId, timeSpentSeconds);
 
       // Verify operations executed in correct order
-      expect(callOrder).toEqual([
-        'create_completion',
-        'update_progress',
-        'add_xp',
-        'check_badges',
-      ]);
+      expect(callOrder).toEqual(['create_completion', 'update_progress', 'add_xp', 'check_badges']);
     });
   });
 

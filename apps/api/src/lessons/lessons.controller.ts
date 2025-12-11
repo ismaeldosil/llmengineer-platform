@@ -29,7 +29,7 @@ export class LessonsController {
   async complete(
     @Param('id') id: string,
     @Body() dto: CompleteLessonDto,
-    @CurrentUser() user: { id: string },
+    @CurrentUser() user: { id: string }
   ) {
     return this.lessonsService.complete(id, user.id, dto.timeSpentSeconds);
   }

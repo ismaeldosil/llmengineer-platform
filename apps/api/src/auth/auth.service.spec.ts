@@ -144,7 +144,7 @@ describe('AuthService', () => {
         expect.objectContaining({
           email: registerDto.email,
           displayName: registerDto.displayName,
-        }),
+        })
       );
     });
 
@@ -152,7 +152,9 @@ describe('AuthService', () => {
       mockUsersService.findByEmail.mockResolvedValue(mockUser);
 
       await expect(authService.register(registerDto)).rejects.toThrow(ConflictException);
-      await expect(authService.register(registerDto)).rejects.toThrow('El email ya está registrado');
+      await expect(authService.register(registerDto)).rejects.toThrow(
+        'El email ya está registrado'
+      );
 
       expect(usersService.create).not.toHaveBeenCalled();
     });
@@ -376,7 +378,7 @@ describe('AuthService', () => {
       expect(usersService.create).toHaveBeenCalledWith(
         expect.objectContaining({
           password: expect.not.stringContaining('plainTextPassword'),
-        }),
+        })
       );
     });
   });
