@@ -1,5 +1,16 @@
 # LLM Engineer Platform
 
+[![CI](https://github.com/ismaeldosil/llmengineer-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/ismaeldosil/llmengineer-platform/actions/workflows/ci.yml)
+[![Coverage](https://img.shields.io/badge/coverage-90%25+-brightgreen)](https://github.com/ismaeldosil/llmengineer-platform)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-20+-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
+[![NestJS](https://img.shields.io/badge/NestJS-10.x-E0234E?logo=nestjs&logoColor=white)](https://nestjs.com/)
+[![Expo](https://img.shields.io/badge/Expo-50.x-000020?logo=expo&logoColor=white)](https://expo.dev/)
+[![Prisma](https://img.shields.io/badge/Prisma-5.x-2D3748?logo=prisma&logoColor=white)](https://www.prisma.io/)
+[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
+[![Code Style](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://prettier.io/)
+
 Plataforma gamificada de aprendizaje para LLM Engineering - Aprende a construir aplicaciones con LLMs en 8 semanas.
 
 ## Stack Tecnológico
