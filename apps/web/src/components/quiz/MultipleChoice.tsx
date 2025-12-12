@@ -42,13 +42,16 @@ export function MultipleChoice({
     if (disabled) return;
 
     // Animate the pressed option
+    const scaleAnim = scaleAnims[index];
+    if (!scaleAnim) return;
+
     Animated.sequence([
-      Animated.timing(scaleAnims[index], {
+      Animated.timing(scaleAnim, {
         toValue: 0.96,
         duration: 100,
         useNativeDriver: true,
       }),
-      Animated.spring(scaleAnims[index], {
+      Animated.spring(scaleAnim, {
         toValue: 1,
         friction: 3,
         tension: 40,
@@ -168,7 +171,7 @@ export function MultipleChoice({
           <Animated.View
             key={index}
             style={{
-              transform: [{ scale: scaleAnims[index] }],
+              transform: [{ scale: scaleAnims[index] ?? 1 }],
             }}
           >
             <Pressable

@@ -110,20 +110,49 @@ export function QuizModal({
   const renderQuestion = () => {
     if (!currentQuestion) return null;
 
-    const commonProps = {
-      question: currentQuestion,
-      onAnswer: handleAnswer,
-      disabled: showFeedback || isSubmitting,
-      showFeedback,
-      selectedAnswer: currentAnswer?.selectedAnswer,
-    };
+    const disabled = showFeedback || isSubmitting;
 
     if (currentQuestion.type === 'multiple-choice') {
-      return <MultipleChoice {...commonProps} />;
+      const quizOptions = currentQuestion.options || [];
+      const optionTexts = quizOptions.map((opt) => opt.text);
+      const selectedIndex =
+        currentAnswer?.selectedAnswer !== undefined
+          ? quizOptions.findIndex((opt) => opt.id === currentAnswer.selectedAnswer)
+          : null;
+      const correctIndex = quizOptions.findIndex((opt) => opt.id === currentQuestion.correctAnswer);
+
+      return (
+        <MultipleChoice
+          question={currentQuestion.question}
+          options={optionTexts}
+          selectedAnswer={selectedIndex !== null && selectedIndex >= 0 ? selectedIndex : null}
+          onSelect={(index: number) => handleAnswer(quizOptions[index]?.id || '')}
+          disabled={disabled}
+          correctAnswer={showFeedback ? correctIndex : undefined}
+          showResult={showFeedback}
+        />
+      );
     }
 
     if (currentQuestion.type === 'true-false') {
-      return <TrueFalse {...commonProps} />;
+      const selectedBool =
+        currentAnswer?.selectedAnswer === 'true'
+          ? true
+          : currentAnswer?.selectedAnswer === 'false'
+            ? false
+            : null;
+      const correctBool = currentQuestion.correctAnswer === 'true';
+
+      return (
+        <TrueFalse
+          question={currentQuestion.question}
+          selectedAnswer={selectedBool}
+          onSelect={(answer: boolean) => handleAnswer(answer ? 'true' : 'false')}
+          disabled={disabled}
+          correctAnswer={showFeedback ? correctBool : undefined}
+          showResult={showFeedback}
+        />
+      );
     }
 
     return null;

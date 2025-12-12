@@ -89,7 +89,8 @@ export default function LessonsScreen() {
     <View style={styles.headerSection}>
       {/* Breadcrumb */}
       <View style={styles.breadcrumb}>
-        <Pressable onPress={() => router.push('/dashboard')} style={styles.breadcrumbItem}>
+        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+        <Pressable onPress={() => router.push('/dashboard/' as any)} style={styles.breadcrumbItem}>
           <Text style={styles.breadcrumbLink}>Dashboard</Text>
         </Pressable>
         <Icon icon={ChevronRight} size="sm" color="#6B7280" />

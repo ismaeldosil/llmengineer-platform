@@ -125,7 +125,8 @@ export function CodeCompletion({
       ],
     };
 
-    const langKeywords = keywords[language] || keywords.javascript;
+    const langKeywords = keywords[language] ?? keywords.javascript;
+    if (!langKeywords) return [];
 
     // Split code into lines
     const lines = code.split('\n');
@@ -269,7 +270,7 @@ export function CodeCompletion({
               {/* Show after code on same line if both exist */}
               {isLastLine &&
                 afterLines.length > 0 &&
-                afterLines[0].parts.map((part, partIndex) => (
+                afterLines[0]?.parts.map((part, partIndex) => (
                   <Text
                     key={`after-inline-${partIndex}`}
                     style={[styles.codeText, getTextStyle(part.type)]}
