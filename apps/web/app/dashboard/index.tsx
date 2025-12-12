@@ -1,13 +1,12 @@
 import { useState, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, RefreshControl, Alert, Platform } from 'react-native';
-import { Stack, router } from 'expo-router';
+import { Stack } from 'expo-router';
 import { useSelector } from 'react-redux';
 import type { RootState } from '@/store';
 import {
   useGetProgressQuery,
   useGetMeQuery,
   useGetLessonsQuery,
-  useCheckinMutation,
 } from '@/services/api';
 import { useAuth } from '@/hooks/useAuth';
 import { MainLayout } from '@/components/layout';
@@ -52,7 +51,6 @@ export default function DashboardScreen() {
     isLoading: lessonsLoading,
     refetch: refetchLessons,
   } = useGetLessonsQuery();
-  const [checkin] = useCheckinMutation();
 
   const displayName = user?.displayName || userData?.displayName || 'Developer';
   const totalXp = progress?.totalXp || 0;
