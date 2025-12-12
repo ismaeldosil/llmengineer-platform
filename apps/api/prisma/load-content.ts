@@ -1,3 +1,4 @@
+// eslint-disable no-console -- CLI script that needs console output
 import { PrismaClient } from '@prisma/client';
 import * as fs from 'fs';
 import * as path from 'path';
