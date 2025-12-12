@@ -1211,4 +1211,138 @@ describe('LessonsService', () => {
       });
     });
   });
+
+  describe('search', () => {
+    const mockLessonWithContent = {
+      id: 'lesson-1',
+      slug: 'intro-to-llms',
+      title: 'Introduction to LLMs',
+      description: 'Learn about Large Language Models and tokenization',
+      week: 1,
+      order: 1,
+      difficulty: 'beginner' as const,
+      xpReward: 100,
+      estimatedMinutes: 15,
+      contentUrl: null,
+      sections: [
+        {
+          title: 'What is an LLM?',
+          content:
+            'An LLM (Large Language Model) is a type of AI.\nIt uses tokenization to process text.\nTokenization splits text into tokens.',
+          keyPoints: ['LLMs are AI models', 'Tokenization is important'],
+        },
+        {
+          title: 'API Basics',
+          content: 'Learn how to call the OpenAI API.\nUse the chat completions endpoint.',
+          keyPoints: ['API calls are simple'],
+        },
+      ],
+      quiz: {
+        questions: [
+          {
+            question: 'What is tokenization?',
+            options: [
+              { text: 'Splitting text into tokens' },
+              { text: 'Converting tokens to text' },
+            ],
+            explanation: 'Tokenization divides text into smaller units called tokens.',
+          },
+        ],
+      },
+      isPublished: true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+
+    beforeEach(() => {
+      mockPrismaService.lesson.findMany.mockResolvedValue([mockLessonWithContent]);
+    });
+
+    it('should find matches in lesson title', async () => {
+      const results = await lessonsService.search('Introduction');
+      expect(results.length).toBeGreaterThan(0);
+      expect(results[0].matchType).toBe('title');
+      expect(results[0].lessonTitle).toBe('Introduction to LLMs');
+    });
+
+    it('should find matches in lesson description', async () => {
+      const results = await lessonsService.search('tokenization');
+      const descMatch = results.find((r) => r.matchType === 'description');
+      expect(descMatch).toBeDefined();
+    });
+
+    it('should find matches in section content', async () => {
+      const results = await lessonsService.search('Large Language Model');
+      const sectionMatch = results.find((r) => r.matchType === 'section');
+      expect(sectionMatch).toBeDefined();
+      expect(sectionMatch?.sectionTitle).toBe('What is an LLM?');
+    });
+
+    it('should find matches in keyPoints', async () => {
+      const results = await lessonsService.search('AI models');
+      const keyPointMatch = results.find((r) => r.matchType === 'keyPoint');
+      expect(keyPointMatch).toBeDefined();
+    });
+
+    it('should find matches in quiz questions', async () => {
+      const results = await lessonsService.search('What is tokenization');
+      const quizMatch = results.find((r) => r.matchType === 'quiz');
+      expect(quizMatch).toBeDefined();
+    });
+
+    it('should find matches in quiz options', async () => {
+      const results = await lessonsService.search('Splitting text');
+      const quizMatch = results.find((r) => r.matchType === 'quiz');
+      expect(quizMatch).toBeDefined();
+    });
+
+    it('should find matches in quiz explanation', async () => {
+      const results = await lessonsService.search('smaller units');
+      const quizMatch = results.find((r) => r.matchType === 'quiz');
+      expect(quizMatch).toBeDefined();
+    });
+
+    it('should be case-insensitive', async () => {
+      const resultsLower = await lessonsService.search('llm');
+      const resultsUpper = await lessonsService.search('LLM');
+      expect(resultsLower.length).toEqual(resultsUpper.length);
+    });
+
+    it('should return context before and after match', async () => {
+      const results = await lessonsService.search('tokenization');
+      const matchWithContext = results.find(
+        (r) => r.matchType === 'section' && r.contextBefore
+      );
+      expect(matchWithContext?.contextBefore).toBeDefined();
+      expect(matchWithContext?.contextAfter).toBeDefined();
+    });
+
+    it('should return empty array when no matches found', async () => {
+      const results = await lessonsService.search('nonexistentterm12345');
+      expect(results).toEqual([]);
+    });
+
+    it('should respect limit parameter', async () => {
+      const results = await lessonsService.search('tokenization', 1);
+      expect(results.length).toBeLessThanOrEqual(1);
+    });
+
+    it('should respect offset parameter', async () => {
+      const allResults = await lessonsService.search('tokenization');
+      const offsetResults = await lessonsService.search('tokenization', 20, 1);
+      if (allResults.length > 1) {
+        expect(offsetResults[0]).toEqual(allResults[1]);
+      }
+    });
+
+    it('should include lesson metadata in results', async () => {
+      const results = await lessonsService.search('LLM');
+      expect(results[0]).toHaveProperty('lessonId');
+      expect(results[0]).toHaveProperty('lessonSlug');
+      expect(results[0]).toHaveProperty('lessonTitle');
+      expect(results[0]).toHaveProperty('week');
+      expect(results[0]).toHaveProperty('matchType');
+      expect(results[0]).toHaveProperty('matchedText');
+    });
+  });
 });

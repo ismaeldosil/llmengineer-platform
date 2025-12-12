@@ -1,9 +1,10 @@
-import { Controller, Get, Post, Param, Body, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Param, Body, Query, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
 import { LessonsService } from './lessons.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { CompleteLessonDto } from './dto/complete-lesson.dto';
+import { SearchLessonDto } from './dto/search-lesson.dto';
 
 @ApiTags('lessons')
 @ApiBearerAuth()
@@ -17,6 +18,16 @@ export class LessonsController {
   @ApiOperation({ summary: 'Obtener todas las lecciones' })
   async findAll(@CurrentUser() user: { id: string }) {
     return this.lessonsService.findAll(user.id);
+  }
+
+  @Get('search')
+  @ApiOperation({ summary: 'Buscar en contenido de lecciones' })
+  @ApiResponse({
+    status: 200,
+    description: 'Resultados de búsqueda con contexto',
+  })
+  async search(@Query() dto: SearchLessonDto) {
+    return this.lessonsService.search(dto.query, dto.limit, dto.offset);
   }
 
   @Get(':id')
