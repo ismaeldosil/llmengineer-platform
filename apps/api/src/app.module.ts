@@ -8,6 +8,7 @@ import { BadgesModule } from './badges/badges.module';
 import { LeaderboardModule } from './leaderboard/leaderboard.module';
 import { StreaksModule } from './streaks/streaks.module';
 import { QuizModule } from './quiz/quiz.module';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { QuizModule } from './quiz/quiz.module';
     LeaderboardModule,
     StreaksModule,
     QuizModule,
+    HealthModule,
   ],
 })
 export class AppModule {}
