@@ -32,7 +32,7 @@ async function bootstrap() {
   SwaggerModule.setup('api/docs', app, document);
 
   const port = process.env.PORT || 3001;
-  await app.listen(port);
-  console.log(`🚀 API running on http://localhost:${port}`); // eslint-disable-line no-console
+  await app.listen(port, '0.0.0.0');
+  console.log(`🚀 API running on port ${port}`); // eslint-disable-line no-console
 }
 bootstrap();
