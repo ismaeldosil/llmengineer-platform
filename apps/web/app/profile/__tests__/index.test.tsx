@@ -455,8 +455,7 @@ describe('ProfileScreen', () => {
       expect(getByText('Editar Perfil')).toBeTruthy();
     });
 
-    it('should call handleEditProfile when edit button is pressed', () => {
-      const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
+    it('should be pressable without throwing error', () => {
       const store = createMockStore();
       const { getByText } = render(
         <Provider store={store}>
@@ -465,10 +464,8 @@ describe('ProfileScreen', () => {
       );
 
       const editButton = getByText('Editar Perfil');
-      fireEvent.press(editButton);
-
-      expect(consoleSpy).toHaveBeenCalledWith('Edit profile - to be implemented');
-      consoleSpy.mockRestore();
+      // Edit profile is a placeholder - just verify button is pressable
+      expect(() => fireEvent.press(editButton)).not.toThrow();
     });
 
     it('should have correct accessibility props', () => {

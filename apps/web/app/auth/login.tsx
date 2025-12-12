@@ -155,6 +155,7 @@ export default function LoginScreen() {
               )}
 
               <Pressable
+                testID="login-submit-button"
                 style={[styles.button, (isLoading || !isFormValid()) && styles.buttonDisabled]}
                 onPress={handleLogin}
                 disabled={isLoading || !isFormValid()}
