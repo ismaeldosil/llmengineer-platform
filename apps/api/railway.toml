@@ -1,0 +1,20 @@
+[build]
+builder = "dockerfile"
+dockerfilePath = "apps/api/Dockerfile.railway"
+
+[deploy]
+startCommand = "npx prisma migrate deploy && node dist/main"
+healthcheckPath = "/api/health"
+healthcheckTimeout = 100
+restartPolicyType = "on_failure"
+restartPolicyMaxRetries = 10
+
+# Environment variables required for deployment
+# These should be set in Railway's dashboard
+# [env]
+# DATABASE_URL = "postgresql://user:password@host:port/dbname?schema=public"
+# JWT_SECRET = "your-secure-random-jwt-secret"
+# JWT_EXPIRES_IN = "7d"
+# PORT = "3001"
+# NODE_ENV = "production"
+# CORS_ORIGIN = "https://your-frontend-domain.com"

@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "expo start --web",
     "build": "expo export --platform web",
+    "build:vercel": "expo export --platform web",
     "test": "jest --passWithNoTests",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",

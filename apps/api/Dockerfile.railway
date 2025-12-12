@@ -1,0 +1,71 @@
+# Multi-stage build for production deployment on Railway
+# Optimized for smaller image size and faster builds
+
+# Stage 1: Dependencies
+FROM node:20-alpine AS deps
+
+# Install OpenSSL for Prisma
+RUN apk add --no-cache openssl openssl-dev libc6-compat
+
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+COPY apps/api/package*.json ./apps/api/
+COPY packages/shared/package*.json ./packages/shared/
+
+# Install dependencies (production + dev dependencies needed for build)
+RUN npm ci
+
+# Stage 2: Builder
+FROM node:20-alpine AS builder
+
+RUN apk add --no-cache openssl openssl-dev libc6-compat
+
+WORKDIR /app
+
+# Copy dependencies from deps stage
+COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /app/apps/api/node_modules ./apps/api/node_modules
+COPY --from=deps /app/packages/shared/node_modules ./packages/shared/node_modules
+
+# Copy source code
+COPY tsconfig.base.json ./
+COPY apps/api ./apps/api
+COPY packages/shared ./packages/shared
+
+# Generate Prisma Client
+WORKDIR /app/apps/api
+RUN npx prisma generate
+
+# Build shared package
+WORKDIR /app/packages/shared
+RUN npm run build
+
+# Build API
+WORKDIR /app/apps/api
+RUN npm run build
+
+# Stage 3: Runner
+FROM node:20-alpine AS runner
+
+RUN apk add --no-cache openssl openssl-dev
+
+WORKDIR /app
+
+# Don't run as root
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nestjs
+
+# Copy only production files
+COPY --from=builder --chown=nestjs:nodejs /app/apps/api/dist ./dist
+COPY --from=builder --chown=nestjs:nodejs /app/apps/api/node_modules ./node_modules
+COPY --from=builder --chown=nestjs:nodejs /app/apps/api/prisma ./prisma
+COPY --from=builder --chown=nestjs:nodejs /app/apps/api/package*.json ./
+
+USER nestjs
+
+EXPOSE 3001
+
+# Run migrations and start the application
+CMD npx prisma migrate deploy && node dist/main
