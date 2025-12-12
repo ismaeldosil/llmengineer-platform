@@ -1,15 +1,16 @@
 import { Controller, Get, Patch, Body, UseGuards } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBearerAuth, ApiOkResponse, ApiBody } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiBearerAuth, ApiOkResponse, ApiBody, ApiResponse } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { BadgesService } from '../badges/badges.service';
 import { UserBadgesResponseDto } from '../badges/dto/badge-response.dto';
-import { UpdateProfileDto, UserResponseDto } from './dto';
+import { UpdateProfileDto, UserResponseDto, UserStatsDto } from './dto';
 
 @ApiTags('users')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
+@ApiResponse({ status: 429, description: 'Demasiadas solicitudes. Intenta de nuevo más tarde.' })
 @Controller('users')
 export class UsersController {
   constructor(
@@ -59,5 +60,15 @@ export class UsersController {
       badges,
       total: badges.length,
     };
+  }
+
+  @Get('me/stats')
+  @ApiOperation({ summary: 'Get detailed user statistics' })
+  @ApiOkResponse({
+    type: UserStatsDto,
+    description: 'Detailed user statistics including study time, quizzes, and XP history',
+  })
+  async getStats(@CurrentUser() user: { id: string }): Promise<UserStatsDto> {
+    return this.usersService.getStats(user.id);
   }
 }

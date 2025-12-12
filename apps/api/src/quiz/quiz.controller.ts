@@ -1,5 +1,6 @@
 import { Controller, Post, Param, Body, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
+import { Throttle } from '@nestjs/throttler';
 import { QuizService } from './quiz.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
@@ -44,6 +45,11 @@ export class QuizController {
     status: 400,
     description: 'Quiz inv�lido o incompleto',
   })
+  @ApiResponse({
+    status: 429,
+    description: 'Demasiadas solicitudes. Intenta de nuevo más tarde.',
+  })
+  @Throttle({ default: { ttl: 60000, limit: 30 } })
   async submitQuiz(
     @Param('id') id: string,
     @Body() dto: SubmitQuizDto,

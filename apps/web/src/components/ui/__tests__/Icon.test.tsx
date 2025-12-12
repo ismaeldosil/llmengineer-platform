@@ -119,9 +119,7 @@ describe('Icon', () => {
 
   describe('color prop', () => {
     it('overrides variant color when color prop is provided', () => {
-      const { getByTestId } = render(
-        <Icon icon={User} variant="primary" color="#ff0000" />
-      );
+      const { getByTestId } = render(<Icon icon={User} variant="primary" color="#ff0000" />);
       expect(getByTestId('icon-color')).toHaveTextContent('#ff0000');
     });
 

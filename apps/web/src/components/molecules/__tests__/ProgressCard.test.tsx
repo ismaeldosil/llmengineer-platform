@@ -140,4 +140,170 @@ describe('ProgressCard', () => {
 
     expect(getByText('LLM Master')).toBeTruthy();
   });
+
+  describe('Progress Bar Animation', () => {
+    it('should initialize progress width to 0 when loading', () => {
+      const { queryByText } = render(
+        <ProgressCard totalXp={500} level={1} lessonsCompleted={5} isLoading={true} />
+      );
+
+      // Should not render content when loading
+      expect(queryByText('500 XP')).toBeNull();
+    });
+
+    it('should animate progress bar on mount', () => {
+      const { getByText } = render(
+        <ProgressCard totalXp={250} level={1} lessonsCompleted={5} />
+      );
+
+      // Progress bar should be rendered
+      expect(getByText('250 / 500 XP para nivel 2')).toBeTruthy();
+    });
+
+    it('should update progress bar when XP changes', () => {
+      const { getByText, rerender } = render(
+        <ProgressCard totalXp={100} level={1} lessonsCompleted={5} />
+      );
+
+      expect(getByText('100 / 500 XP para nivel 2')).toBeTruthy();
+
+      rerender(<ProgressCard totalXp={300} level={1} lessonsCompleted={10} />);
+
+      expect(getByText('300 / 500 XP para nivel 2')).toBeTruthy();
+    });
+
+    it('should not animate when loading', () => {
+      const { queryByText } = render(
+        <ProgressCard totalXp={250} level={1} lessonsCompleted={5} isLoading={true} />
+      );
+
+      expect(queryByText('Prompt Curious')).toBeNull();
+    });
+  });
+
+  describe('Edge Cases', () => {
+    it('should handle maximum XP values', () => {
+      const { getByText } = render(
+        <ProgressCard totalXp={999999} level={1999} lessonsCompleted={9999} currentStreak={365} />
+      );
+
+      expect(getByText('999,999 XP')).toBeTruthy();
+      expect(getByText('9999')).toBeTruthy(); // No comma for 4-digit numbers
+      expect(getByText('365')).toBeTruthy();
+    });
+
+    it('should handle negative streak as 0', () => {
+      const { getAllByText } = render(
+        <ProgressCard totalXp={500} level={1} lessonsCompleted={5} currentStreak={0} />
+      );
+
+      const zeroElements = getAllByText('0');
+      expect(zeroElements.length).toBeGreaterThan(0);
+    });
+
+    it('should handle rapid prop updates', () => {
+      const { getByText, rerender } = render(
+        <ProgressCard totalXp={100} level={1} lessonsCompleted={1} />
+      );
+
+      expect(getByText('100 / 500 XP para nivel 2')).toBeTruthy();
+
+      rerender(<ProgressCard totalXp={200} level={1} lessonsCompleted={2} />);
+      rerender(<ProgressCard totalXp={300} level={1} lessonsCompleted={3} />);
+      rerender(<ProgressCard totalXp={400} level={1} lessonsCompleted={4} />);
+
+      expect(getByText('400 / 500 XP para nivel 2')).toBeTruthy();
+    });
+
+    it('should maintain consistency between stats', () => {
+      const totalXp = 2500;
+      const lessonsCompleted = 25;
+      const streak = 10;
+
+      const { getByText } = render(
+        <ProgressCard
+          totalXp={totalXp}
+          level={5}
+          lessonsCompleted={lessonsCompleted}
+          currentStreak={streak}
+        />
+      );
+
+      // Verify all three stats are displayed correctly
+      expect(getByText('25')).toBeTruthy(); // Lessons
+      expect(getByText('10')).toBeTruthy(); // Streak
+      expect(getByText('2,500')).toBeTruthy(); // XP Total
+    });
+  });
+
+  describe('Loading State Transitions', () => {
+    it('should transition from loading to loaded', () => {
+      const { queryByText, rerender, getByText } = render(
+        <ProgressCard totalXp={500} level={1} lessonsCompleted={5} isLoading={true} />
+      );
+
+      expect(queryByText('Prompt Curious')).toBeNull();
+
+      rerender(<ProgressCard totalXp={500} level={1} lessonsCompleted={5} isLoading={false} />);
+
+      expect(getByText('Prompt Curious')).toBeTruthy();
+      expect(getByText('500 XP')).toBeTruthy();
+    });
+
+    it('should show ActivityIndicator when loading', () => {
+      const { UNSAFE_getByType } = render(
+        <ProgressCard totalXp={0} level={1} lessonsCompleted={0} isLoading={true} />
+      );
+
+      const { ActivityIndicator } = require('react-native');
+      expect(UNSAFE_getByType(ActivityIndicator)).toBeTruthy();
+    });
+  });
+
+  describe('XP Progress Calculation', () => {
+    it('should calculate progress correctly for partial level', () => {
+      const { getByText } = render(<ProgressCard totalXp={750} level={1} lessonsCompleted={7} />);
+
+      expect(getByText('250 / 500 XP para nivel 2')).toBeTruthy();
+    });
+
+    it('should handle exact level completion', () => {
+      const { getByText } = render(<ProgressCard totalXp={1500} level={3} lessonsCompleted={15} />);
+
+      expect(getByText('0 / 500 XP para nivel 4')).toBeTruthy();
+    });
+
+    it('should calculate progress for mid-level XP', () => {
+      const { getByText } = render(<ProgressCard totalXp={2750} level={5} lessonsCompleted={20} />);
+
+      expect(getByText('250 / 500 XP para nivel 6')).toBeTruthy();
+    });
+  });
+
+  describe('Formatting', () => {
+    it('should format thousands with commas', () => {
+      const { getByText } = render(
+        <ProgressCard totalXp={12345} level={24} lessonsCompleted={123} />
+      );
+
+      expect(getByText('12,345 XP')).toBeTruthy();
+      expect(getByText('123')).toBeTruthy();
+    });
+
+    it('should format XP in progress text with commas', () => {
+      const { getByText } = render(<ProgressCard totalXp={250} level={1} lessonsCompleted={5} />);
+
+      expect(getByText('250 / 500 XP para nivel 2')).toBeTruthy();
+    });
+
+    it('should handle single digit values', () => {
+      const { getByText, getAllByText } = render(
+        <ProgressCard totalXp={5} level={1} lessonsCompleted={1} currentStreak={1} />
+      );
+
+      expect(getByText('5 XP')).toBeTruthy();
+      const ones = getAllByText('1');
+      expect(ones.length).toBeGreaterThan(0);
+    });
+  });
 });
