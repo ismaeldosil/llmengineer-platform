@@ -7,7 +7,7 @@ export class CustomThrottlerGuard extends ThrottlerGuard {
     context: ExecutionContext,
     limit: number,
     ttl: number,
-    throttler: { name: string; limit: number; ttl: number },
+    throttler: { name: string; limit: number; ttl: number }
   ): Promise<boolean> {
     const { req, res } = this.getRequestResponse(context);
 
@@ -16,10 +16,7 @@ export class CustomThrottlerGuard extends ThrottlerGuard {
     const key = this.generateKey(context, tracker, throttler.name);
 
     // Get current usage from storage
-    const { totalHits, timeToExpire } = await this.storageService.increment(
-      key,
-      ttl,
-    );
+    const { totalHits, timeToExpire } = await this.storageService.increment(key, ttl);
 
     // Calculate remaining requests
     const remaining = Math.max(0, limit - totalHits);

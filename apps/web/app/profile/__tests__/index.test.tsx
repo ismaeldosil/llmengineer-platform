@@ -11,13 +11,20 @@ import type { User, UserProgress, Badge } from '@llmengineer/shared';
 
 // Mock expo-router
 const mockReplace = jest.fn();
+const mockPush = jest.fn();
 jest.mock('expo-router', () => ({
   Stack: {
     Screen: ({ options: _options }: any) => null,
   },
   router: {
     replace: (path: string) => mockReplace(path),
+    push: (path: string) => mockPush(path),
   },
+}));
+
+// Mock lucide-react-native
+jest.mock('lucide-react-native', () => ({
+  Settings: ({ size, color }: any) => `Settings-${size}-${color}`,
 }));
 
 const mockUser: User = {
@@ -116,6 +123,7 @@ describe('ProfileScreen', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockReplace.mockClear();
+    mockPush.mockClear();
 
     // Default mock responses
     mockGetProgressQuery.mockReturnValue({
@@ -482,41 +490,21 @@ describe('ProfileScreen', () => {
     });
   });
 
-  describe('Logout Functionality', () => {
-    it('should render logout button in settings section', () => {
+  describe('Settings Navigation', () => {
+    it('should render settings button in settings section', () => {
       const store = createMockStore();
-      const { getByText } = render(
+      const { getAllByText } = render(
         <Provider store={store}>
           <ProfileScreen />
         </Provider>
       );
 
-      expect(getByText('Configuración')).toBeTruthy();
-      expect(getByText('Cerrar Sesión')).toBeTruthy();
+      // There are two "Configuración" texts: section title and button text
+      const configTexts = getAllByText('Configuración');
+      expect(configTexts.length).toBe(2);
     });
 
-    it('should dispatch logout action and navigate to home when logout is pressed', () => {
-      const store = createMockStore();
-      const { getByText } = render(
-        <Provider store={store}>
-          <ProfileScreen />
-        </Provider>
-      );
-
-      const logoutButton = getByText('Cerrar Sesión');
-      fireEvent.press(logoutButton);
-
-      // Check that router.replace was called with '/'
-      expect(mockReplace).toHaveBeenCalledWith('/');
-
-      // Check that auth state was cleared
-      const state = store.getState();
-      expect(state.auth.user).toBeNull();
-      expect(state.auth.token).toBeNull();
-      expect(state.auth.isAuthenticated).toBe(false);
-    });
-
-    it('should have correct accessibility props for logout button', () => {
+    it('should navigate to settings screen when settings button is pressed', () => {
       const store = createMockStore();
       const { getByLabelText } = render(
         <Provider store={store}>
@@ -524,9 +512,29 @@ describe('ProfileScreen', () => {
         </Provider>
       );
 
-      const logoutButton = getByLabelText('Cerrar sesión');
-      expect(logoutButton).toBeTruthy();
-      expect(logoutButton.props.accessibilityRole).toBe('button');
+      const settingsButton = getByLabelText('Ir a configuración');
+      fireEvent.press(settingsButton);
+
+      // Check that router.push was called with '/profile/settings'
+      expect(mockPush).toHaveBeenCalledWith('/profile/settings');
+
+      // Auth state should remain unchanged
+      const state = store.getState();
+      expect(state.auth.user).toEqual(mockUser);
+      expect(state.auth.isAuthenticated).toBe(true);
+    });
+
+    it('should have correct accessibility props for settings button', () => {
+      const store = createMockStore();
+      const { getByLabelText } = render(
+        <Provider store={store}>
+          <ProfileScreen />
+        </Provider>
+      );
+
+      const settingsButton = getByLabelText('Ir a configuración');
+      expect(settingsButton).toBeTruthy();
+      expect(settingsButton.props.accessibilityRole).toBe('button');
     });
   });
 

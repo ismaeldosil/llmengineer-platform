@@ -27,7 +27,10 @@ interface Module {
 }
 
 const MODULE_INFO: Record<number, { title: string; description: string }> = {
-  1: { title: 'Setup + Fundamentos', description: 'Configurar el environment y entender la arquitectura' },
+  1: {
+    title: 'Setup + Fundamentos',
+    description: 'Configurar el environment y entender la arquitectura',
+  },
   2: { title: 'Plugins Core + Web', description: 'Dominar los plugins principales' },
   3: { title: 'Desarrollo + Build', description: 'Compilar y desplegar para Android e iOS' },
   4: { title: 'Testing + App Store', description: 'Preparar y publicar en las tiendas de apps' },
@@ -74,7 +77,8 @@ export default function DashboardScreen() {
 
   const totalLessons = lessons?.length || 0;
   const completedLessons = lessons?.filter((l) => l.isCompleted).length || 0;
-  const progressPercent = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
+  const progressPercent =
+    totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
 
   const handleLogout = () => {
     if (Platform.OS === 'web') {
@@ -125,9 +129,7 @@ export default function DashboardScreen() {
           {/* Welcome Header */}
           <View style={styles.welcomeSection}>
             <View style={styles.welcomeHeader}>
-              <Text style={styles.welcomeTitle}>
-                ¡Bienvenido, {displayName}!{' '}
-              </Text>
+              <Text style={styles.welcomeTitle}>¡Bienvenido, {displayName}! </Text>
               <Icon icon={Rocket} size="lg" color="#a855f7" />
             </View>
             <Text style={styles.welcomeSubtitle}>

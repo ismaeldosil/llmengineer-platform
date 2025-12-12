@@ -14,9 +14,9 @@ export class HealthController {
       properties: {
         status: { type: 'string', example: 'ok' },
         timestamp: { type: 'string', example: '2025-12-11T12:00:00.000Z' },
-        uptime: { type: 'number', example: 123.456 }
-      }
-    }
+        uptime: { type: 'number', example: 123.456 },
+      },
+    },
   })
   check() {
     return {

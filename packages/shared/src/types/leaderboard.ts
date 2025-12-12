@@ -1,4 +1,5 @@
 export type LeaderboardType = 'global' | 'weekly';
+export type RankChangeDirection = 'up' | 'down' | 'same' | 'new';
 
 export interface LeaderboardEntry {
   rank: number;
@@ -7,6 +8,8 @@ export interface LeaderboardEntry {
   totalXp: number;
   level: number;
   isCurrentUser?: boolean;
+  rankChange?: number;
+  rankChangeDirection?: RankChangeDirection;
 }
 
 export interface LeaderboardResponse {

@@ -1,0 +1,53 @@
+{
+  "slug": "token-tetris",
+  "name": "Token Tetris",
+  "description": "Optimiza tokens mientras juegas Tetris",
+  "icon": "🧱",
+  "isActive": true,
+  "levels": [
+    {
+      "level": 1,
+      "name": "Beginner",
+      "config": {
+        "speed": 1,
+        "tokenGoal": 50
+      }
+    },
+    {
+      "level": 2,
+      "name": "Intermediate",
+      "config": {
+        "speed": 1.5,
+        "tokenGoal": 100
+      }
+    },
+    {
+      "level": 3,
+      "name": "Advanced",
+      "config": {
+        "speed": 2,
+        "tokenGoal": 150
+      }
+    },
+    {
+      "level": 4,
+      "name": "Expert",
+      "config": {
+        "speed": 2.5,
+        "tokenGoal": 200
+      }
+    },
+    {
+      "level": 5,
+      "name": "Master",
+      "config": {
+        "speed": 3,
+        "tokenGoal": 300
+      }
+    }
+  ],
+  "rewards": {
+    "xpPerLevel": 100,
+    "bonusForPerfect": 50
+  }
+}

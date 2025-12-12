@@ -21,6 +21,11 @@ describe('LeaderboardService', () => {
       findMany: jest.fn(),
       findUnique: jest.fn(),
     },
+    leaderboardSnapshot: {
+      findMany: jest.fn(),
+      findUnique: jest.fn(),
+      createMany: jest.fn(),
+    },
   };
 
   beforeEach(async () => {
@@ -99,6 +104,7 @@ describe('LeaderboardService', () => {
 
     it('should return global leaderboard with top users', async () => {
       mockPrismaService.userProgress.findMany.mockResolvedValue(mockUsers);
+      mockPrismaService.leaderboardSnapshot.findMany.mockResolvedValue([]);
 
       const result = await service.getLeaderboard('user-4', LeaderboardType.GLOBAL, 50, 0);
 
@@ -124,6 +130,8 @@ describe('LeaderboardService', () => {
         totalXp: 1500,
         level: 5,
         isCurrentUser: false,
+        rankChange: 0,
+        rankChangeDirection: 'new',
       });
       expect(result.total).toBe(3);
       expect(result.offset).toBe(0);
@@ -131,6 +139,7 @@ describe('LeaderboardService', () => {
 
     it('should mark current user in the list', async () => {
       mockPrismaService.userProgress.findMany.mockResolvedValue(mockUsers);
+      mockPrismaService.leaderboardSnapshot.findMany.mockResolvedValue([]);
 
       const result = await service.getLeaderboard('user-2', LeaderboardType.GLOBAL, 50, 0);
 
@@ -142,6 +151,7 @@ describe('LeaderboardService', () => {
     it('should handle pagination with offset', async () => {
       const paginatedUsers = [mockUsers[2]];
       mockPrismaService.userProgress.findMany.mockResolvedValue(paginatedUsers);
+      mockPrismaService.leaderboardSnapshot.findMany.mockResolvedValue([]);
 
       const result = await service.getLeaderboard('user-4', LeaderboardType.GLOBAL, 50, 2);
 
@@ -158,6 +168,7 @@ describe('LeaderboardService', () => {
 
     it('should get current user rank when not in the list', async () => {
       mockPrismaService.userProgress.findMany.mockResolvedValue(mockUsers);
+      mockPrismaService.leaderboardSnapshot.findMany.mockResolvedValue([]);
       mockPrismaService.userProgress.findUnique.mockResolvedValue({
         id: 'progress-4',
         userId: 'user-4',
@@ -166,6 +177,7 @@ describe('LeaderboardService', () => {
         user: { id: 'user-4', displayName: 'User Four' },
       });
       mockPrismaService.userProgress.count.mockResolvedValue(3);
+      mockPrismaService.leaderboardSnapshot.findUnique.mockResolvedValue(null);
 
       const result = await service.getLeaderboard('user-4', LeaderboardType.GLOBAL, 50, 0);
 
@@ -177,11 +189,14 @@ describe('LeaderboardService', () => {
         totalXp: 500,
         level: 2,
         isCurrentUser: true,
+        rankChange: 0,
+        rankChangeDirection: 'new',
       });
     });
 
     it('should handle user with no progress', async () => {
       mockPrismaService.userProgress.findMany.mockResolvedValue(mockUsers);
+      mockPrismaService.leaderboardSnapshot.findMany.mockResolvedValue([]);
       mockPrismaService.userProgress.findUnique.mockResolvedValue(null);
 
       const result = await service.getLeaderboard('new-user', LeaderboardType.GLOBAL, 50, 0);
@@ -192,6 +207,7 @@ describe('LeaderboardService', () => {
 
     it('should handle empty leaderboard', async () => {
       mockPrismaService.userProgress.findMany.mockResolvedValue([]);
+      mockPrismaService.leaderboardSnapshot.findMany.mockResolvedValue([]);
       mockPrismaService.userProgress.findUnique.mockResolvedValue(null);
 
       const result = await service.getLeaderboard('user-1', LeaderboardType.GLOBAL, 50, 0);
@@ -220,6 +236,7 @@ describe('LeaderboardService', () => {
       ];
 
       mockPrismaService.userProgress.findMany.mockResolvedValue(usersWithTies);
+      mockPrismaService.leaderboardSnapshot.findMany.mockResolvedValue([]);
 
       const result = await service.getLeaderboard('user-3', LeaderboardType.GLOBAL, 50, 0);
 
@@ -265,6 +282,7 @@ describe('LeaderboardService', () => {
     it('should return weekly leaderboard with top users', async () => {
       mockPrismaService.lessonCompletion.groupBy.mockResolvedValue(mockWeeklyXp);
       mockPrismaService.user.findMany.mockResolvedValue(mockUsers);
+      mockPrismaService.leaderboardSnapshot.findMany.mockResolvedValue([]);
       mockPrismaService.lessonCompletion.aggregate.mockResolvedValue({
         _sum: { xpEarned: 0 },
       });
@@ -290,12 +308,15 @@ describe('LeaderboardService', () => {
         totalXp: 500,
         level: 5,
         isCurrentUser: false,
+        rankChange: 0,
+        rankChangeDirection: 'new',
       });
     });
 
     it('should mark current user in weekly list', async () => {
       mockPrismaService.lessonCompletion.groupBy.mockResolvedValue(mockWeeklyXp);
       mockPrismaService.user.findMany.mockResolvedValue(mockUsers);
+      mockPrismaService.leaderboardSnapshot.findMany.mockResolvedValue([]);
 
       const result = await service.getLeaderboard('user-2', LeaderboardType.WEEKLY, 50, 0);
 
@@ -306,6 +327,7 @@ describe('LeaderboardService', () => {
     it('should handle pagination in weekly leaderboard', async () => {
       mockPrismaService.lessonCompletion.groupBy.mockResolvedValue(mockWeeklyXp);
       mockPrismaService.user.findMany.mockResolvedValue([mockUsers[2]]);
+      mockPrismaService.leaderboardSnapshot.findMany.mockResolvedValue([]);
       mockPrismaService.lessonCompletion.aggregate.mockResolvedValue({
         _sum: { xpEarned: 0 },
       });
@@ -323,6 +345,7 @@ describe('LeaderboardService', () => {
 
       mockPrismaService.lessonCompletion.groupBy.mockResolvedValue(extendedWeeklyXp);
       mockPrismaService.user.findMany.mockResolvedValue(mockUsers);
+      mockPrismaService.leaderboardSnapshot.findMany.mockResolvedValue([]);
       mockPrismaService.lessonCompletion.aggregate.mockResolvedValue({
         _sum: { xpEarned: 200 },
       });
@@ -331,6 +354,7 @@ describe('LeaderboardService', () => {
         displayName: 'User Four',
         progress: { level: 2 },
       });
+      mockPrismaService.leaderboardSnapshot.findUnique.mockResolvedValue(null);
 
       const result = await service.getLeaderboard('user-4', LeaderboardType.WEEKLY, 3, 0);
 
@@ -342,12 +366,15 @@ describe('LeaderboardService', () => {
         totalXp: 200,
         level: 2,
         isCurrentUser: true,
+        rankChange: 0,
+        rankChangeDirection: 'new',
       });
     });
 
     it('should handle user with no weekly XP', async () => {
       mockPrismaService.lessonCompletion.groupBy.mockResolvedValue(mockWeeklyXp);
       mockPrismaService.user.findMany.mockResolvedValue(mockUsers);
+      mockPrismaService.leaderboardSnapshot.findMany.mockResolvedValue([]);
       mockPrismaService.lessonCompletion.aggregate.mockResolvedValue({
         _sum: { xpEarned: 0 },
       });
@@ -361,6 +388,7 @@ describe('LeaderboardService', () => {
     it('should handle empty weekly leaderboard', async () => {
       mockPrismaService.lessonCompletion.groupBy.mockResolvedValue([]);
       mockPrismaService.user.findMany.mockResolvedValue([]);
+      mockPrismaService.leaderboardSnapshot.findMany.mockResolvedValue([]);
       mockPrismaService.lessonCompletion.aggregate.mockResolvedValue({
         _sum: { xpEarned: 0 },
       });
@@ -377,6 +405,7 @@ describe('LeaderboardService', () => {
 
       mockPrismaService.lessonCompletion.groupBy.mockResolvedValue(mockWeeklyXpWithNull);
       mockPrismaService.user.findMany.mockResolvedValue([mockUsers[0]]);
+      mockPrismaService.leaderboardSnapshot.findMany.mockResolvedValue([]);
 
       const result = await service.getLeaderboard('user-2', LeaderboardType.WEEKLY, 50, 0);
 
@@ -386,6 +415,7 @@ describe('LeaderboardService', () => {
     it('should handle missing user data gracefully', async () => {
       mockPrismaService.lessonCompletion.groupBy.mockResolvedValue(mockWeeklyXp);
       mockPrismaService.user.findMany.mockResolvedValue([]);
+      mockPrismaService.leaderboardSnapshot.findMany.mockResolvedValue([]);
 
       const result = await service.getLeaderboard('user-4', LeaderboardType.WEEKLY, 50, 0);
 
@@ -452,6 +482,7 @@ describe('LeaderboardService', () => {
   describe('edge cases', () => {
     it('should handle very large limit', async () => {
       mockPrismaService.userProgress.findMany.mockResolvedValue([]);
+      mockPrismaService.leaderboardSnapshot.findMany.mockResolvedValue([]);
 
       await service.getLeaderboard('user-1', LeaderboardType.GLOBAL, 100, 0);
 
@@ -464,6 +495,7 @@ describe('LeaderboardService', () => {
 
     it('should handle very large offset', async () => {
       mockPrismaService.userProgress.findMany.mockResolvedValue([]);
+      mockPrismaService.leaderboardSnapshot.findMany.mockResolvedValue([]);
 
       await service.getLeaderboard('user-1', LeaderboardType.GLOBAL, 50, 1000);
 
@@ -486,10 +518,194 @@ describe('LeaderboardService', () => {
       ];
 
       mockPrismaService.userProgress.findMany.mockResolvedValue(mockUsers);
+      mockPrismaService.leaderboardSnapshot.findMany.mockResolvedValue([]);
 
       const result = await service.getLeaderboard('user-1', LeaderboardType.GLOBAL, 50, 0);
 
       expect(result.entries[0].avatarUrl).toBeNull();
+    });
+  });
+
+  describe('rank changes', () => {
+    it('should show rank improvement when user moved up', async () => {
+      const mockUsers = [
+        {
+          id: 'progress-1',
+          userId: 'user-1',
+          totalXp: 1500,
+          level: 5,
+          user: { id: 'user-1', displayName: 'User One' },
+        },
+      ];
+
+      const mockSnapshots = [
+        {
+          userId: 'user-1',
+          rank: 3,
+          xp: 1400,
+          type: 'GLOBAL',
+          date: new Date(),
+        },
+      ];
+
+      mockPrismaService.userProgress.findMany.mockResolvedValue(mockUsers);
+      mockPrismaService.leaderboardSnapshot.findMany.mockResolvedValue(mockSnapshots);
+
+      const result = await service.getLeaderboard('user-2', LeaderboardType.GLOBAL, 50, 0);
+
+      expect(result.entries[0]).toMatchObject({
+        rank: 1,
+        rankChange: 2,
+        rankChangeDirection: 'up',
+      });
+    });
+
+    it('should show rank decline when user moved down', async () => {
+      const mockUsers = [
+        {
+          id: 'progress-1',
+          userId: 'user-1',
+          totalXp: 1000,
+          level: 3,
+          user: { id: 'user-1', displayName: 'User One' },
+        },
+      ];
+
+      const mockSnapshots = [
+        {
+          userId: 'user-1',
+          rank: 1,
+          xp: 1500,
+          type: 'GLOBAL',
+          date: new Date(),
+        },
+      ];
+
+      mockPrismaService.userProgress.findMany.mockResolvedValue(mockUsers);
+      mockPrismaService.leaderboardSnapshot.findMany.mockResolvedValue(mockSnapshots);
+
+      const result = await service.getLeaderboard('user-2', LeaderboardType.GLOBAL, 50, 0);
+
+      expect(result.entries[0]).toMatchObject({
+        rank: 1,
+        rankChange: 0,
+        rankChangeDirection: 'same',
+      });
+    });
+
+    it('should show same rank when position unchanged', async () => {
+      const mockUsers = [
+        {
+          id: 'progress-1',
+          userId: 'user-1',
+          totalXp: 1500,
+          level: 5,
+          user: { id: 'user-1', displayName: 'User One' },
+        },
+      ];
+
+      const mockSnapshots = [
+        {
+          userId: 'user-1',
+          rank: 1,
+          xp: 1500,
+          type: 'GLOBAL',
+          date: new Date(),
+        },
+      ];
+
+      mockPrismaService.userProgress.findMany.mockResolvedValue(mockUsers);
+      mockPrismaService.leaderboardSnapshot.findMany.mockResolvedValue(mockSnapshots);
+
+      const result = await service.getLeaderboard('user-2', LeaderboardType.GLOBAL, 50, 0);
+
+      expect(result.entries[0]).toMatchObject({
+        rank: 1,
+        rankChange: 0,
+        rankChangeDirection: 'same',
+      });
+    });
+
+    it('should show new status when no previous snapshot exists', async () => {
+      const mockUsers = [
+        {
+          id: 'progress-1',
+          userId: 'user-1',
+          totalXp: 1500,
+          level: 5,
+          user: { id: 'user-1', displayName: 'User One' },
+        },
+      ];
+
+      mockPrismaService.userProgress.findMany.mockResolvedValue(mockUsers);
+      mockPrismaService.leaderboardSnapshot.findMany.mockResolvedValue([]);
+
+      const result = await service.getLeaderboard('user-2', LeaderboardType.GLOBAL, 50, 0);
+
+      expect(result.entries[0]).toMatchObject({
+        rank: 1,
+        rankChange: 0,
+        rankChangeDirection: 'new',
+      });
+    });
+  });
+
+  describe('createDailySnapshots', () => {
+    it('should create global and weekly snapshots', async () => {
+      jest.useFakeTimers();
+      jest.setSystemTime(new Date('2025-12-12T00:00:00Z'));
+
+      const mockUsers = [
+        {
+          id: 'progress-1',
+          userId: 'user-1',
+          totalXp: 1500,
+          level: 5,
+          user: { id: 'user-1' },
+        },
+        {
+          id: 'progress-2',
+          userId: 'user-2',
+          totalXp: 1200,
+          level: 4,
+          user: { id: 'user-2' },
+        },
+      ];
+
+      const mockWeeklyXp = [
+        { userId: 'user-1', _sum: { xpEarned: 500 } },
+        { userId: 'user-2', _sum: { xpEarned: 400 } },
+      ];
+
+      mockPrismaService.userProgress.findMany.mockResolvedValue(mockUsers);
+      mockPrismaService.lessonCompletion.groupBy.mockResolvedValue(mockWeeklyXp);
+      mockPrismaService.leaderboardSnapshot.createMany.mockResolvedValue({ count: 2 });
+
+      await service.createDailySnapshots();
+
+      expect(prisma.leaderboardSnapshot.createMany).toHaveBeenCalledTimes(2);
+      expect(prisma.leaderboardSnapshot.createMany).toHaveBeenCalledWith({
+        data: expect.arrayContaining([
+          expect.objectContaining({
+            userId: 'user-1',
+            rank: 1,
+            xp: 1500,
+            type: 'GLOBAL',
+          }),
+        ]),
+        skipDuplicates: true,
+      });
+
+      jest.useRealTimers();
+    });
+
+    it('should handle empty user list gracefully', async () => {
+      mockPrismaService.userProgress.findMany.mockResolvedValue([]);
+      mockPrismaService.lessonCompletion.groupBy.mockResolvedValue([]);
+
+      await service.createDailySnapshots();
+
+      expect(prisma.leaderboardSnapshot.createMany).not.toHaveBeenCalled();
     });
   });
 });

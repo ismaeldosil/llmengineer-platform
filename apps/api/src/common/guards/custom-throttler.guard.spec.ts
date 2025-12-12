@@ -11,7 +11,7 @@ describe('CustomThrottlerGuard', () => {
         skipIf: () => false,
       },
       {} as any,
-      {} as any,
+      {} as any
     );
   });
 
@@ -50,7 +50,7 @@ describe('CustomThrottlerGuard', () => {
       expect(mockResponse.header).toHaveBeenCalledWith('X-RateLimit-Remaining', '99');
       expect(mockResponse.header).toHaveBeenCalledWith(
         'X-RateLimit-Reset',
-        expect.stringMatching(/^\d{4}-\d{2}-\d{2}T/),
+        expect.stringMatching(/^\d{4}-\d{2}-\d{2}T/)
       );
     });
 

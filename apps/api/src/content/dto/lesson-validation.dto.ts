@@ -1,4 +1,14 @@
-import { IsString, IsNumber, IsIn, IsOptional, MaxLength, Min, Max, IsInt, IsPositive } from 'class-validator';
+import {
+  IsString,
+  IsNumber,
+  IsIn,
+  IsOptional,
+  MaxLength,
+  Min,
+  Max,
+  IsInt,
+  IsPositive,
+} from 'class-validator';
 
 export class LessonValidationDto {
   @IsString({ message: 'slug debe ser una cadena de texto' })
@@ -23,7 +33,9 @@ export class LessonValidationDto {
   order!: number;
 
   @IsString({ message: 'difficulty debe ser una cadena de texto' })
-  @IsIn(['beginner', 'intermediate', 'advanced'], { message: 'difficulty debe ser beginner, intermediate o advanced' })
+  @IsIn(['beginner', 'intermediate', 'advanced'], {
+    message: 'difficulty debe ser beginner, intermediate o advanced',
+  })
   difficulty!: 'beginner' | 'intermediate' | 'advanced';
 
   @IsNumber({}, { message: 'xpReward debe ser un número' })

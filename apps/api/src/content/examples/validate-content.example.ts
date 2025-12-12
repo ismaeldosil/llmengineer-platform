@@ -38,7 +38,7 @@ async function validateContent() {
     console.log('✅ Lesson is valid!');
   } else {
     console.log('❌ Lesson validation failed:');
-    lessonResult.errors.forEach(err => console.log(`   - ${err}`));
+    lessonResult.errors.forEach((err) => console.log(`   - ${err}`));
   }
 
   // Example 2: Validate a quiz
@@ -50,10 +50,11 @@ async function validateContent() {
       'Large Language Model',
       'Linear Learning Machine',
       'Language Logic Module',
-      'Long Learning Method'
+      'Long Learning Method',
     ],
     correctAnswer: 0,
-    explanation: 'LLM stands for Large Language Model, which is a type of AI trained on vast amounts of text data.'
+    explanation:
+      'LLM stands for Large Language Model, which is a type of AI trained on vast amounts of text data.',
   };
 
   const quizResult = await validator.validateQuiz(quizData);
@@ -61,7 +62,7 @@ async function validateContent() {
     console.log('✅ Quiz is valid!');
   } else {
     console.log('❌ Quiz validation failed:');
-    quizResult.errors.forEach(err => console.log(`   - ${err}`));
+    quizResult.errors.forEach((err) => console.log(`   - ${err}`));
   }
 
   // Example 3: Validate a badge
@@ -80,7 +81,7 @@ async function validateContent() {
     console.log('✅ Badge is valid!');
   } else {
     console.log('❌ Badge validation failed:');
-    badgeResult.errors.forEach(err => console.log(`   - ${err}`));
+    badgeResult.errors.forEach((err) => console.log(`   - ${err}`));
   }
 
   // Example 4: Validate invalid data to see error messages
@@ -98,7 +99,7 @@ async function validateContent() {
 
   const invalidResult = await validator.validateLesson(invalidLesson);
   console.log('Expected errors found:');
-  invalidResult.errors.forEach(err => console.log(`   - ${err}`));
+  invalidResult.errors.forEach((err) => console.log(`   - ${err}`));
 
   // Example 5: Validate a directory of content files (if exists)
   console.log('\n📁 Example 5: Validating content directory...');
@@ -116,11 +117,13 @@ async function validateContent() {
       console.log('\n⚠️  Errors found:');
       report.errors.forEach(({ file, errors }) => {
         console.log(`\n   File: ${file}`);
-        errors.forEach(err => console.log(`      - ${err}`));
+        errors.forEach((err) => console.log(`      - ${err}`));
       });
     }
   } catch (error) {
-    console.log('⚠️  Content directory validation skipped (directory may not exist or contain JSON files)');
+    console.log(
+      '⚠️  Content directory validation skipped (directory may not exist or contain JSON files)'
+    );
   }
 
   console.log('\n✨ Validation examples completed!\n');

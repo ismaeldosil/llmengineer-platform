@@ -34,7 +34,7 @@ describe('Auth Flow (e2e)', () => {
         whitelist: true,
         forbidNonWhitelisted: true,
         transform: true,
-      }),
+      })
     );
 
     await app.init();
@@ -88,10 +88,7 @@ describe('Auth Flow (e2e)', () => {
 
     it('should reject duplicate email', async () => {
       // First registration should succeed
-      await request(app.getHttpServer())
-        .post('/auth/register')
-        .send(testUser)
-        .expect(201);
+      await request(app.getHttpServer()).post('/auth/register').send(testUser).expect(201);
 
       // Second registration with same email should fail
       const response = await request(app.getHttpServer())
@@ -195,9 +192,7 @@ describe('Auth Flow (e2e)', () => {
   describe('POST /auth/login', () => {
     beforeEach(async () => {
       // Register a user for login tests
-      await request(app.getHttpServer())
-        .post('/auth/register')
-        .send(testUser);
+      await request(app.getHttpServer()).post('/auth/register').send(testUser);
     });
 
     it('should login existing user and return token', async () => {
@@ -298,7 +293,7 @@ describe('Auth Flow (e2e)', () => {
       expect(userAfter?.progress?.lastActiveAt).toBeTruthy();
       if (userBefore?.progress?.lastActiveAt && userAfter?.progress?.lastActiveAt) {
         expect(userAfter.progress.lastActiveAt.getTime()).toBeGreaterThan(
-          userBefore.progress.lastActiveAt.getTime(),
+          userBefore.progress.lastActiveAt.getTime()
         );
       }
     });
@@ -333,9 +328,7 @@ describe('Auth Flow (e2e)', () => {
     });
 
     it('should return 401 without token', async () => {
-      const response = await request(app.getHttpServer())
-        .get('/auth/me')
-        .expect(401);
+      const response = await request(app.getHttpServer()).get('/auth/me').expect(401);
 
       expect(response.body).toHaveProperty('message');
     });
@@ -369,7 +362,8 @@ describe('Auth Flow (e2e)', () => {
       // or mock the JWT service to return an expired token
 
       // For now, we'll test with a clearly invalid/tampered token
-      const expiredToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjF9.invalid';
+      const expiredToken =
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjF9.invalid';
 
       const response = await request(app.getHttpServer())
         .get('/auth/me')

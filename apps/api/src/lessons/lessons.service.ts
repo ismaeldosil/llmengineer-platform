@@ -2,7 +2,7 @@ import { Injectable, NotFoundException, ConflictException } from '@nestjs/common
 import { PrismaService } from '../prisma/prisma.service';
 import { UsersService } from '../users/users.service';
 import { BadgesService } from '../badges/badges.service';
-import { calculateLessonXpWithBonuses } from '@llmengineer/shared';
+import { calculateLessonXpWithBonuses, calculateXpWithMultipliers } from '@llmengineer/shared';
 
 @Injectable()
 export class LessonsService {
@@ -81,21 +81,45 @@ export class LessonsService {
 
     const currentStreak = userProgress?.currentStreak || 0;
 
-    // Calcular XP con bonificaciones
+    // Check if this is the first lesson completed today
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const todayCompletions = await this.prisma.lessonCompletion.count({
+      where: {
+        userId,
+        completedAt: {
+          gte: today,
+        },
+      },
+    });
+
+    const isFirstLessonToday = todayCompletions === 0;
+
+    // Calcular XP con bonificaciones (speed and quiz bonuses)
+    // Note: Pass currentStreak as 0 to prevent old streak multiplier from being applied
+    // We'll apply the new GAME-010 multiplier system separately
     const xpResult = calculateLessonXpWithBonuses({
       baseXp: lesson.xpReward,
       timeSpentSeconds,
       estimatedMinutes: lesson.estimatedMinutes,
       quizScore,
-      currentStreak,
+      currentStreak: 0, // Don't apply old streak multiplier
     });
+
+    // Apply GAME-010 multipliers (7+ and 30+ day streak multiplier + first lesson bonus)
+    const multiplierResult = calculateXpWithMultipliers(
+      xpResult.totalXp,
+      currentStreak,
+      isFirstLessonToday
+    );
 
     const completion = await this.prisma.lessonCompletion.create({
       data: {
         userId,
         lessonId,
         timeSpentSeconds,
-        xpEarned: xpResult.totalXp,
+        xpEarned: multiplierResult.totalXp,
       },
     });
 
@@ -106,14 +130,22 @@ export class LessonsService {
       },
     });
 
-    const addXpResult = await this.usersService.addXp(userId, xpResult.totalXp);
+    const addXpResult = await this.usersService.addXp(userId, multiplierResult.totalXp);
 
     await this.badgesService.checkAndAwardBadges(userId);
 
     return {
       lessonId,
-      xpEarned: xpResult.totalXp,
-      xpBreakdown: xpResult.breakdown,
+      xpEarned: multiplierResult.totalXp,
+      xpBreakdown: {
+        base: xpResult.breakdown.base,
+        streakMultiplier: multiplierResult.multiplier,
+        firstLessonBonus: isFirstLessonToday ? 50 : 0,
+        quizBonus: xpResult.breakdown.quizBonus,
+        speedBonus: xpResult.breakdown.speedBonus,
+        total: multiplierResult.totalXp,
+      },
+      appliedBonuses: multiplierResult.appliedBonuses,
       completedAt: completion.completedAt,
       leveledUp: addXpResult?.leveledUp || false,
       newLevel: addXpResult?.level,

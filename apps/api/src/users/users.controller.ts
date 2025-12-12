@@ -1,11 +1,25 @@
-import { Controller, Get, Patch, Body, UseGuards } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBearerAuth, ApiOkResponse, ApiBody, ApiResponse } from '@nestjs/swagger';
+import { Controller, Get, Patch, Body, UseGuards, Query } from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiBearerAuth,
+  ApiOkResponse,
+  ApiBody,
+  ApiResponse,
+  ApiQuery,
+} from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { BadgesService } from '../badges/badges.service';
 import { UserBadgesResponseDto } from '../badges/dto/badge-response.dto';
-import { UpdateProfileDto, UserResponseDto, UserStatsDto } from './dto';
+import {
+  UpdateProfileDto,
+  UserResponseDto,
+  UserStatsDto,
+  XpHistoryQueryDto,
+  XpHistoryResponseDto,
+} from './dto';
 
 @ApiTags('users')
 @ApiBearerAuth()
@@ -34,7 +48,7 @@ export class UsersController {
   })
   async updateProfile(
     @CurrentUser() user: { id: string },
-    @Body() dto: UpdateProfileDto,
+    @Body() dto: UpdateProfileDto
   ): Promise<UserResponseDto> {
     return this.usersService.updateProfile(user.id, dto);
   }
@@ -70,5 +84,40 @@ export class UsersController {
   })
   async getStats(@CurrentUser() user: { id: string }): Promise<UserStatsDto> {
     return this.usersService.getStats(user.id);
+  }
+
+  @Get('me/xp-history')
+  @ApiOperation({
+    summary: 'Get XP earning history',
+    description:
+      'Returns XP earning history with source tracking and statistics. Supports filtering by date range or number of days.',
+  })
+  @ApiQuery({
+    name: 'days',
+    required: false,
+    type: Number,
+    description: 'Number of days to retrieve (default: 30, max: 90)',
+  })
+  @ApiQuery({
+    name: 'startDate',
+    required: false,
+    type: String,
+    description: 'Start date in YYYY-MM-DD format (optional, overrides days parameter)',
+  })
+  @ApiQuery({
+    name: 'endDate',
+    required: false,
+    type: String,
+    description: 'End date in YYYY-MM-DD format (optional, requires startDate)',
+  })
+  @ApiOkResponse({
+    type: XpHistoryResponseDto,
+    description: 'XP earning history with statistics',
+  })
+  async getXpHistory(
+    @CurrentUser() user: { id: string },
+    @Query() query: XpHistoryQueryDto
+  ): Promise<XpHistoryResponseDto> {
+    return this.usersService.getXpHistory(user.id, query);
   }
 }
