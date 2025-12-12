@@ -4,6 +4,7 @@ dockerfilePath = "apps/api/Dockerfile.railway"
 watchPatterns = ["apps/api/**", "packages/shared/**"]
 
 [deploy]
+startCommand = "node dist/main"
 healthcheckPath = "/api/health"
 healthcheckTimeout = 300
 restartPolicyType = "on_failure"
