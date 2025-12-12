@@ -3,6 +3,26 @@ import { render, fireEvent } from '@testing-library/react-native';
 import { LessonCard } from '../LessonCard';
 import type { Lesson } from '@llmengineer/shared';
 
+// Mock lucide-react-native icons
+jest.mock('lucide-react-native', () => ({
+  CheckCircle2: 'CheckCircle2',
+  Lock: 'Lock',
+  Clock: 'Clock',
+  Award: 'Award',
+  Play: 'Play',
+  BookOpen: 'BookOpen',
+}));
+
+// Mock Icon component
+jest.mock('@/components/ui/Icon', () => ({
+  Icon: ({ icon, size, color, variant }: any) => {
+    const React = require('react');
+    const { Text } = require('react-native');
+    const iconName = typeof icon === 'string' ? icon : 'Icon';
+    return React.createElement(Text, { testID: `icon-${iconName}` }, `Icon(${iconName})`);
+  },
+}));
+
 const mockLesson: Lesson = {
   id: '1',
   slug: 'introduction-to-prompts',
@@ -55,15 +75,19 @@ describe('LessonCard', () => {
       isCompleted: true,
     };
 
-    const { getByText } = render(<LessonCard lesson={completedLesson} onPress={mockOnPress} />);
+    const { getByText, queryByText } = render(
+      <LessonCard lesson={completedLesson} onPress={mockOnPress} />
+    );
 
-    expect(getByText('✓')).toBeTruthy();
+    // Should show completed status text and icon
+    expect(getByText('Completado')).toBeTruthy();
+    expect(queryByText('Icon(CheckCircle2)')).toBeTruthy();
   });
 
   it('should not show completed overlay when lesson is not completed', () => {
     const { queryByText } = render(<LessonCard lesson={mockLesson} onPress={mockOnPress} />);
 
-    expect(queryByText('✓')).toBeNull();
+    expect(queryByText('Completado')).toBeNull();
   });
 
   it('should render intermediate difficulty', () => {
@@ -150,5 +174,112 @@ describe('LessonCard', () => {
     expect(getByText('beginner')).toBeTruthy();
     expect(getByText('+100 XP')).toBeTruthy();
     expect(getByText('15 min')).toBeTruthy();
+  });
+
+  // New tests for locked state
+  it('should render locked lesson correctly', () => {
+    const { getByText, queryByText } = render(
+      <LessonCard lesson={mockLesson} onPress={mockOnPress} isLocked={true} />
+    );
+
+    expect(queryByText('Icon(Lock)')).toBeTruthy();
+    // Should not show action text when locked
+    expect(queryByText('Comenzar')).toBeNull();
+  });
+
+  it('should not call onPress when locked lesson is pressed', () => {
+    const { getByText } = render(
+      <LessonCard lesson={mockLesson} onPress={mockOnPress} isLocked={true} />
+    );
+
+    const card = getByText('Introduction to Prompts');
+    fireEvent.press(card);
+
+    expect(mockOnPress).not.toHaveBeenCalled();
+  });
+
+  it('should show "Comenzar" for available lessons', () => {
+    const { getByText } = render(<LessonCard lesson={mockLesson} onPress={mockOnPress} />);
+
+    expect(getByText('Comenzar')).toBeTruthy();
+  });
+
+  it('should show "Continuar" for in-progress lessons', () => {
+    const { getByText } = render(
+      <LessonCard lesson={mockLesson} onPress={mockOnPress} status="in_progress" />
+    );
+
+    expect(getByText('Continuar')).toBeTruthy();
+  });
+
+  it('should show "Completado" for completed lessons', () => {
+    const completedLesson: Lesson = {
+      ...mockLesson,
+      isCompleted: true,
+    };
+
+    const { getByText } = render(<LessonCard lesson={completedLesson} onPress={mockOnPress} />);
+
+    expect(getByText('Completado')).toBeTruthy();
+  });
+
+  it('should handle all lesson statuses', () => {
+    // Available status
+    const { getByText: getTextAvailable } = render(
+      <LessonCard lesson={mockLesson} onPress={mockOnPress} status="available" />
+    );
+    expect(getTextAvailable('Comenzar')).toBeTruthy();
+
+    // In progress status
+    const { getByText: getTextInProgress } = render(
+      <LessonCard lesson={mockLesson} onPress={mockOnPress} status="in_progress" />
+    );
+    expect(getTextInProgress('Continuar')).toBeTruthy();
+
+    // Completed status
+    const { getByText: getTextCompleted } = render(
+      <LessonCard
+        lesson={{ ...mockLesson, isCompleted: true }}
+        onPress={mockOnPress}
+        status="completed"
+      />
+    );
+    expect(getTextCompleted('Completado')).toBeTruthy();
+
+    // Locked status
+    const { queryByText: queryTextLocked } = render(
+      <LessonCard lesson={mockLesson} onPress={mockOnPress} status="locked" />
+    );
+    expect(queryTextLocked('Icon(Lock)')).toBeTruthy();
+  });
+
+  it('should display lesson icon based on status', () => {
+    // Available lesson should show BookOpen icon
+    const { queryByText: queryAvailable } = render(
+      <LessonCard lesson={mockLesson} onPress={mockOnPress} status="available" />
+    );
+    expect(queryAvailable('Icon(BookOpen)')).toBeTruthy();
+
+    // In-progress lesson should show Play icon
+    const { queryByText: queryInProgress } = render(
+      <LessonCard lesson={mockLesson} onPress={mockOnPress} status="in_progress" />
+    );
+    expect(queryInProgress('Icon(Play)')).toBeTruthy();
+
+    // Completed lesson should show CheckCircle2 icon
+    const { queryByText: queryCompleted } = render(
+      <LessonCard
+        lesson={{ ...mockLesson, isCompleted: true }}
+        onPress={mockOnPress}
+        status="completed"
+      />
+    );
+    expect(queryCompleted('Icon(CheckCircle2)')).toBeTruthy();
+
+    // Locked lesson should show Lock icon
+    const { queryByText: queryLocked } = render(
+      <LessonCard lesson={mockLesson} onPress={mockOnPress} status="locked" />
+    );
+    expect(queryLocked('Icon(Lock)')).toBeTruthy();
   });
 });
