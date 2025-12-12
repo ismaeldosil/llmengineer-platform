@@ -516,6 +516,299 @@ describe('LessonsService', () => {
     });
   });
 
+  describe('complete - quiz score bonuses', () => {
+    it('should award perfect quiz bonus (100%)', async () => {
+      const userId = 'user-id-1';
+      const lessonId = 'lesson-id-1';
+      const timeSpentSeconds = 1000; // > 80% of 15min, no speed bonus
+      const quizScore = 100;
+      mockPrismaService.lesson.findUnique.mockResolvedValue(mockLesson);
+      mockPrismaService.lessonCompletion.findUnique.mockResolvedValue(null);
+      mockPrismaService.lessonCompletion.create.mockResolvedValue(mockCompletion);
+      mockPrismaService.userProgress.update.mockResolvedValue({});
+      mockUsersService.addXp.mockResolvedValue({});
+      mockBadgesService.checkAndAwardBadges.mockResolvedValue([]);
+
+      const result = await lessonsService.complete(lessonId, userId, timeSpentSeconds, quizScore);
+
+      // 100 (base) + 0 (no speed) + 50 (perfect quiz) = 150
+      expect(result.xpEarned).toBe(150);
+      expect(result.xpBreakdown).toMatchObject({
+        base: 100,
+        speedBonus: 0,
+        quizBonus: 50,
+      });
+    });
+
+    it('should award excellent quiz bonus (90%+)', async () => {
+      const userId = 'user-id-1';
+      const lessonId = 'lesson-id-1';
+      const timeSpentSeconds = 1000;
+      const quizScore = 92;
+      mockPrismaService.lesson.findUnique.mockResolvedValue(mockLesson);
+      mockPrismaService.lessonCompletion.findUnique.mockResolvedValue(null);
+      mockPrismaService.lessonCompletion.create.mockResolvedValue(mockCompletion);
+      mockPrismaService.userProgress.update.mockResolvedValue({});
+      mockUsersService.addXp.mockResolvedValue({});
+      mockBadgesService.checkAndAwardBadges.mockResolvedValue([]);
+
+      const result = await lessonsService.complete(lessonId, userId, timeSpentSeconds, quizScore);
+
+      // 100 (base) + 0 (no speed) + 25 (excellent quiz) = 125
+      expect(result.xpEarned).toBe(125);
+      expect(result.xpBreakdown.quizBonus).toBe(25);
+    });
+
+    it('should award good quiz bonus (70%+)', async () => {
+      const userId = 'user-id-1';
+      const lessonId = 'lesson-id-1';
+      const timeSpentSeconds = 1000;
+      const quizScore = 75;
+      mockPrismaService.lesson.findUnique.mockResolvedValue(mockLesson);
+      mockPrismaService.lessonCompletion.findUnique.mockResolvedValue(null);
+      mockPrismaService.lessonCompletion.create.mockResolvedValue(mockCompletion);
+      mockPrismaService.userProgress.update.mockResolvedValue({});
+      mockUsersService.addXp.mockResolvedValue({});
+      mockBadgesService.checkAndAwardBadges.mockResolvedValue([]);
+
+      const result = await lessonsService.complete(lessonId, userId, timeSpentSeconds, quizScore);
+
+      // 100 (base) + 0 (no speed) + 10 (good quiz) = 110
+      expect(result.xpEarned).toBe(110);
+      expect(result.xpBreakdown.quizBonus).toBe(10);
+    });
+
+    it('should not award quiz bonus for score below 70%', async () => {
+      const userId = 'user-id-1';
+      const lessonId = 'lesson-id-1';
+      const timeSpentSeconds = 1000;
+      const quizScore = 65;
+      mockPrismaService.lesson.findUnique.mockResolvedValue(mockLesson);
+      mockPrismaService.lessonCompletion.findUnique.mockResolvedValue(null);
+      mockPrismaService.lessonCompletion.create.mockResolvedValue(mockCompletion);
+      mockPrismaService.userProgress.update.mockResolvedValue({});
+      mockUsersService.addXp.mockResolvedValue({});
+      mockBadgesService.checkAndAwardBadges.mockResolvedValue([]);
+
+      const result = await lessonsService.complete(lessonId, userId, timeSpentSeconds, quizScore);
+
+      // 100 (base) + 0 (no speed) + 0 (no quiz bonus) = 100
+      expect(result.xpEarned).toBe(100);
+      expect(result.xpBreakdown.quizBonus).toBe(0);
+    });
+
+    it('should combine speed and quiz bonuses', async () => {
+      const userId = 'user-id-1';
+      const lessonId = 'lesson-id-1';
+      const timeSpentSeconds = 300; // < 80% of 15min -> speed bonus
+      const quizScore = 100; // perfect quiz
+      mockPrismaService.lesson.findUnique.mockResolvedValue(mockLesson);
+      mockPrismaService.lessonCompletion.findUnique.mockResolvedValue(null);
+      mockPrismaService.lessonCompletion.create.mockResolvedValue(mockCompletion);
+      mockPrismaService.userProgress.update.mockResolvedValue({});
+      mockUsersService.addXp.mockResolvedValue({});
+      mockBadgesService.checkAndAwardBadges.mockResolvedValue([]);
+
+      const result = await lessonsService.complete(lessonId, userId, timeSpentSeconds, quizScore);
+
+      // 100 (base) + 25 (speed) + 50 (perfect quiz) = 175
+      expect(result.xpEarned).toBe(175);
+      expect(result.xpBreakdown).toMatchObject({
+        base: 100,
+        speedBonus: 25,
+        quizBonus: 50,
+        baseWithBonuses: 175,
+      });
+    });
+  });
+
+  describe('complete - streak multipliers', () => {
+    it('should apply 3-day streak multiplier (x1.1)', async () => {
+      const userId = 'user-id-1';
+      const lessonId = 'lesson-id-1';
+      const timeSpentSeconds = 1000;
+      mockPrismaService.lesson.findUnique.mockResolvedValue(mockLesson);
+      mockPrismaService.lessonCompletion.findUnique.mockResolvedValue(null);
+      mockPrismaService.userProgress.findUnique.mockResolvedValue({ currentStreak: 3 });
+      mockPrismaService.lessonCompletion.create.mockResolvedValue(mockCompletion);
+      mockPrismaService.userProgress.update.mockResolvedValue({});
+      mockUsersService.addXp.mockResolvedValue({});
+      mockBadgesService.checkAndAwardBadges.mockResolvedValue([]);
+
+      const result = await lessonsService.complete(lessonId, userId, timeSpentSeconds);
+
+      // 100 (base) * 1.1 = 110
+      expect(result.xpEarned).toBe(110);
+      expect(result.xpBreakdown.streakMultiplier).toBe(1.1);
+    });
+
+    it('should apply 7-day streak multiplier (x1.2)', async () => {
+      const userId = 'user-id-1';
+      const lessonId = 'lesson-id-1';
+      const timeSpentSeconds = 1000;
+      mockPrismaService.lesson.findUnique.mockResolvedValue(mockLesson);
+      mockPrismaService.lessonCompletion.findUnique.mockResolvedValue(null);
+      mockPrismaService.userProgress.findUnique.mockResolvedValue({ currentStreak: 7 });
+      mockPrismaService.lessonCompletion.create.mockResolvedValue(mockCompletion);
+      mockPrismaService.userProgress.update.mockResolvedValue({});
+      mockUsersService.addXp.mockResolvedValue({});
+      mockBadgesService.checkAndAwardBadges.mockResolvedValue([]);
+
+      const result = await lessonsService.complete(lessonId, userId, timeSpentSeconds);
+
+      // 100 (base) * 1.2 = 120
+      expect(result.xpEarned).toBe(120);
+      expect(result.xpBreakdown.streakMultiplier).toBe(1.2);
+    });
+
+    it('should apply 14-day streak multiplier (x1.3)', async () => {
+      const userId = 'user-id-1';
+      const lessonId = 'lesson-id-1';
+      const timeSpentSeconds = 1000;
+      mockPrismaService.lesson.findUnique.mockResolvedValue(mockLesson);
+      mockPrismaService.lessonCompletion.findUnique.mockResolvedValue(null);
+      mockPrismaService.userProgress.findUnique.mockResolvedValue({ currentStreak: 14 });
+      mockPrismaService.lessonCompletion.create.mockResolvedValue(mockCompletion);
+      mockPrismaService.userProgress.update.mockResolvedValue({});
+      mockUsersService.addXp.mockResolvedValue({});
+      mockBadgesService.checkAndAwardBadges.mockResolvedValue([]);
+
+      const result = await lessonsService.complete(lessonId, userId, timeSpentSeconds);
+
+      // 100 (base) * 1.3 = 130
+      expect(result.xpEarned).toBe(130);
+      expect(result.xpBreakdown.streakMultiplier).toBe(1.3);
+    });
+
+    it('should apply 30-day streak multiplier (x1.5)', async () => {
+      const userId = 'user-id-1';
+      const lessonId = 'lesson-id-1';
+      const timeSpentSeconds = 1000;
+      mockPrismaService.lesson.findUnique.mockResolvedValue(mockLesson);
+      mockPrismaService.lessonCompletion.findUnique.mockResolvedValue(null);
+      mockPrismaService.userProgress.findUnique.mockResolvedValue({ currentStreak: 30 });
+      mockPrismaService.lessonCompletion.create.mockResolvedValue(mockCompletion);
+      mockPrismaService.userProgress.update.mockResolvedValue({});
+      mockUsersService.addXp.mockResolvedValue({});
+      mockBadgesService.checkAndAwardBadges.mockResolvedValue([]);
+
+      const result = await lessonsService.complete(lessonId, userId, timeSpentSeconds);
+
+      // 100 (base) * 1.5 = 150
+      expect(result.xpEarned).toBe(150);
+      expect(result.xpBreakdown.streakMultiplier).toBe(1.5);
+    });
+
+    it('should combine all bonuses and streak multiplier correctly', async () => {
+      const userId = 'user-id-1';
+      const lessonId = 'lesson-id-1';
+      const timeSpentSeconds = 300; // speed bonus
+      const quizScore = 100; // perfect quiz
+      mockPrismaService.lesson.findUnique.mockResolvedValue(mockLesson);
+      mockPrismaService.lessonCompletion.findUnique.mockResolvedValue(null);
+      mockPrismaService.userProgress.findUnique.mockResolvedValue({ currentStreak: 7 });
+      mockPrismaService.lessonCompletion.create.mockResolvedValue(mockCompletion);
+      mockPrismaService.userProgress.update.mockResolvedValue({});
+      mockUsersService.addXp.mockResolvedValue({});
+      mockBadgesService.checkAndAwardBadges.mockResolvedValue([]);
+
+      const result = await lessonsService.complete(lessonId, userId, timeSpentSeconds, quizScore);
+
+      // (100 base + 25 speed + 50 quiz) * 1.2 = 175 * 1.2 = 210
+      expect(result.xpEarned).toBe(210);
+      expect(result.xpBreakdown).toMatchObject({
+        base: 100,
+        speedBonus: 25,
+        quizBonus: 50,
+        baseWithBonuses: 175,
+        streakMultiplier: 1.2,
+      });
+    });
+
+    it('should handle null userProgress (no streak)', async () => {
+      const userId = 'user-id-1';
+      const lessonId = 'lesson-id-1';
+      const timeSpentSeconds = 1000;
+      mockPrismaService.lesson.findUnique.mockResolvedValue(mockLesson);
+      mockPrismaService.lessonCompletion.findUnique.mockResolvedValue(null);
+      mockPrismaService.userProgress.findUnique.mockResolvedValue(null);
+      mockPrismaService.lessonCompletion.create.mockResolvedValue(mockCompletion);
+      mockPrismaService.userProgress.update.mockResolvedValue({});
+      mockUsersService.addXp.mockResolvedValue({});
+      mockBadgesService.checkAndAwardBadges.mockResolvedValue([]);
+
+      const result = await lessonsService.complete(lessonId, userId, timeSpentSeconds);
+
+      // 100 (base) * 1.0 (no streak) = 100
+      expect(result.xpEarned).toBe(100);
+      expect(result.xpBreakdown.streakMultiplier).toBe(1.0);
+    });
+  });
+
+  describe('complete - level up detection', () => {
+    it('should detect level up and return new level info', async () => {
+      const userId = 'user-id-1';
+      const lessonId = 'lesson-id-1';
+      const timeSpentSeconds = 300;
+      mockPrismaService.lesson.findUnique.mockResolvedValue(mockLesson);
+      mockPrismaService.lessonCompletion.findUnique.mockResolvedValue(null);
+      mockPrismaService.lessonCompletion.create.mockResolvedValue(mockCompletion);
+      mockPrismaService.userProgress.update.mockResolvedValue({});
+      mockUsersService.addXp.mockResolvedValue({
+        leveledUp: true,
+        level: 2,
+        levelTitle: 'Prompt Apprentice',
+      });
+      mockBadgesService.checkAndAwardBadges.mockResolvedValue([]);
+
+      const result = await lessonsService.complete(lessonId, userId, timeSpentSeconds);
+
+      expect(result.leveledUp).toBe(true);
+      expect(result.newLevel).toBe(2);
+      expect(result.newLevelTitle).toBe('Prompt Apprentice');
+    });
+
+    it('should handle no level up', async () => {
+      const userId = 'user-id-1';
+      const lessonId = 'lesson-id-1';
+      const timeSpentSeconds = 300;
+      mockPrismaService.lesson.findUnique.mockResolvedValue(mockLesson);
+      mockPrismaService.lessonCompletion.findUnique.mockResolvedValue(null);
+      mockPrismaService.lessonCompletion.create.mockResolvedValue(mockCompletion);
+      mockPrismaService.userProgress.update.mockResolvedValue({});
+      mockUsersService.addXp.mockResolvedValue({
+        leveledUp: false,
+        level: 1,
+        levelTitle: 'Prompt Curious',
+      });
+      mockBadgesService.checkAndAwardBadges.mockResolvedValue([]);
+
+      const result = await lessonsService.complete(lessonId, userId, timeSpentSeconds);
+
+      expect(result.leveledUp).toBe(false);
+      expect(result.newLevel).toBe(1);
+      expect(result.newLevelTitle).toBe('Prompt Curious');
+    });
+
+    it('should handle addXp returning null (fallback behavior)', async () => {
+      const userId = 'user-id-1';
+      const lessonId = 'lesson-id-1';
+      const timeSpentSeconds = 300;
+      mockPrismaService.lesson.findUnique.mockResolvedValue(mockLesson);
+      mockPrismaService.lessonCompletion.findUnique.mockResolvedValue(null);
+      mockPrismaService.lessonCompletion.create.mockResolvedValue(mockCompletion);
+      mockPrismaService.userProgress.update.mockResolvedValue({});
+      mockUsersService.addXp.mockResolvedValue(null);
+      mockBadgesService.checkAndAwardBadges.mockResolvedValue([]);
+
+      const result = await lessonsService.complete(lessonId, userId, timeSpentSeconds);
+
+      expect(result.leveledUp).toBe(false);
+      expect(result.newLevel).toBeUndefined();
+      expect(result.newLevelTitle).toBeUndefined();
+    });
+  });
+
   describe('edge cases', () => {
     it('should handle lesson with 0 XP reward', async () => {
       const userId = 'user-id-1';
@@ -574,6 +867,45 @@ describe('LessonsService', () => {
 
       expect(result1[0].isCompleted).toBe(true);
       expect(result2[0].isCompleted).toBe(false);
+    });
+
+    it('should handle very long time spent', async () => {
+      const userId = 'user-id-1';
+      const lessonId = 'lesson-id-1';
+      const timeSpentSeconds = 9999; // way over estimated time
+      mockPrismaService.lesson.findUnique.mockResolvedValue(mockLesson);
+      mockPrismaService.lessonCompletion.findUnique.mockResolvedValue(null);
+      mockPrismaService.lessonCompletion.create.mockResolvedValue({
+        ...mockCompletion,
+        timeSpentSeconds,
+      });
+      mockPrismaService.userProgress.update.mockResolvedValue({});
+      mockUsersService.addXp.mockResolvedValue({});
+      mockBadgesService.checkAndAwardBadges.mockResolvedValue([]);
+
+      const result = await lessonsService.complete(lessonId, userId, timeSpentSeconds);
+
+      // Should only get base XP, no speed bonus
+      expect(result.xpEarned).toBe(100);
+      expect(result.xpBreakdown.speedBonus).toBe(0);
+    });
+
+    it('should handle quiz score of exactly 0', async () => {
+      const userId = 'user-id-1';
+      const lessonId = 'lesson-id-1';
+      const timeSpentSeconds = 1000;
+      const quizScore = 0;
+      mockPrismaService.lesson.findUnique.mockResolvedValue(mockLesson);
+      mockPrismaService.lessonCompletion.findUnique.mockResolvedValue(null);
+      mockPrismaService.lessonCompletion.create.mockResolvedValue(mockCompletion);
+      mockPrismaService.userProgress.update.mockResolvedValue({});
+      mockUsersService.addXp.mockResolvedValue({});
+      mockBadgesService.checkAndAwardBadges.mockResolvedValue([]);
+
+      const result = await lessonsService.complete(lessonId, userId, timeSpentSeconds, quizScore);
+
+      expect(result.xpEarned).toBe(100);
+      expect(result.xpBreakdown.quizBonus).toBe(0);
     });
   });
 });
