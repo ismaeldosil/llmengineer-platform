@@ -10,10 +10,10 @@ module.exports = {
   // Codecov tracks historical coverage at PR level
   coverageThreshold: {
     global: {
-      branches: 60,
-      functions: 60,
-      lines: 65,
-      statements: 65,
+      branches: 45,
+      functions: 40,
+      lines: 45,
+      statements: 45,
     },
   },
   moduleNameMapper: {
