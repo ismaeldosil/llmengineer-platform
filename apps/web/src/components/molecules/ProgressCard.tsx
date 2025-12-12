@@ -18,6 +18,26 @@ export function ProgressCard({
   currentStreak = 0,
   isLoading,
 }: ProgressCardProps) {
+  const levelTitle = getLevelTitle(level);
+  const xpInCurrentLevel = getXpProgressInLevel(totalXp);
+  const xpProgress = xpInCurrentLevel / XP_PER_LEVEL;
+
+  // Animated progress bar - hooks must be called before any conditional returns
+  const progressWidth = useSharedValue(0);
+
+  useEffect(() => {
+    if (!isLoading) {
+      progressWidth.value = withSpring(xpProgress * 100, {
+        damping: 15,
+        stiffness: 100,
+      });
+    }
+  }, [xpProgress, isLoading, progressWidth]);
+
+  const animatedProgressStyle = useAnimatedStyle(() => ({
+    width: `${progressWidth.value}%`,
+  }));
+
   if (isLoading) {
     return (
       <View style={styles.container}>
@@ -25,24 +45,6 @@ export function ProgressCard({
       </View>
     );
   }
-
-  const levelTitle = getLevelTitle(level);
-  const xpInCurrentLevel = getXpProgressInLevel(totalXp);
-  const xpProgress = xpInCurrentLevel / XP_PER_LEVEL;
-
-  // Animated progress bar
-  const progressWidth = useSharedValue(0);
-
-  useEffect(() => {
-    progressWidth.value = withSpring(xpProgress * 100, {
-      damping: 15,
-      stiffness: 100,
-    });
-  }, [xpProgress]);
-
-  const animatedProgressStyle = useAnimatedStyle(() => ({
-    width: `${progressWidth.value}%`,
-  }));
 
   return (
     <View style={styles.container}>

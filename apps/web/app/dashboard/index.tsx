@@ -1,114 +1,118 @@
 import { useState, useCallback } from 'react';
-import { View, StyleSheet, ScrollView, RefreshControl, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, RefreshControl, Alert, Platform } from 'react-native';
 import { Stack, router } from 'expo-router';
 import { useSelector } from 'react-redux';
 import type { RootState } from '@/store';
 import {
   useGetProgressQuery,
   useGetMeQuery,
-  useGetNextLessonQuery,
+  useGetLessonsQuery,
   useCheckinMutation,
 } from '@/services/api';
 import { useAuth } from '@/hooks/useAuth';
-import {
-  ProgressCard,
-  StreakBanner,
-  DashboardHeader,
-  QuickActionsGrid,
-  NextLessonWidget,
-  LeaderboardWidget,
-  type QuickAction,
-} from '@/components/molecules';
+import { MainLayout } from '@/components/layout';
+import { StatsGrid, GlobalProgress, ModuleCard } from '@/components/molecules';
+import { getLevelTitle, XP_PER_LEVEL, getXpProgressInLevel } from '@llmengineer/shared';
+import { Rocket } from 'lucide-react-native';
+import { Icon } from '@/components/ui/Icon';
+
+// Group lessons by week/module
+interface Module {
+  id: string;
+  title: string;
+  description: string;
+  lessonsCompleted: number;
+  totalLessons: number;
+  isComplete: boolean;
+}
+
+const MODULE_INFO: Record<number, { title: string; description: string }> = {
+  1: { title: 'Setup + Fundamentos', description: 'Configurar el environment y entender la arquitectura' },
+  2: { title: 'Plugins Core + Web', description: 'Dominar los plugins principales' },
+  3: { title: 'Desarrollo + Build', description: 'Compilar y desplegar para Android e iOS' },
+  4: { title: 'Testing + App Store', description: 'Preparar y publicar en las tiendas de apps' },
+};
 
 export default function DashboardScreen() {
   const user = useSelector((state: RootState) => state.auth.user);
   const { logout } = useAuth();
   const [refreshing, setRefreshing] = useState(false);
 
-  const { data: userData, isLoading: _userLoading, refetch: refetchUser } = useGetMeQuery();
+  const { data: userData } = useGetMeQuery();
   const {
     data: progress,
     isLoading: progressLoading,
     refetch: refetchProgress,
   } = useGetProgressQuery();
   const {
-    data: nextLesson,
-    isLoading: nextLessonLoading,
-    refetch: refetchNextLesson,
-  } = useGetNextLessonQuery();
+    data: lessons,
+    isLoading: lessonsLoading,
+    refetch: refetchLessons,
+  } = useGetLessonsQuery();
   const [checkin] = useCheckinMutation();
 
-  const displayName = user?.displayName || userData?.displayName || 'Estudiante';
+  const displayName = user?.displayName || userData?.displayName || 'Developer';
+  const totalXp = progress?.totalXp || 0;
+  const level = progress?.level || 1;
+  const levelTitle = getLevelTitle(level);
+  const xpInCurrentLevel = getXpProgressInLevel(totalXp);
+  const xpForNextLevel = XP_PER_LEVEL - xpInCurrentLevel;
 
-  const handleCheckin = async () => {
-    try {
-      await checkin().unwrap();
-    } catch (err) {
-      console.error('Checkin failed:', err);
-    }
-  };
+  // Calculate modules from lessons
+  const modules: Module[] = Object.entries(MODULE_INFO).map(([week, info]) => {
+    const weekLessons = lessons?.filter((l) => l.week === Number(week)) || [];
+    const completed = weekLessons.filter((l) => l.isCompleted).length;
+    return {
+      id: week,
+      title: info.title,
+      description: info.description,
+      lessonsCompleted: completed,
+      totalLessons: weekLessons.length,
+      isComplete: weekLessons.length > 0 && completed === weekLessons.length,
+    };
+  });
+
+  const totalLessons = lessons?.length || 0;
+  const completedLessons = lessons?.filter((l) => l.isCompleted).length || 0;
+  const progressPercent = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
 
   const handleLogout = () => {
-    Alert.alert('Cerrar Sesion', '¿Estas seguro que deseas cerrar sesion?', [
-      { text: 'Cancelar', style: 'cancel' },
-      {
-        text: 'Cerrar Sesion',
-        style: 'destructive',
-        onPress: logout,
-      },
-    ]);
+    if (Platform.OS === 'web') {
+      if (confirm('Are you sure you want to log out?')) {
+        logout();
+      }
+    } else {
+      Alert.alert('Cerrar Sesion', '¿Estas seguro que deseas cerrar sesion?', [
+        { text: 'Cancelar', style: 'cancel' },
+        { text: 'Cerrar Sesion', style: 'destructive', onPress: logout },
+      ]);
+    }
   };
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
     try {
-      await Promise.all([refetchUser(), refetchProgress(), refetchNextLesson()]);
+      await Promise.all([refetchProgress(), refetchLessons()]);
     } catch (error) {
       console.error('Refresh failed:', error);
     } finally {
       setRefreshing(false);
     }
-  }, [refetchUser, refetchProgress, refetchNextLesson]);
-
-  const quickActions: QuickAction[] = [
-    {
-      id: 'lessons',
-      icon: '📚',
-      label: 'Lecciones',
-      onPress: () => router.push('/lessons'),
-    },
-    {
-      id: 'games',
-      icon: '🎮',
-      label: 'Mini-juegos',
-      onPress: () => router.push('/games'),
-    },
-    {
-      id: 'leaderboard',
-      icon: '🏆',
-      label: 'Ranking',
-      onPress: () => router.push('/leaderboard'),
-    },
-    {
-      id: 'profile',
-      icon: '👤',
-      label: 'Perfil',
-      onPress: () => router.push('/profile'),
-    },
-  ];
+  }, [refetchProgress, refetchLessons]);
 
   return (
     <>
-      <Stack.Screen options={{ title: 'Dashboard', headerShown: false }} />
-      <View style={styles.container}>
-        <DashboardHeader
-          displayName={displayName}
-          onProfilePress={() => router.push('/profile')}
-          onLogoutPress={handleLogout}
-        />
-
+      <Stack.Screen options={{ headerShown: false }} />
+      <MainLayout
+        totalXp={totalXp}
+        level={level}
+        levelTitle={levelTitle}
+        xpForNextLevel={xpForNextLevel}
+        onLogout={handleLogout}
+      >
         <ScrollView
           style={styles.scrollContainer}
+          contentContainerStyle={styles.scrollContent}
           refreshControl={
             <RefreshControl
               refreshing={refreshing}
@@ -118,38 +122,98 @@ export default function DashboardScreen() {
             />
           }
         >
-          <StreakBanner currentStreak={progress?.currentStreak || 0} onCheckin={handleCheckin} />
+          {/* Welcome Header */}
+          <View style={styles.welcomeSection}>
+            <View style={styles.welcomeHeader}>
+              <Text style={styles.welcomeTitle}>
+                ¡Bienvenido, {displayName}!{' '}
+              </Text>
+              <Icon icon={Rocket} size="lg" color="#a855f7" />
+            </View>
+            <Text style={styles.welcomeSubtitle}>
+              Continúa tu camino para convertirte en un experto de LLM Engineering
+            </Text>
+          </View>
 
-          <ProgressCard
-            totalXp={progress?.totalXp || 0}
-            level={progress?.level || 1}
-            lessonsCompleted={progress?.lessonsCompleted || 0}
+          {/* Stats Grid */}
+          <StatsGrid
+            totalXp={totalXp}
+            level={level}
+            levelTitle={levelTitle}
             currentStreak={progress?.currentStreak || 0}
+            progressPercent={progressPercent}
             isLoading={progressLoading}
           />
 
-          <NextLessonWidget
-            lesson={nextLesson}
-            isLoading={nextLessonLoading}
-            onPress={() => nextLesson && router.push(`/lessons/${nextLesson.id}`)}
-            onViewAll={() => router.push('/lessons')}
+          {/* Global Progress */}
+          <GlobalProgress
+            title="Progreso General"
+            current={completedLessons}
+            total={totalLessons}
+            isLoading={lessonsLoading}
           />
 
-          <LeaderboardWidget onViewMore={() => router.push('/leaderboard')} />
-
-          <QuickActionsGrid actions={quickActions} />
+          {/* Modules Section */}
+          <View style={styles.modulesSection}>
+            <Text style={styles.sectionTitle}>Módulos del Curso</Text>
+            <View style={styles.modulesGrid}>
+              {modules.map((module) => (
+                <ModuleCard
+                  key={module.id}
+                  id={module.id}
+                  title={module.title}
+                  description={module.description}
+                  lessonsCompleted={module.lessonsCompleted}
+                  totalLessons={module.totalLessons}
+                  isComplete={module.isComplete}
+                />
+              ))}
+            </View>
+          </View>
         </ScrollView>
-      </View>
+      </MainLayout>
     </>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#111827',
-  },
   scrollContainer: {
     flex: 1,
+  },
+  scrollContent: {
+    paddingBottom: 40,
+  },
+  welcomeSection: {
+    paddingHorizontal: 24,
+    paddingTop: 24,
+  },
+  welcomeHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  welcomeTitle: {
+    fontSize: 28,
+    fontWeight: '700',
+    color: '#f8fafc',
+  },
+  welcomeSubtitle: {
+    fontSize: 15,
+    color: '#94a3b8',
+    marginTop: 8,
+  },
+  modulesSection: {
+    paddingHorizontal: 24,
+    marginTop: 32,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#f8fafc',
+    marginBottom: 16,
+  },
+  modulesGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 16,
   },
 });
