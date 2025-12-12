@@ -61,6 +61,7 @@ describe('useSidebarCollapsed', () => {
       });
 
       expect(localStorageMock.getItem).toHaveBeenCalledWith('sidebar-collapsed');
+      expect(result.current.isLoaded).toBe(true);
     });
   });
 
