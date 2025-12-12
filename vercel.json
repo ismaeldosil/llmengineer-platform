@@ -1,10 +1,9 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "expo export --platform web",
-  "outputDirectory": "dist",
+  "buildCommand": "npm run build -w @llmengineer/shared && npm run build -w @llmengineer/web",
+  "outputDirectory": "apps/web/dist",
   "framework": null,
-  "installCommand": "npm install",
-  "devCommand": "expo start --web",
+  "installCommand": "npm install --legacy-peer-deps",
   "rewrites": [
     {
       "source": "/(.*)",
