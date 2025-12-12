@@ -13,7 +13,8 @@
  *
  * function MyProfile() {
  *   const handleDayPress = (day: DayActivity) => {
- *     console.log(`Pressed ${day.date}: ${day.xp} XP`);
+ *     // Handle day press - show details, navigate, etc.
+ *     Alert.alert(`${day.date}`, `${day.xp} XP`);
  *   };
  *
  *   return (
