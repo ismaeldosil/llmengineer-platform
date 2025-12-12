@@ -65,5 +65,5 @@ USER nestjs
 
 EXPOSE 3001
 
-# Run migrations and start the application
-CMD npx prisma migrate deploy && node dist/main
+# Start the application (run migrations manually or via Railway deploy hook)
+CMD ["node", "dist/main"]

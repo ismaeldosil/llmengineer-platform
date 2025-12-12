@@ -4,9 +4,8 @@ dockerfilePath = "apps/api/Dockerfile.railway"
 watchPatterns = ["apps/api/**", "packages/shared/**"]
 
 [deploy]
-startCommand = "npx prisma migrate deploy && node dist/main"
 healthcheckPath = "/api/health"
-healthcheckTimeout = 100
+healthcheckTimeout = 300
 restartPolicyType = "on_failure"
 restartPolicyMaxRetries = 10
 
