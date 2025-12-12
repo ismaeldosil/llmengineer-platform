@@ -13,6 +13,38 @@
 
 Plataforma gamificada de aprendizaje para LLM Engineering - Aprende a construir aplicaciones con LLMs en 8 semanas.
 
+## Curriculum del Curso
+
+### Semanas 1-2: Fundamentos (✅ Completado)
+| Lección | Tema | Contenido |
+|---------|------|-----------|
+| 1 | Intro to LLMs | Qué son los LLMs, tokenización, arquitectura transformer |
+| 2 | API Basics | OpenAI API, autenticación, primeras llamadas |
+| 3 | Prompt Engineering | Técnicas de prompting, few-shot, chain-of-thought |
+| 4 | Temperature & Sampling | Parámetros de generación, top-p, top-k |
+| 5 | System Prompts | Roles, personalización, mejores prácticas |
+| 6 | Context Management | Manejo de contexto, tokens, ventanas |
+| 7 | Structured Outputs | JSON mode, function calling, validación |
+| 8 | Error Handling | Manejo de errores, retries, rate limits |
+| 9 | Streaming | Respuestas en streaming, SSE |
+| 10 | Cost Optimization | Optimización de costos, caching, batching |
+
+### Semanas 3-8: Contenido Avanzado (📋 En desarrollo)
+| Módulo | Tema | Estado |
+|--------|------|--------|
+| ADV-001 | RAG Fundamentals - Vector DBs, Embeddings, Chunking | 🔴 Pendiente |
+| ADV-002 | RAG Advanced - Hybrid Search, Re-ranking | 🔴 Pendiente |
+| ADV-003 | Evaluation & Benchmarking | 🔴 Pendiente |
+| ADV-004 | Agents & Tool Use - Fundamentals | 🔴 Pendiente |
+| ADV-005 | Agents Advanced - Multi-Agent Systems | 🔴 Pendiente |
+| ADV-006 | Security & Guardrails | 🔴 Pendiente |
+| ADV-007 | Fine-tuning & Model Adaptation | 🔴 Pendiente |
+| ADV-008 | Production MLOps for LLMs | 🔴 Pendiente |
+| ADV-009 | Multimodal Models - Vision & Beyond | 🔴 Pendiente |
+| ADV-010 | Local Models & Edge Deployment | 🔴 Pendiente |
+
+Ver [tickets en GitHub](https://github.com/ismaeldosil/llmengineer-platform/issues?q=label%3Aepic%3Aadvanced-llm) para seguimiento.
+
 ## Stack Tecnológico
 
 ### Frontend (apps/web)
