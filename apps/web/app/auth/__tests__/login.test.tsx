@@ -75,14 +75,14 @@ describe('LoginScreen', () => {
   });
 
   it('should disable submit button when form is invalid', () => {
-    const { getByText } = renderLoginScreen();
+    const { getByTestId } = renderLoginScreen();
 
-    const submitButton = getByText('Iniciar Sesión').parent;
-    expect(submitButton?.props.accessibilityState?.disabled).toBe(true);
+    const submitButton = getByTestId('login-submit-button');
+    expect(submitButton).toBeDisabled();
   });
 
   it('should enable submit button when form is valid', async () => {
-    const { getByPlaceholderText, getByText } = renderLoginScreen();
+    const { getByPlaceholderText, getByTestId } = renderLoginScreen();
 
     const emailInput = getByPlaceholderText('tu@email.com');
     const passwordInput = getByPlaceholderText('Tu contraseña');
@@ -91,8 +91,8 @@ describe('LoginScreen', () => {
     fireEvent.changeText(passwordInput, 'TestPass123');
 
     await waitFor(() => {
-      const submitButton = getByText('Iniciar Sesión').parent;
-      expect(submitButton?.props.accessibilityState?.disabled).toBe(false);
+      const submitButton = getByTestId('login-submit-button');
+      expect(submitButton).toBeEnabled();
     });
   });
 

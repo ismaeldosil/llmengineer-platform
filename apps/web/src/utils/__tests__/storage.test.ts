@@ -18,7 +18,7 @@ describe('storage utils', () => {
 
     it('should throw error if save fails', async () => {
       const error = new Error('Storage error');
-      (AsyncStorage.setItem as jest.Mock).mockRejectedValue(error);
+      (AsyncStorage.setItem as jest.Mock).mockRejectedValueOnce(error);
 
       await expect(storage.saveToken('token')).rejects.toThrow('Storage error');
     });
@@ -44,7 +44,7 @@ describe('storage utils', () => {
     });
 
     it('should return null if retrieval fails', async () => {
-      (AsyncStorage.getItem as jest.Mock).mockRejectedValue(new Error('Storage error'));
+      (AsyncStorage.getItem as jest.Mock).mockRejectedValueOnce(new Error('Storage error'));
 
       const result = await storage.getToken();
 
@@ -62,7 +62,7 @@ describe('storage utils', () => {
 
     it('should throw error if save fails', async () => {
       const error = new Error('Storage error');
-      (AsyncStorage.setItem as jest.Mock).mockRejectedValue(error);
+      (AsyncStorage.setItem as jest.Mock).mockRejectedValueOnce(error);
 
       await expect(storage.saveUser({ id: '1' })).rejects.toThrow('Storage error');
     });
@@ -88,7 +88,7 @@ describe('storage utils', () => {
     });
 
     it('should return null if retrieval fails', async () => {
-      (AsyncStorage.getItem as jest.Mock).mockRejectedValue(new Error('Storage error'));
+      (AsyncStorage.getItem as jest.Mock).mockRejectedValueOnce(new Error('Storage error'));
 
       const result = await storage.getUser();
 
@@ -108,7 +108,7 @@ describe('storage utils', () => {
 
     it('should throw error if clear fails', async () => {
       const error = new Error('Storage error');
-      (AsyncStorage.multiRemove as jest.Mock).mockRejectedValue(error);
+      (AsyncStorage.multiRemove as jest.Mock).mockRejectedValueOnce(error);
 
       await expect(storage.clearAuth()).rejects.toThrow('Storage error');
     });
@@ -123,7 +123,7 @@ describe('storage utils', () => {
 
     it('should throw error if clear fails', async () => {
       const error = new Error('Storage error');
-      (AsyncStorage.clear as jest.Mock).mockRejectedValue(error);
+      (AsyncStorage.clear as jest.Mock).mockRejectedValueOnce(error);
 
       await expect(storage.clear()).rejects.toThrow('Storage error');
     });

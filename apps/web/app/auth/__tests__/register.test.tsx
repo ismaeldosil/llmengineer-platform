@@ -113,14 +113,15 @@ describe('RegisterScreen', () => {
   });
 
   it('should disable submit button when form is invalid', () => {
-    const { getByText } = renderRegisterScreen();
+    const { getByTestId } = renderRegisterScreen();
 
-    const submitButton = getByText('Crear Cuenta').parent;
-    expect(submitButton?.props.accessibilityState?.disabled).toBe(true);
+    // Button should be disabled when form is empty/invalid
+    const submitButton = getByTestId('register-submit-button');
+    expect(submitButton).toBeDisabled();
   });
 
   it('should enable submit button when form is valid', async () => {
-    const { getByPlaceholderText, getByText } = renderRegisterScreen();
+    const { getByPlaceholderText, getByTestId } = renderRegisterScreen();
 
     const nameInput = getByPlaceholderText('Tu nombre');
     const emailInput = getByPlaceholderText('tu@email.com');
@@ -133,8 +134,8 @@ describe('RegisterScreen', () => {
     fireEvent.changeText(confirmPasswordInput, 'TestPass123');
 
     await waitFor(() => {
-      const submitButton = getByText('Crear Cuenta').parent;
-      expect(submitButton?.props.accessibilityState?.disabled).toBe(false);
+      const submitButton = getByTestId('register-submit-button');
+      expect(submitButton).toBeEnabled();
     });
   });
 

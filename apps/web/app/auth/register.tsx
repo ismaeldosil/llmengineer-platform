@@ -249,6 +249,7 @@ export default function RegisterScreen() {
               )}
 
               <Pressable
+                testID="register-submit-button"
                 style={[styles.button, (isLoading || !isFormValid()) && styles.buttonDisabled]}
                 onPress={handleRegister}
                 disabled={isLoading || !isFormValid()}

@@ -5,3 +5,6 @@ export { DashboardHeader } from './DashboardHeader';
 export { QuickActionsGrid, type QuickAction } from './QuickActionsGrid';
 export { NextLessonWidget } from './NextLessonWidget';
 export { LeaderboardWidget } from './LeaderboardWidget';
+export { StatsGrid } from './StatsGrid';
+export { GlobalProgress } from './GlobalProgress';
+export { ModuleCard } from './ModuleCard';
