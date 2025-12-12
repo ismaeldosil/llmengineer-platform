@@ -12,11 +12,19 @@ type ParsedSegment =
   | { type: 'code'; content: string }
   | { type: 'codeBlock'; content: string; language?: string };
 
+type TableCell = {
+  content: ParsedSegment[];
+  isHeader: boolean;
+};
+
+type TableRow = TableCell[];
+
 type ParsedBlock =
   | { type: 'paragraph'; segments: ParsedSegment[] }
   | { type: 'bulletList'; items: ParsedSegment[][] }
   | { type: 'numberedList'; items: ParsedSegment[][] }
-  | { type: 'codeBlock'; content: string; language?: string };
+  | { type: 'codeBlock'; content: string; language?: string }
+  | { type: 'table'; rows: TableRow[] };
 
 function parseInlineMarkdown(text: string): ParsedSegment[] {
   const segments: ParsedSegment[] = [];
@@ -59,6 +67,27 @@ function parseInlineMarkdown(text: string): ParsedSegment[] {
   return segments;
 }
 
+function isTableSeparatorRow(line: string): boolean {
+  const trimmed = line.trim();
+  if (!trimmed.startsWith('|') || !trimmed.endsWith('|')) return false;
+  const cells = trimmed.slice(1, -1).split('|');
+  return cells.every((cell) => /^[\s-:]+$/.test(cell));
+}
+
+function isTableRow(line: string): boolean {
+  const trimmed = line.trim();
+  return trimmed.startsWith('|') && trimmed.endsWith('|');
+}
+
+function parseTableRow(line: string, isHeader: boolean): TableRow {
+  const trimmed = line.trim();
+  const cellsContent = trimmed.slice(1, -1).split('|');
+  return cellsContent.map((cell) => ({
+    content: parseInlineMarkdown(cell.trim()),
+    isHeader,
+  }));
+}
+
 function parseMarkdown(content: string): ParsedBlock[] {
   const blocks: ParsedBlock[] = [];
   const lines = content.split('\n');
@@ -69,6 +98,26 @@ function parseMarkdown(content: string): ParsedBlock[] {
     if (line === undefined) {
       i++;
       continue;
+    }
+
+    // Check for table
+    if (isTableRow(line)) {
+      const nextLine = lines[i + 1];
+      if (nextLine && isTableSeparatorRow(nextLine)) {
+        const rows: TableRow[] = [];
+        // Parse header row
+        rows.push(parseTableRow(line, true));
+        i += 2; // Skip header and separator
+        // Parse body rows
+        while (i < lines.length) {
+          const currentLine = lines[i];
+          if (currentLine === undefined || !isTableRow(currentLine)) break;
+          rows.push(parseTableRow(currentLine, false));
+          i++;
+        }
+        blocks.push({ type: 'table', rows });
+        continue;
+      }
     }
 
     // Check for code block (```)
@@ -230,6 +279,39 @@ export function MarkdownContent({ content, baseStyle = {} }: MarkdownContentProp
               </View>
             );
 
+          case 'table':
+            return (
+              <View key={blockIndex} style={styles.tableContainer}>
+                {block.rows.map((row, rowIndex) => (
+                  <View
+                    key={rowIndex}
+                    style={[
+                      styles.tableRow,
+                      rowIndex === 0 && styles.tableHeaderRow,
+                      rowIndex % 2 === 1 && styles.tableRowAlt,
+                    ]}
+                  >
+                    {row.map((cell, cellIndex) => (
+                      <View
+                        key={cellIndex}
+                        style={[styles.tableCell, cellIndex === 0 && styles.tableCellFirst]}
+                      >
+                        <Text
+                          style={[
+                            baseTextStyle,
+                            styles.tableCellText,
+                            cell.isHeader && styles.tableHeaderText,
+                          ]}
+                        >
+                          {renderSegments(cell.content, baseTextStyle)}
+                        </Text>
+                      </View>
+                    ))}
+                  </View>
+                ))}
+              </View>
+            );
+
           case 'paragraph':
           default:
             return (
@@ -308,5 +390,40 @@ const styles = StyleSheet.create({
   },
   listItemText: {
     flex: 1,
+  },
+  tableContainer: {
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#374151',
+    overflow: 'hidden',
+    marginVertical: 12,
+  },
+  tableRow: {
+    flexDirection: 'row',
+    borderBottomWidth: 1,
+    borderBottomColor: '#374151',
+  },
+  tableHeaderRow: {
+    backgroundColor: '#1F2937',
+  },
+  tableRowAlt: {
+    backgroundColor: '#111827',
+  },
+  tableCell: {
+    flex: 1,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderLeftWidth: 1,
+    borderLeftColor: '#374151',
+  },
+  tableCellFirst: {
+    borderLeftWidth: 0,
+  },
+  tableCellText: {
+    fontSize: 14,
+  },
+  tableHeaderText: {
+    fontWeight: '700',
+    color: '#F9FAFB',
   },
 });
