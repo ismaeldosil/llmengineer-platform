@@ -117,7 +117,7 @@ export async function syncLesson(
       difficulty,
       xpReward: lessonData.xpReward || 100,
       estimatedMinutes: lessonData.estimatedMinutes || 15,
-      sections: lessonData.sections || [],
+      sections: JSON.parse(JSON.stringify(lessonData.sections || [])),
       isPublished: true,
     },
     create: {
@@ -129,7 +129,7 @@ export async function syncLesson(
       difficulty,
       xpReward: lessonData.xpReward || 100,
       estimatedMinutes: lessonData.estimatedMinutes || 15,
-      sections: lessonData.sections || [],
+      sections: JSON.parse(JSON.stringify(lessonData.sections || [])),
       isPublished: true,
     },
   });

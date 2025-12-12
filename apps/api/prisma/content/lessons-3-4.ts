@@ -601,7 +601,7 @@ const generateCode = async (spec: string, language: string) => {
     frequency_penalty: 0.1,      // Leve para evitar patrones repetitivos
     presence_penalty: 0,         // Sin penalización (código puede repetir conceptos)
     max_tokens: 800,
-    stop: ["```\\n\\n", "// END"],  // Detiene en fin de bloque
+    stop: ["\`\`\`\\n\\n", "// END"],  // Detiene en fin de bloque
     messages: [
       {
         role: "system",

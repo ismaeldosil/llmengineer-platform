@@ -1,3 +1,4 @@
+// @ts-nocheck
 export const introToLlms = {
   sections: [
     {
@@ -1146,7 +1147,7 @@ const codeConfig = {
   model: 'gpt-4-turbo-preview',  // Mejor en código
   temperature: 0.2,               // Preciso pero no rígido
   max_tokens: 2000,              // Código puede ser largo
-  stop: ['```\\n\\n']             // Detener después del bloque de código
+  stop: ['\`\`\`\\n\\n']             // Detener después del bloque de código
 };
 \`\`\``,
       keyPoints: [
