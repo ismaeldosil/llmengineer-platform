@@ -1,0 +1,59 @@
+{
+  "slug": "api-basics",
+  "sections": [
+    {
+      "title": "Introducción a las APIs de LLMs",
+      "content": "Las APIs de LLMs permiten integrar capacidades de inteligencia artificial en tus aplicaciones. Los principales proveedores son:\n\n- **OpenAI** (GPT-4, GPT-3.5)\n- **Anthropic** (Claude)\n- **Google** (Gemini)\n- **Cohere**\n- **Open source** (Hugging Face, Ollama)\n\nTodas siguen un patrón similar: envías un mensaje y recibes una respuesta generada.",
+      "keyPoints": [
+        "APIs REST como interfaz principal",
+        "Múltiples proveedores disponibles",
+        "Patrón request/response estándar"
+      ]
+    },
+    {
+      "title": "Estructura de una Request",
+      "content": "Una request típica a un LLM incluye:\n\n```javascript\nconst response = await fetch('https://api.openai.com/v1/chat/completions', {\n  method: 'POST',\n  headers: {\n    'Content-Type': 'application/json',\n    'Authorization': `Bearer ${API_KEY}`\n  },\n  body: JSON.stringify({\n    model: 'gpt-4',\n    messages: [\n      { role: 'system', content: 'Eres un asistente útil.' },\n      { role: 'user', content: '¿Qué es JavaScript?' }\n    ],\n    temperature: 0.7,\n    max_tokens: 500\n  })\n});\n```\n\n**Componentes clave:**\n- `model`: El modelo a usar\n- `messages`: Array de mensajes con roles\n- `temperature`: Control de creatividad\n- `max_tokens`: Límite de tokens en la respuesta",
+      "keyPoints": [
+        "Autenticación via API Key",
+        "Formato JSON para requests",
+        "Messages array con system/user/assistant roles"
+      ]
+    },
+    {
+      "title": "Estructura de la Response",
+      "content": "La respuesta de la API incluye:\n\n```json\n{\n  \"id\": \"chatcmpl-abc123\",\n  \"object\": \"chat.completion\",\n  \"created\": 1699000000,\n  \"model\": \"gpt-4\",\n  \"choices\": [\n    {\n      \"index\": 0,\n      \"message\": {\n        \"role\": \"assistant\",\n        \"content\": \"JavaScript es un lenguaje de programación...\"\n      },\n      \"finish_reason\": \"stop\"\n    }\n  ],\n  \"usage\": {\n    \"prompt_tokens\": 25,\n    \"completion_tokens\": 150,\n    \"total_tokens\": 175\n  }\n}\n```\n\n**Información importante:**\n- `choices[0].message.content`: La respuesta del modelo\n- `usage`: Tokens consumidos (importante para costos)\n- `finish_reason`: Por qué terminó (stop, length, etc.)",
+      "keyPoints": [
+        "Respuesta en choices array",
+        "Usage tracking para monitorear costos",
+        "finish_reason indica cómo terminó la generación"
+      ]
+    },
+    {
+      "title": "Ejemplo práctico con Node.js",
+      "content": "Usando el SDK oficial de OpenAI:\n\n```javascript\nimport OpenAI from 'openai';\n\nconst openai = new OpenAI({\n  apiKey: process.env.OPENAI_API_KEY\n});\n\nasync function askQuestion(question) {\n  const completion = await openai.chat.completions.create({\n    model: 'gpt-4',\n    messages: [\n      { role: 'system', content: 'Eres un tutor de programación.' },\n      { role: 'user', content: question }\n    ]\n  });\n  \n  return completion.choices[0].message.content;\n}\n\n// Uso\nconst answer = await askQuestion('¿Qué es una Promise en JS?');\nconsole.log(answer);\n```\n\nLos SDKs simplifican la autenticación y el manejo de errores.",
+      "keyPoints": [
+        "SDKs oficiales disponibles para múltiples lenguajes",
+        "Variables de entorno para API keys",
+        "Async/await para manejo de promesas"
+      ]
+    }
+  ],
+  "quiz": {
+    "questions": [
+      {
+        "type": "multiple_choice",
+        "question": "¿Qué header es necesario para autenticarse con la API de OpenAI?",
+        "options": ["X-API-Key", "Authorization: Bearer", "API-Token", "Auth-Key"],
+        "correctAnswer": 1,
+        "explanation": "OpenAI y la mayoría de APIs de LLMs usan el header 'Authorization: Bearer {API_KEY}' para autenticación."
+      },
+      {
+        "type": "multiple_choice",
+        "question": "¿Dónde se encuentra la respuesta del modelo en el JSON de respuesta?",
+        "options": ["response.text", "data.message", "choices[0].message.content", "output.content"],
+        "correctAnswer": 2,
+        "explanation": "La respuesta del modelo está en choices[0].message.content siguiendo el formato estándar de OpenAI."
+      }
+    ]
+  }
+}

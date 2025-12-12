@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 16,
-    paddingHorizontal: 24,
+    paddingHorizontal: 30,
     marginTop: 24,
     ...(Platform.OS === 'web' ? {} : { paddingHorizontal: 16 }),
   },

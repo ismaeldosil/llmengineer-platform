@@ -1,14 +1,12 @@
 import { Injectable, ExecutionContext } from '@nestjs/common';
-import { ThrottlerGuard, ThrottlerException } from '@nestjs/throttler';
+import { ThrottlerGuard, ThrottlerException, ThrottlerRequest } from '@nestjs/throttler';
 
 @Injectable()
 export class CustomThrottlerGuard extends ThrottlerGuard {
   protected async handleRequest(
-    context: ExecutionContext,
-    limit: number,
-    ttl: number,
-    throttler: { name: string; limit: number; ttl: number }
+    requestProps: ThrottlerRequest
   ): Promise<boolean> {
+    const { context, limit, ttl, throttler, blockDuration } = requestProps;
     const { req, res } = this.getRequestResponse(context);
 
     // Get the tracker key (usually IP address)
@@ -16,7 +14,13 @@ export class CustomThrottlerGuard extends ThrottlerGuard {
     const key = this.generateKey(context, tracker, throttler.name);
 
     // Get current usage from storage
-    const { totalHits, timeToExpire } = await this.storageService.increment(key, ttl);
+    const { totalHits, timeToExpire } = await this.storageService.increment(
+      key,
+      ttl,
+      limit,
+      blockDuration,
+      throttler.name
+    );
 
     // Calculate remaining requests
     const remaining = Math.max(0, limit - totalHits);

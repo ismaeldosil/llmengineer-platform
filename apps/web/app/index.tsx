@@ -1,40 +1,39 @@
-import { useEffect } from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
-import { Link, Stack, router } from 'expo-router';
+import { Redirect, router } from 'expo-router';
 import { useSelector } from 'react-redux';
 import type { RootState } from '@/store';
 
 export default function Home() {
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      router.replace('/dashboard');
-    }
-  }, [isAuthenticated]);
+  // Si está autenticado, redirigir al dashboard
+  if (isAuthenticated) {
+    return <Redirect href="/dashboard" />;
+  }
+
+  const handleLogin = () => {
+    router.push('/auth/login');
+  };
+
+  const handleRegister = () => {
+    router.push('/auth/register');
+  };
 
   return (
-    <>
-      <Stack.Screen options={{ title: 'LLM Engineer' }} />
-      <View style={styles.container}>
-        <Text style={styles.title}>LLM Engineer Platform</Text>
-        <Text style={styles.subtitle}>Aprende LLM Engineering en 8 semanas</Text>
+    <View style={styles.container}>
+      <Text style={styles.title}>LLM Engineer Platform</Text>
+      <Text style={styles.subtitle}>Aprende LLM Engineering en 8 semanas</Text>
 
-        <View style={styles.buttonContainer}>
-          <Link href="/auth/login" asChild>
-            <Pressable style={styles.button}>
-              <Text style={styles.buttonText}>Iniciar Sesión</Text>
-            </Pressable>
-          </Link>
+      <View style={styles.buttonContainer}>
+        <Pressable style={styles.button} onPress={handleLogin}>
+          <Text style={styles.buttonText}>Iniciar Sesión</Text>
+        </Pressable>
 
-          <Link href="/auth/register" asChild>
-            <Pressable style={[styles.button, styles.buttonSecondary]}>
-              <Text style={[styles.buttonText, styles.buttonTextSecondary]}>Registrarse</Text>
-            </Pressable>
-          </Link>
-        </View>
+        <Pressable style={[styles.button, styles.buttonSecondary]} onPress={handleRegister}>
+          <Text style={[styles.buttonText, styles.buttonTextSecondary]}>Registrarse</Text>
+        </Pressable>
       </View>
-    </>
+    </View>
   );
 }
 

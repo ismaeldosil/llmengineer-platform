@@ -1,13 +1,12 @@
 import { useState, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, RefreshControl, Alert, Platform } from 'react-native';
-import { Stack, router } from 'expo-router';
+import { Stack } from 'expo-router';
 import { useSelector } from 'react-redux';
 import type { RootState } from '@/store';
 import {
   useGetProgressQuery,
   useGetMeQuery,
   useGetLessonsQuery,
-  useCheckinMutation,
 } from '@/services/api';
 import { useAuth } from '@/hooks/useAuth';
 import { MainLayout } from '@/components/layout';
@@ -52,7 +51,6 @@ export default function DashboardScreen() {
     isLoading: lessonsLoading,
     refetch: refetchLessons,
   } = useGetLessonsQuery();
-  const [checkin] = useCheckinMutation();
 
   const displayName = user?.displayName || userData?.displayName || 'Developer';
   const totalXp = progress?.totalXp || 0;
@@ -160,15 +158,16 @@ export default function DashboardScreen() {
             <Text style={styles.sectionTitle}>Módulos del Curso</Text>
             <View style={styles.modulesGrid}>
               {modules.map((module) => (
-                <ModuleCard
-                  key={module.id}
-                  id={module.id}
-                  title={module.title}
-                  description={module.description}
-                  lessonsCompleted={module.lessonsCompleted}
-                  totalLessons={module.totalLessons}
-                  isComplete={module.isComplete}
-                />
+                <View key={module.id} style={styles.moduleCardWrapper}>
+                  <ModuleCard
+                    id={module.id}
+                    title={module.title}
+                    description={module.description}
+                    lessonsCompleted={module.lessonsCompleted}
+                    totalLessons={module.totalLessons}
+                    isComplete={module.isComplete}
+                  />
+                </View>
               ))}
             </View>
           </View>
@@ -183,10 +182,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingBottom: 40,
+    paddingBottom: 48,
   },
   welcomeSection: {
-    paddingHorizontal: 24,
+    paddingHorizontal: 30,
     paddingTop: 24,
   },
   welcomeHeader: {
@@ -204,7 +203,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   modulesSection: {
-    paddingHorizontal: 24,
+    paddingHorizontal: 30,
     marginTop: 32,
   },
   sectionTitle: {
@@ -217,5 +216,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 16,
+    justifyContent: 'space-between',
+  },
+  moduleCardWrapper: {
+    width: '48.5%',
+    marginBottom: 0,
   },
 });
