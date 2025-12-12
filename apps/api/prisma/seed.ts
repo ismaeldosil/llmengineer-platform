@@ -333,6 +333,142 @@ async function seedLessons() {
       sections: [],
       isPublished: true,
     },
+    // Semana 3: RAG
+    {
+      slug: 'rag-fundamentals',
+      title: 'RAG Fundamentals',
+      description:
+        'Aprende los fundamentos de Retrieval Augmented Generation: embeddings, vector databases y chunking strategies.',
+      week: 3,
+      order: 1,
+      difficulty: Difficulty.intermediate,
+      xpReward: 200,
+      estimatedMinutes: 35,
+      sections: [],
+      isPublished: true,
+    },
+    {
+      slug: 'rag-advanced',
+      title: 'RAG Avanzado',
+      description:
+        'Técnicas avanzadas de RAG: hybrid search, re-ranking, query transformation y evaluación de pipelines.',
+      week: 3,
+      order: 2,
+      difficulty: Difficulty.advanced,
+      xpReward: 200,
+      estimatedMinutes: 40,
+      sections: [],
+      isPublished: true,
+    },
+    // Semana 4: Evaluation & Agents Basics
+    {
+      slug: 'evaluation-benchmarking',
+      title: 'Evaluación y Benchmarking',
+      description:
+        'Aprende a evaluar LLMs: métricas automáticas, LLM-as-Judge, benchmarks estándar y evaluación humana.',
+      week: 4,
+      order: 1,
+      difficulty: Difficulty.intermediate,
+      xpReward: 200,
+      estimatedMinutes: 35,
+      sections: [],
+      isPublished: true,
+    },
+    {
+      slug: 'agents-fundamentals',
+      title: 'Agentes y Tool Use',
+      description:
+        'Fundamentos de agentes: function calling, tool use, ReAct pattern y construcción de agentes básicos.',
+      week: 4,
+      order: 2,
+      difficulty: Difficulty.intermediate,
+      xpReward: 200,
+      estimatedMinutes: 40,
+      sections: [],
+      isPublished: true,
+    },
+    // Semana 5: Agents Advanced & Security
+    {
+      slug: 'agents-advanced',
+      title: 'Agentes Avanzados',
+      description:
+        'Sistemas multi-agente, orquestación con LangGraph y CrewAI, memoria a largo plazo y planning.',
+      week: 5,
+      order: 1,
+      difficulty: Difficulty.advanced,
+      xpReward: 250,
+      estimatedMinutes: 45,
+      sections: [],
+      isPublished: true,
+    },
+    {
+      slug: 'security-guardrails',
+      title: 'Seguridad y Guardrails',
+      description:
+        'Protege tus aplicaciones LLM: prompt injection, jailbreaking, PII detection y content moderation.',
+      week: 5,
+      order: 2,
+      difficulty: Difficulty.advanced,
+      xpReward: 250,
+      estimatedMinutes: 40,
+      sections: [],
+      isPublished: true,
+    },
+    // Semana 6: Fine-tuning & MLOps
+    {
+      slug: 'finetuning-adaptation',
+      title: 'Fine-tuning y Adaptación',
+      description:
+        'Técnicas de fine-tuning: LoRA, QLoRA, preparación de datasets y cuándo usar fine-tuning vs prompting.',
+      week: 6,
+      order: 1,
+      difficulty: Difficulty.advanced,
+      xpReward: 250,
+      estimatedMinutes: 45,
+      sections: [],
+      isPublished: true,
+    },
+    {
+      slug: 'production-mlops',
+      title: 'MLOps para LLMs',
+      description:
+        'Lleva LLMs a producción: observabilidad, logging, A/B testing, optimización de latencia y costos.',
+      week: 6,
+      order: 2,
+      difficulty: Difficulty.advanced,
+      xpReward: 250,
+      estimatedMinutes: 40,
+      sections: [],
+      isPublished: true,
+    },
+    // Semana 7: Multimodal
+    {
+      slug: 'multimodal-models',
+      title: 'Modelos Multimodales',
+      description:
+        'Trabaja con modelos que procesan imágenes, audio y documentos: GPT-4 Vision, Whisper y más.',
+      week: 7,
+      order: 1,
+      difficulty: Difficulty.advanced,
+      xpReward: 250,
+      estimatedMinutes: 40,
+      sections: [],
+      isPublished: true,
+    },
+    // Semana 8: Local Models
+    {
+      slug: 'local-models-edge',
+      title: 'Modelos Locales y Edge',
+      description:
+        'Ejecuta LLMs localmente: Ollama, quantización, optimización para edge y casos de uso offline.',
+      week: 8,
+      order: 1,
+      difficulty: Difficulty.advanced,
+      xpReward: 250,
+      estimatedMinutes: 40,
+      sections: [],
+      isPublished: true,
+    },
   ];
 
   for (const lesson of lessons) {
