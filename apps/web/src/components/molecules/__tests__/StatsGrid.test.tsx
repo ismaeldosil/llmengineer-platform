@@ -327,10 +327,7 @@ describe('StatsGrid', () => {
 
     it('should handle very long level titles', () => {
       const { getByText } = render(
-        <StatsGrid
-          {...defaultProps}
-          levelTitle="This is a very long level title that might wrap"
-        />
+        <StatsGrid {...defaultProps} levelTitle="This is a very long level title that might wrap" />
       );
 
       expect(getByText('This is a very long level title that might wrap')).toBeTruthy();
@@ -413,9 +410,7 @@ describe('StatsGrid', () => {
     });
 
     it('should render level without suffix', () => {
-      const { getByText } = render(
-        <StatsGrid {...defaultProps} level={5} levelTitle="Expert" />
-      );
+      const { getByText } = render(<StatsGrid {...defaultProps} level={5} levelTitle="Expert" />);
 
       expect(getByText('Expert')).toBeTruthy();
       // Level card should not have a suffix

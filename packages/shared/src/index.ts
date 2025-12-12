@@ -6,3 +6,5 @@ export * from './types/leaderboard';
 export * from './types/quiz';
 export * from './constants/levels';
 export * from './constants/xp';
+export { calculateXpWithMultipliers } from './utils/xp-multipliers';
+export type { MultiplierResult } from './utils/xp-multipliers';

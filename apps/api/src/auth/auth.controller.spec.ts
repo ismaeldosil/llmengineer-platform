@@ -157,9 +157,19 @@ describe('AuthController', () => {
         totalXP: 5000,
         streakDays: 10,
         createdAt: new Date('2024-01-01'),
-      } as { id: string; email: string; displayName: string; level: number; totalXP: number; streakDays: number; createdAt: Date };
+      } as {
+        id: string;
+        email: string;
+        displayName: string;
+        level: number;
+        totalXP: number;
+        streakDays: number;
+        createdAt: Date;
+      };
 
-      const result = await controller.getMe(mockUser as { id: string; email: string; displayName: string });
+      const result = await controller.getMe(
+        mockUser as { id: string; email: string; displayName: string }
+      );
 
       expect(result).toEqual(mockUser);
       expect((result as typeof mockUser).level).toBe(5);

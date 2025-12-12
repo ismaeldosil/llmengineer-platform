@@ -47,6 +47,9 @@ describe('UsersService', () => {
     streakLog: {
       findMany: jest.fn(),
     },
+    userBadge: {
+      findMany: jest.fn(),
+    },
   };
 
   beforeEach(async () => {
@@ -496,11 +499,9 @@ describe('UsersService', () => {
         displayName: '   ',
       };
 
+      await expect(service.updateProfile(userId, updateDto)).rejects.toThrow(BadRequestException);
       await expect(service.updateProfile(userId, updateDto)).rejects.toThrow(
-        BadRequestException,
-      );
-      await expect(service.updateProfile(userId, updateDto)).rejects.toThrow(
-        'El nombre no puede estar vacío',
+        'El nombre no puede estar vacío'
       );
 
       expect(prismaService.user.update).not.toHaveBeenCalled();
@@ -602,7 +603,7 @@ describe('UsersService', () => {
           data: {
             displayName: 'New Name',
           },
-        }),
+        })
       );
     });
   });
@@ -832,7 +833,6 @@ describe('UsersService', () => {
     });
 
     it('should aggregate XP from multiple completions on same date', async () => {
-      const sameDate = new Date('2024-01-15T10:00:00Z');
       const completionsSameDay = [
         {
           id: 'comp-1',
@@ -990,6 +990,429 @@ describe('UsersService', () => {
           date: 'asc',
         },
       });
+    });
+  });
+
+  describe('getXpHistory', () => {
+    const userId = 'user-123';
+
+    const mockCompletions = [
+      {
+        id: 'comp-1',
+        userId,
+        lessonId: 'lesson-1',
+        timeSpentSeconds: 900,
+        xpEarned: 100,
+        completedAt: new Date('2024-01-15T10:00:00Z'),
+        lesson: {
+          title: 'Introduction to Prompts',
+          xpReward: 100,
+          quiz: { score: 95 },
+        },
+      },
+      {
+        id: 'comp-2',
+        userId,
+        lessonId: 'lesson-2',
+        timeSpentSeconds: 1200,
+        xpEarned: 150,
+        completedAt: new Date('2024-01-16T14:00:00Z'),
+        lesson: {
+          title: 'Advanced Techniques',
+          xpReward: 150,
+          quiz: null,
+        },
+      },
+      {
+        id: 'comp-3',
+        userId,
+        lessonId: 'lesson-3',
+        timeSpentSeconds: 600,
+        xpEarned: 50,
+        completedAt: new Date('2024-01-15T16:00:00Z'),
+        lesson: {
+          title: 'Quick Tips',
+          xpReward: 50,
+          quiz: null,
+        },
+      },
+    ];
+
+    const mockStreakLogs = [
+      {
+        id: 'streak-1',
+        userId,
+        date: new Date('2024-01-15'),
+        checkedIn: true,
+        bonusXp: 10,
+      },
+      {
+        id: 'streak-2',
+        userId,
+        date: new Date('2024-01-16'),
+        checkedIn: true,
+        bonusXp: 0,
+      },
+    ];
+
+    const mockBadges = [
+      {
+        id: 'ub-1',
+        userId,
+        badgeId: 'badge-1',
+        earnedAt: new Date('2024-01-15T12:00:00Z'),
+        badge: {
+          name: 'First Steps',
+          xpBonus: 50,
+        },
+      },
+    ];
+
+    beforeEach(() => {
+      mockPrismaService.lessonCompletion.findMany.mockResolvedValue(mockCompletions);
+      mockPrismaService.streakLog.findMany.mockResolvedValue(mockStreakLogs);
+      mockPrismaService.userBadge.findMany.mockResolvedValue(mockBadges);
+    });
+
+    it('should return XP history with default 30 days', async () => {
+      const result = await service.getXpHistory(userId, { days: 30 });
+
+      expect(result).toBeDefined();
+      expect(result).toHaveProperty('history');
+      expect(result).toHaveProperty('totalThisWeek');
+      expect(result).toHaveProperty('totalThisMonth');
+      expect(result).toHaveProperty('averagePerDay');
+      expect(result).toHaveProperty('bestDay');
+    });
+
+    it('should aggregate XP by date correctly', async () => {
+      const result = await service.getXpHistory(userId, { days: 30 });
+
+      expect(result.history).toHaveLength(2);
+
+      // Jan 15: 100 (comp-1) + 50 (comp-3) + 10 (streak) + 50 (badge) = 210
+      const jan15 = result.history.find((h) => h.date === '2024-01-15');
+      expect(jan15).toBeDefined();
+      expect(jan15?.xp).toBe(210);
+      expect(jan15?.sources).toContain('lesson');
+      expect(jan15?.sources).toContain('quiz');
+      expect(jan15?.sources).toContain('streak');
+      expect(jan15?.sources).toContain('badge');
+
+      // Jan 16: 150 (comp-2) = 150
+      const jan16 = result.history.find((h) => h.date === '2024-01-16');
+      expect(jan16).toBeDefined();
+      expect(jan16?.xp).toBe(150);
+      expect(jan16?.sources).toContain('lesson');
+    });
+
+    it('should include detailed breakdown of XP sources', async () => {
+      const result = await service.getXpHistory(userId, { days: 30 });
+
+      const jan15 = result.history.find((h) => h.date === '2024-01-15');
+      expect(jan15?.details).toBeDefined();
+      expect(jan15?.details?.length).toBeGreaterThan(0);
+
+      // Should have lesson details
+      const lessonDetail = jan15?.details?.find((d) => d.source === 'lesson');
+      expect(lessonDetail).toBeDefined();
+      expect(lessonDetail?.description).toContain('Completed lesson:');
+
+      // Should have streak detail
+      const streakDetail = jan15?.details?.find((d) => d.source === 'streak');
+      expect(streakDetail).toBeDefined();
+      expect(streakDetail?.xp).toBe(10);
+
+      // Should have badge detail
+      const badgeDetail = jan15?.details?.find((d) => d.source === 'badge');
+      expect(badgeDetail).toBeDefined();
+      expect(badgeDetail?.description).toContain('Earned badge:');
+    });
+
+    it('should identify best day correctly', async () => {
+      const result = await service.getXpHistory(userId, { days: 30 });
+
+      expect(result.bestDay.date).toBe('2024-01-15');
+      expect(result.bestDay.xp).toBe(210);
+    });
+
+    it('should calculate average per day correctly', async () => {
+      const result = await service.getXpHistory(userId, { days: 30 });
+
+      // Total XP: 210 + 150 = 360
+      // Days with activity: 2
+      // Average: 360 / 2 = 180
+      expect(result.averagePerDay).toBe(180);
+    });
+
+    it('should accept custom date range', async () => {
+      const query = {
+        startDate: '2024-01-15',
+        endDate: '2024-01-16',
+      };
+
+      await service.getXpHistory(userId, query);
+
+      expect(prismaService.lessonCompletion.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            userId,
+            completedAt: {
+              gte: expect.any(Date),
+              lte: expect.any(Date),
+            },
+          }),
+        })
+      );
+    });
+
+    it('should throw error when start date is after end date', async () => {
+      const query = {
+        startDate: '2024-01-20',
+        endDate: '2024-01-15',
+      };
+
+      await expect(service.getXpHistory(userId, query)).rejects.toThrow(BadRequestException);
+      await expect(service.getXpHistory(userId, query)).rejects.toThrow(
+        'Start date must be before end date'
+      );
+    });
+
+    it('should throw error when date range exceeds 90 days', async () => {
+      const query = {
+        startDate: '2024-01-01',
+        endDate: '2024-05-01', // More than 90 days
+      };
+
+      await expect(service.getXpHistory(userId, query)).rejects.toThrow(BadRequestException);
+      await expect(service.getXpHistory(userId, query)).rejects.toThrow(
+        'Date range cannot exceed 90 days'
+      );
+    });
+
+    it('should handle days parameter correctly', async () => {
+      const query = { days: 7 };
+
+      await service.getXpHistory(userId, query);
+
+      const callArgs = (prismaService.lessonCompletion.findMany as jest.Mock).mock.calls[0][0];
+      const startDate = callArgs.where.completedAt.gte;
+      const endDate = callArgs.where.completedAt.lte;
+
+      // Calculate difference in days
+      const diffTime = Math.abs(endDate.getTime() - startDate.getTime());
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+      expect(diffDays).toBeGreaterThanOrEqual(7);
+      expect(diffDays).toBeLessThanOrEqual(8); // Allow some tolerance for time boundaries
+    });
+
+    it('should return empty history when no data exists', async () => {
+      mockPrismaService.lessonCompletion.findMany.mockResolvedValue([]);
+      mockPrismaService.streakLog.findMany.mockResolvedValue([]);
+      mockPrismaService.userBadge.findMany.mockResolvedValue([]);
+
+      const result = await service.getXpHistory(userId, { days: 30 });
+
+      expect(result.history).toEqual([]);
+      expect(result.totalThisWeek).toBe(0);
+      expect(result.totalThisMonth).toBe(0);
+      expect(result.averagePerDay).toBe(0);
+      expect(result.bestDay).toEqual({ date: '', xp: 0 });
+    });
+
+    it('should only include streak bonus when bonusXp > 0', async () => {
+      const streakLogsWithZero = [
+        {
+          id: 'streak-1',
+          userId,
+          date: new Date('2024-01-15'),
+          checkedIn: true,
+          bonusXp: 0, // No bonus
+        },
+      ];
+
+      mockPrismaService.streakLog.findMany.mockResolvedValue(streakLogsWithZero);
+
+      const result = await service.getXpHistory(userId, { days: 30 });
+
+      const jan15 = result.history.find((h) => h.date === '2024-01-15');
+      const streakDetail = jan15?.details?.find((d) => d.source === 'streak');
+
+      expect(streakDetail).toBeUndefined();
+    });
+
+    it('should only include badge XP when xpBonus > 0', async () => {
+      const badgesWithZero = [
+        {
+          id: 'ub-1',
+          userId,
+          badgeId: 'badge-1',
+          earnedAt: new Date('2024-01-15T12:00:00Z'),
+          badge: {
+            name: 'Zero Badge',
+            xpBonus: 0, // No XP bonus
+          },
+        },
+      ];
+
+      mockPrismaService.userBadge.findMany.mockResolvedValue(badgesWithZero);
+
+      const result = await service.getXpHistory(userId, { days: 30 });
+
+      const jan15 = result.history.find((h) => h.date === '2024-01-15');
+      const badgeDetail = jan15?.details?.find((d) => d.source === 'badge');
+
+      expect(badgeDetail).toBeUndefined();
+    });
+
+    it('should mark quiz as source when lesson has quiz', async () => {
+      const result = await service.getXpHistory(userId, { days: 30 });
+
+      const jan15 = result.history.find((h) => h.date === '2024-01-15');
+      expect(jan15?.sources).toContain('quiz');
+    });
+
+    it('should not mark quiz as source when lesson has no quiz', async () => {
+      const result = await service.getXpHistory(userId, { days: 30 });
+
+      const jan16 = result.history.find((h) => h.date === '2024-01-16');
+      expect(jan16?.sources).not.toContain('quiz');
+    });
+
+    it('should sort history by date ascending', async () => {
+      const result = await service.getXpHistory(userId, { days: 30 });
+
+      expect(result.history).toHaveLength(2);
+      expect(result.history[0].date).toBe('2024-01-15');
+      expect(result.history[1].date).toBe('2024-01-16');
+    });
+
+    it('should call all necessary prisma methods', async () => {
+      await service.getXpHistory(userId, { days: 30 });
+
+      expect(prismaService.lessonCompletion.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            userId,
+            completedAt: expect.any(Object),
+          }),
+          include: expect.objectContaining({
+            lesson: expect.objectContaining({
+              select: expect.objectContaining({
+                title: true,
+                xpReward: true,
+                quiz: true,
+              }),
+            }),
+          }),
+        })
+      );
+
+      expect(prismaService.streakLog.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            userId,
+            date: expect.any(Object),
+            checkedIn: true,
+          }),
+        })
+      );
+
+      expect(prismaService.userBadge.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            userId,
+            earnedAt: expect.any(Object),
+          }),
+          include: expect.objectContaining({
+            badge: expect.objectContaining({
+              select: expect.objectContaining({
+                name: true,
+                xpBonus: true,
+              }),
+            }),
+          }),
+        })
+      );
+    });
+
+    it('should use default days value when not provided', async () => {
+      await service.getXpHistory(userId, {});
+
+      // Should use default 30 days
+      const callArgs = (prismaService.lessonCompletion.findMany as jest.Mock).mock.calls[0][0];
+      expect(callArgs.where.completedAt).toBeDefined();
+      expect(callArgs.where.completedAt.gte).toBeInstanceOf(Date);
+      expect(callArgs.where.completedAt.lte).toBeInstanceOf(Date);
+    });
+
+    it('should aggregate multiple completions on same day', async () => {
+      const result = await service.getXpHistory(userId, { days: 30 });
+
+      // Jan 15 should have 2 lesson completions (100 + 50)
+      const jan15 = result.history.find((h) => h.date === '2024-01-15');
+      const lessonDetails = jan15?.details?.filter((d) => d.source === 'lesson');
+
+      expect(lessonDetails?.length).toBe(2);
+    });
+
+    it('should round average per day to 2 decimal places', async () => {
+      // Mock data that would create a decimal average
+      const oddCompletions = [
+        {
+          id: 'comp-1',
+          userId,
+          lessonId: 'lesson-1',
+          timeSpentSeconds: 900,
+          xpEarned: 100,
+          completedAt: new Date('2024-01-15T10:00:00Z'),
+          lesson: {
+            title: 'Test Lesson',
+            xpReward: 100,
+            quiz: null,
+          },
+        },
+        {
+          id: 'comp-2',
+          userId,
+          lessonId: 'lesson-2',
+          timeSpentSeconds: 900,
+          xpEarned: 100,
+          completedAt: new Date('2024-01-16T10:00:00Z'),
+          lesson: {
+            title: 'Test Lesson 2',
+            xpReward: 100,
+            quiz: null,
+          },
+        },
+        {
+          id: 'comp-3',
+          userId,
+          lessonId: 'lesson-3',
+          timeSpentSeconds: 900,
+          xpEarned: 100,
+          completedAt: new Date('2024-01-17T10:00:00Z'),
+          lesson: {
+            title: 'Test Lesson 3',
+            xpReward: 100,
+            quiz: null,
+          },
+        },
+      ];
+
+      mockPrismaService.lessonCompletion.findMany.mockResolvedValue(oddCompletions);
+      mockPrismaService.streakLog.findMany.mockResolvedValue([]);
+      mockPrismaService.userBadge.findMany.mockResolvedValue([]);
+
+      const result = await service.getXpHistory(userId, { days: 30 });
+
+      // 300 / 3 = 100.00
+      expect(result.averagePerDay).toBe(100);
+      expect(
+        Number.isInteger(result.averagePerDay) ||
+          result.averagePerDay.toString().split('.')[1]?.length <= 2
+      ).toBe(true);
     });
   });
 });

@@ -133,13 +133,7 @@ describe('BadgesLoaderService', () => {
     });
 
     it('should return true for all valid categories', () => {
-      const validCategories = [
-        'progress',
-        'streak',
-        'completion',
-        'mastery',
-        'special',
-      ];
+      const validCategories = ['progress', 'streak', 'completion', 'mastery', 'special'];
       validCategories.forEach((category) => {
         const badge = { ...mockValidBadge, category };
         expect(service.validateBadgeStructure(badge)).toBe(true);
@@ -335,10 +329,7 @@ describe('BadgesLoaderService', () => {
     it('should load badges from a valid JSON file', async () => {
       const result = await service.loadBadgesFromFile('/path/to/badges.json');
 
-      expect(fs.readFile).toHaveBeenCalledWith(
-        '/path/to/badges.json',
-        'utf-8',
-      );
+      expect(fs.readFile).toHaveBeenCalledWith('/path/to/badges.json', 'utf-8');
       expect(result.created).toBe(2);
       expect(result.updated).toBe(0);
       expect(result.errors).toHaveLength(0);
@@ -442,47 +433,39 @@ describe('BadgesLoaderService', () => {
     });
 
     it('should throw error when file does not exist', async () => {
-      (fs.readFile as jest.Mock).mockRejectedValue(
-        new Error('ENOENT: no such file or directory'),
-      );
+      (fs.readFile as jest.Mock).mockRejectedValue(new Error('ENOENT: no such file or directory'));
 
-      await expect(
-        service.loadBadgesFromFile('/nonexistent/file.json'),
-      ).rejects.toThrow('Failed to load badges');
+      await expect(service.loadBadgesFromFile('/nonexistent/file.json')).rejects.toThrow(
+        'Failed to load badges'
+      );
     });
 
     it('should throw error when JSON is invalid', async () => {
       (fs.readFile as jest.Mock).mockResolvedValue('invalid json {');
 
-      await expect(
-        service.loadBadgesFromFile('/path/to/badges.json'),
-      ).rejects.toThrow('Failed to load badges');
+      await expect(service.loadBadgesFromFile('/path/to/badges.json')).rejects.toThrow(
+        'Failed to load badges'
+      );
     });
 
     it('should throw error when badges array is missing', async () => {
-      (fs.readFile as jest.Mock).mockResolvedValue(
-        JSON.stringify({ invalid: 'structure' }),
-      );
+      (fs.readFile as jest.Mock).mockResolvedValue(JSON.stringify({ invalid: 'structure' }));
 
-      await expect(
-        service.loadBadgesFromFile('/path/to/badges.json'),
-      ).rejects.toThrow('Invalid JSON structure: "badges" array not found');
+      await expect(service.loadBadgesFromFile('/path/to/badges.json')).rejects.toThrow(
+        'Invalid JSON structure: "badges" array not found'
+      );
     });
 
     it('should throw error when badges is not an array', async () => {
-      (fs.readFile as jest.Mock).mockResolvedValue(
-        JSON.stringify({ badges: 'not an array' }),
-      );
+      (fs.readFile as jest.Mock).mockResolvedValue(JSON.stringify({ badges: 'not an array' }));
 
-      await expect(
-        service.loadBadgesFromFile('/path/to/badges.json'),
-      ).rejects.toThrow('Invalid JSON structure: "badges" array not found');
+      await expect(service.loadBadgesFromFile('/path/to/badges.json')).rejects.toThrow(
+        'Invalid JSON structure: "badges" array not found'
+      );
     });
 
     it('should handle empty badges array', async () => {
-      (fs.readFile as jest.Mock).mockResolvedValue(
-        JSON.stringify({ badges: [] }),
-      );
+      (fs.readFile as jest.Mock).mockResolvedValue(JSON.stringify({ badges: [] }));
 
       const result = await service.loadBadgesFromFile('/path/to/badges.json');
 
@@ -493,9 +476,7 @@ describe('BadgesLoaderService', () => {
 
     it('should handle badge with unknown slug in error', async () => {
       const badgeWithoutSlug = { name: 'No Slug' };
-      (fs.readFile as jest.Mock).mockResolvedValue(
-        JSON.stringify({ badges: [badgeWithoutSlug] }),
-      );
+      (fs.readFile as jest.Mock).mockResolvedValue(JSON.stringify({ badges: [badgeWithoutSlug] }));
 
       const result = await service.loadBadgesFromFile('/path/to/badges.json');
 
@@ -506,18 +487,13 @@ describe('BadgesLoaderService', () => {
 
   describe('loadDefaultBadges', () => {
     beforeEach(() => {
-      (fs.readFile as jest.Mock).mockResolvedValue(
-        JSON.stringify({ badges: [mockValidBadge] }),
-      );
+      (fs.readFile as jest.Mock).mockResolvedValue(JSON.stringify({ badges: [mockValidBadge] }));
       mockPrismaService.badge.findUnique.mockResolvedValue(null);
       mockPrismaService.badge.create.mockResolvedValue(mockExistingBadge);
     });
 
     it('should load from default path', async () => {
-      const expectedPath = path.resolve(
-        process.cwd(),
-        'prisma/content/badges.json',
-      );
+      const expectedPath = path.resolve(process.cwd(), 'prisma/content/badges.json');
 
       await service.loadDefaultBadges();
 
@@ -539,9 +515,7 @@ describe('BadgesLoaderService', () => {
         ...mockValidBadge,
         slug: `badge-${i}`,
       }));
-      (fs.readFile as jest.Mock).mockResolvedValue(
-        JSON.stringify({ badges: largeBadgeArray }),
-      );
+      (fs.readFile as jest.Mock).mockResolvedValue(JSON.stringify({ badges: largeBadgeArray }));
       mockPrismaService.badge.findUnique.mockResolvedValue(null);
       mockPrismaService.badge.create.mockResolvedValue(mockExistingBadge);
 
@@ -558,9 +532,7 @@ describe('BadgesLoaderService', () => {
         { ...mockValidBadge, slug: 'badge-4', category: 'mastery' },
         { ...mockValidBadge, slug: 'badge-5', category: 'special' },
       ];
-      (fs.readFile as jest.Mock).mockResolvedValue(
-        JSON.stringify({ badges }),
-      );
+      (fs.readFile as jest.Mock).mockResolvedValue(JSON.stringify({ badges }));
       mockPrismaService.badge.findUnique.mockResolvedValue(null);
       mockPrismaService.badge.create.mockResolvedValue(mockExistingBadge);
 
@@ -577,9 +549,7 @@ describe('BadgesLoaderService', () => {
         description: 'Description with\nnewlines\tand\ttabs',
         icon: '🎯🏆🔥',
       };
-      (fs.readFile as jest.Mock).mockResolvedValue(
-        JSON.stringify({ badges: [specialBadge] }),
-      );
+      (fs.readFile as jest.Mock).mockResolvedValue(JSON.stringify({ badges: [specialBadge] }));
       mockPrismaService.badge.findUnique.mockResolvedValue(null);
       mockPrismaService.badge.create.mockResolvedValue(mockExistingBadge);
 

@@ -91,9 +91,14 @@ export class ContentValidatorService {
       if (typeof quizData.correctAnswer !== 'number') {
         result.valid = false;
         result.errors.push('correctAnswer debe ser un número para multiple_choice');
-      } else if (quizData.options && (quizData.correctAnswer < 0 || quizData.correctAnswer >= quizData.options.length)) {
+      } else if (
+        quizData.options &&
+        (quizData.correctAnswer < 0 || quizData.correctAnswer >= quizData.options.length)
+      ) {
         result.valid = false;
-        result.errors.push(`correctAnswer debe ser un índice válido (0-${quizData.options.length - 1})`);
+        result.errors.push(
+          `correctAnswer debe ser un índice válido (0-${quizData.options.length - 1})`
+        );
       }
     } else if (quizData.type === 'true_false') {
       if (typeof quizData.correctAnswer !== 'boolean') {
@@ -230,7 +235,9 @@ export class ContentValidatorService {
         }
       }
 
-      this.logger.log(`Validación completada: ${report.validFiles}/${report.totalFiles} archivos válidos`);
+      this.logger.log(
+        `Validación completada: ${report.validFiles}/${report.totalFiles} archivos válidos`
+      );
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
       this.logger.error(`Error al leer directorio ${dirPath}: ${errorMessage}`);

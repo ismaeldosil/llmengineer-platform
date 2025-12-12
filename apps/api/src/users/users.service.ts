@@ -1,7 +1,18 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { calculateLevel, getLevelTitle, getXpForNextLevel, getXpProgressInLevel } from '@llmengineer/shared';
-import { UpdateProfileDto, UserStatsDto } from './dto';
+import {
+  calculateLevel,
+  getLevelTitle,
+  getXpProgressInLevel,
+} from '@llmengineer/shared';
+import {
+  UpdateProfileDto,
+  UserStatsDto,
+  XpHistoryQueryDto,
+  XpHistoryResponseDto,
+  XpHistoryItemDto,
+  XpHistoryDetailDto,
+} from './dto';
 
 interface CreateUserData {
   email: string;
@@ -208,7 +219,7 @@ export class UsersService {
     let perfectQuizzes = 0;
 
     completions.forEach((completion) => {
-      const quiz = completion.lesson.quiz as any;
+      const quiz = completion.lesson.quiz as { score?: number } | null;
       if (quiz && quiz.score !== undefined) {
         totalQuizScore += quiz.score;
         totalQuizzesTaken++;
@@ -265,6 +276,231 @@ export class UsersService {
       currentLevel,
       currentXp,
       xpToNextLevel,
+    };
+  }
+
+  async getXpHistory(userId: string, query: XpHistoryQueryDto): Promise<XpHistoryResponseDto> {
+    // Determine date range
+    let startDate: Date;
+    let endDate: Date;
+
+    if (query.startDate && query.endDate) {
+      // Use provided date range
+      startDate = new Date(query.startDate);
+      endDate = new Date(query.endDate);
+
+      // Validate date range
+      if (startDate > endDate) {
+        throw new BadRequestException('Start date must be before end date');
+      }
+
+      // Check if range exceeds 90 days
+      const daysDiff = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+      if (daysDiff > 90) {
+        throw new BadRequestException('Date range cannot exceed 90 days');
+      }
+    } else {
+      // Use days parameter (default: 30)
+      const days = query.days || 30;
+      endDate = new Date();
+      endDate.setHours(23, 59, 59, 999); // End of today
+      startDate = new Date();
+      startDate.setDate(startDate.getDate() - days);
+      startDate.setHours(0, 0, 0, 0); // Start of day
+    }
+
+    // Get all lesson completions within date range
+    const completions = await this.prisma.lessonCompletion.findMany({
+      where: {
+        userId,
+        completedAt: {
+          gte: startDate,
+          lte: endDate,
+        },
+      },
+      include: {
+        lesson: {
+          select: {
+            title: true,
+            xpReward: true,
+            quiz: true,
+          },
+        },
+      },
+      orderBy: {
+        completedAt: 'asc',
+      },
+    });
+
+    // Get streak logs within date range for bonus XP
+    const streakLogs = await this.prisma.streakLog.findMany({
+      where: {
+        userId,
+        date: {
+          gte: startDate,
+          lte: endDate,
+        },
+        checkedIn: true,
+      },
+      orderBy: {
+        date: 'asc',
+      },
+    });
+
+    // Get user badges earned within date range
+    const badges = await this.prisma.userBadge.findMany({
+      where: {
+        userId,
+        earnedAt: {
+          gte: startDate,
+          lte: endDate,
+        },
+      },
+      include: {
+        badge: {
+          select: {
+            name: true,
+            xpBonus: true,
+          },
+        },
+      },
+      orderBy: {
+        earnedAt: 'asc',
+      },
+    });
+
+    // Build daily XP history with details
+    const historyMap = new Map<
+      string,
+      {
+        xp: number;
+        sources: Set<string>;
+        details: XpHistoryDetailDto[];
+      }
+    >();
+
+    // Process lesson completions
+    completions.forEach((completion) => {
+      const date = completion.completedAt.toISOString().split('T')[0];
+
+      if (!historyMap.has(date)) {
+        historyMap.set(date, { xp: 0, sources: new Set(), details: [] });
+      }
+
+      const dayData = historyMap.get(date)!;
+      dayData.xp += completion.xpEarned;
+      dayData.sources.add('lesson');
+
+      // Add detail for lesson completion
+      dayData.details.push({
+        source: 'lesson',
+        xp: completion.xpEarned,
+        description: `Completed lesson: ${completion.lesson.title}`,
+      });
+
+      // Check if there was a quiz
+      const quiz = completion.lesson.quiz as { score?: number } | null;
+      if (quiz && quiz.score !== undefined) {
+        dayData.sources.add('quiz');
+        // Quiz XP is already included in lesson XP, but we mark it as a source
+      }
+    });
+
+    // Process streak bonuses
+    streakLogs.forEach((log) => {
+      const date = log.date.toISOString().split('T')[0];
+
+      if (log.bonusXp > 0) {
+        if (!historyMap.has(date)) {
+          historyMap.set(date, { xp: 0, sources: new Set(), details: [] });
+        }
+
+        const dayData = historyMap.get(date)!;
+        dayData.xp += log.bonusXp;
+        dayData.sources.add('streak');
+
+        dayData.details.push({
+          source: 'streak',
+          xp: log.bonusXp,
+          description: `Streak bonus`,
+        });
+      }
+    });
+
+    // Process badge XP
+    badges.forEach((userBadge) => {
+      const date = userBadge.earnedAt.toISOString().split('T')[0];
+
+      if (userBadge.badge.xpBonus > 0) {
+        if (!historyMap.has(date)) {
+          historyMap.set(date, { xp: 0, sources: new Set(), details: [] });
+        }
+
+        const dayData = historyMap.get(date)!;
+        dayData.xp += userBadge.badge.xpBonus;
+        dayData.sources.add('badge');
+
+        dayData.details.push({
+          source: 'badge',
+          xp: userBadge.badge.xpBonus,
+          description: `Earned badge: ${userBadge.badge.name}`,
+        });
+      }
+    });
+
+    // Convert map to sorted array
+    const history: XpHistoryItemDto[] = Array.from(historyMap.entries())
+      .map(([date, data]) => ({
+        date,
+        xp: data.xp,
+        sources: Array.from(data.sources),
+        details: data.details,
+      }))
+      .sort((a, b) => a.date.localeCompare(b.date));
+
+    // Calculate statistics
+    const now = new Date();
+    const currentWeekStart = new Date(now);
+    currentWeekStart.setDate(now.getDate() - now.getDay()); // Start of week (Sunday)
+    currentWeekStart.setHours(0, 0, 0, 0);
+
+    const currentMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+
+    let totalThisWeek = 0;
+    let totalThisMonth = 0;
+    let totalXp = 0;
+    let bestDay = { date: '', xp: 0 };
+
+    history.forEach((item) => {
+      const itemDate = new Date(item.date);
+      totalXp += item.xp;
+
+      // Check if in current week
+      if (itemDate >= currentWeekStart) {
+        totalThisWeek += item.xp;
+      }
+
+      // Check if in current month
+      if (itemDate >= currentMonthStart) {
+        totalThisMonth += item.xp;
+      }
+
+      // Track best day
+      if (item.xp > bestDay.xp) {
+        bestDay = { date: item.date, xp: item.xp };
+      }
+    });
+
+    // Calculate average per day (only for days with activity)
+    const averagePerDay =
+      history.length > 0 ? Math.round((totalXp / history.length) * 100) / 100 : 0;
+
+    return {
+      history,
+      totalThisWeek,
+      totalThisMonth,
+      averagePerDay,
+      bestDay: bestDay.xp > 0 ? bestDay : { date: '', xp: 0 },
     };
   }
 }

@@ -277,14 +277,7 @@ describe('Navbar', () => {
     });
 
     it('should render showBack with custom back label and XP', () => {
-      const { getByText } = render(
-        <Navbar
-          showBack
-          backLabel="Return"
-          totalXp={1000}
-          level={2}
-        />
-      );
+      const { getByText } = render(<Navbar showBack backLabel="Return" totalXp={1000} level={2} />);
 
       expect(getByText('Return')).toBeTruthy();
       expect(getByText('1,000 XP')).toBeTruthy();
@@ -319,12 +312,7 @@ describe('Navbar', () => {
 
     it('should override default values when props are provided', () => {
       const { getByText } = render(
-        <Navbar
-          totalXp={5000}
-          level={10}
-          levelTitle="Master"
-          xpForNextLevel={2000}
-        />
+        <Navbar totalXp={5000} level={10} levelTitle="Master" xpForNextLevel={2000} />
       );
 
       expect(getByText('5,000 XP')).toBeTruthy();
@@ -356,13 +344,15 @@ describe('Navbar', () => {
         />
       );
 
-      expect(getByText('This is a very long subtitle that might overflow the navbar and cause layout issues')).toBeTruthy();
+      expect(
+        getByText(
+          'This is a very long subtitle that might overflow the navbar and cause layout issues'
+        )
+      ).toBeTruthy();
     });
 
     it('should handle very long back label', () => {
-      const { getByText } = render(
-        <Navbar showBack backLabel="This is a very long back label" />
-      );
+      const { getByText } = render(<Navbar showBack backLabel="This is a very long back label" />);
 
       expect(getByText('This is a very long back label')).toBeTruthy();
     });

@@ -1,5 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 
+export type RankChangeDirection = 'up' | 'down' | 'same' | 'new';
+
 export class LeaderboardEntryDto {
   @ApiProperty({ example: 1, description: 'Posición en el ranking' })
   rank: number;
@@ -25,6 +27,22 @@ export class LeaderboardEntryDto {
 
   @ApiProperty({ example: false, description: 'Indica si es el usuario actual' })
   isCurrentUser: boolean;
+
+  @ApiProperty({
+    example: 3,
+    description:
+      'Cambio de posición desde el día anterior (positivo = subió, negativo = bajó, 0 = sin cambio)',
+    required: false,
+  })
+  rankChange?: number;
+
+  @ApiProperty({
+    example: 'up',
+    description: 'Dirección del cambio de ranking',
+    enum: ['up', 'down', 'same', 'new'],
+    required: false,
+  })
+  rankChangeDirection?: RankChangeDirection;
 }
 
 export class LeaderboardResponseDto {

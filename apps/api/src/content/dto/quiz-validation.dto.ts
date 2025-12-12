@@ -1,8 +1,19 @@
-import { IsString, IsIn, IsOptional, IsArray, IsNumber, IsBoolean, ValidateIf, ArrayMinSize } from 'class-validator';
+import {
+  IsString,
+  IsIn,
+  IsOptional,
+  IsArray,
+  IsNumber,
+  IsBoolean,
+  ValidateIf,
+  ArrayMinSize,
+} from 'class-validator';
 
 export class QuizValidationDto {
   @IsString({ message: 'type debe ser una cadena de texto' })
-  @IsIn(['multiple_choice', 'true_false', 'code_completion'], { message: 'type debe ser multiple_choice, true_false o code_completion' })
+  @IsIn(['multiple_choice', 'true_false', 'code_completion'], {
+    message: 'type debe ser multiple_choice, true_false o code_completion',
+  })
   type!: 'multiple_choice' | 'true_false' | 'code_completion';
 
   @IsString({ message: 'question debe ser una cadena de texto' })

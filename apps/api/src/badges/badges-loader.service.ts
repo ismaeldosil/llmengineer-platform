@@ -85,25 +85,20 @@ export class BadgesLoaderService {
             result.created++;
           }
 
-          this.logger.debug(
-            `${isUpdate ? 'Updated' : 'Created'} badge: ${badgeData.slug}`,
-          );
+          this.logger.debug(`${isUpdate ? 'Updated' : 'Created'} badge: ${badgeData.slug}`);
         } catch (error) {
-          const errorMessage =
-            error instanceof Error ? error.message : 'Unknown error';
+          const errorMessage = error instanceof Error ? error.message : 'Unknown error';
           result.errors.push({
             slug: badgeData.slug || 'unknown',
             error: errorMessage,
           });
-          this.logger.error(
-            `Error processing badge ${badgeData.slug}: ${errorMessage}`,
-          );
+          this.logger.error(`Error processing badge ${badgeData.slug}: ${errorMessage}`);
         }
       }
 
       // Log summary
       this.logger.log(
-        `Badges loaded successfully. Created: ${result.created}, Updated: ${result.updated}, Errors: ${result.errors.length}`,
+        `Badges loaded successfully. Created: ${result.created}, Updated: ${result.updated}, Errors: ${result.errors.length}`
       );
 
       if (result.errors.length > 0) {
@@ -115,8 +110,7 @@ export class BadgesLoaderService {
 
       return result;
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : 'Unknown error';
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       this.logger.error(`Failed to load badges from file: ${errorMessage}`);
       throw new Error(`Failed to load badges: ${errorMessage}`);
     }
@@ -146,16 +140,10 @@ export class BadgesLoaderService {
     }
 
     // Check category is valid
-    const validCategories: string[] = [
-      'progress',
-      'streak',
-      'completion',
-      'mastery',
-      'special',
-    ];
+    const validCategories: string[] = ['progress', 'streak', 'completion', 'mastery', 'special'];
     if (!validCategories.includes(b.category)) {
       this.logger.warn(
-        `Invalid category for badge ${b.slug}: ${b.category}. Valid categories: ${validCategories.join(', ')}`,
+        `Invalid category for badge ${b.slug}: ${b.category}. Valid categories: ${validCategories.join(', ')}`
       );
       return false;
     }
@@ -228,10 +216,7 @@ export class BadgesLoaderService {
    * @returns Result summary with counts of created/updated badges
    */
   async loadDefaultBadges(): Promise<BadgeLoadResult> {
-    const defaultPath = path.resolve(
-      process.cwd(),
-      'prisma/content/badges.json',
-    );
+    const defaultPath = path.resolve(process.cwd(), 'prisma/content/badges.json');
     return this.loadBadgesFromFile(defaultPath);
   }
 }

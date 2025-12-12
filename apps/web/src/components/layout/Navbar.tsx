@@ -65,7 +65,9 @@ export function Navbar({
             <Text style={styles.levelBadgeText}>Lvl {level}</Text>
           </View>
           <View style={styles.levelInfo}>
-            <Text style={styles.levelXpText}>{xpForNextLevel} XP para {levelTitle}</Text>
+            <Text style={styles.levelXpText}>
+              {xpForNextLevel} XP para {levelTitle}
+            </Text>
             <Text style={styles.levelTitleText}>Publisher</Text>
           </View>
         </View>

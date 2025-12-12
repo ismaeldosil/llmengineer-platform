@@ -55,18 +55,8 @@ export function StatsGrid({
 
   return (
     <View style={styles.container}>
-      <StatCard
-        icon={Zap}
-        iconColor="#facc15"
-        label="XP Total"
-        value={totalXp.toLocaleString()}
-      />
-      <StatCard
-        icon={Trophy}
-        iconColor="#a855f7"
-        label="Nivel"
-        value={levelTitle}
-      />
+      <StatCard icon={Zap} iconColor="#facc15" label="XP Total" value={totalXp.toLocaleString()} />
+      <StatCard icon={Trophy} iconColor="#a855f7" label="Nivel" value={levelTitle} />
       <StatCard
         icon={Flame}
         iconColor="#f97316"
@@ -74,12 +64,7 @@ export function StatsGrid({
         value={currentStreak}
         suffix="días"
       />
-      <StatCard
-        icon={Target}
-        iconColor="#3b82f6"
-        label="Progreso"
-        value={`${progressPercent}%`}
-      />
+      <StatCard icon={Target} iconColor="#3b82f6" label="Progreso" value={`${progressPercent}%`} />
     </View>
   );
 }

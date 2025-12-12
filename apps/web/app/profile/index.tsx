@@ -1,12 +1,11 @@
 import { View, Text, StyleSheet, ScrollView, Pressable, ActivityIndicator } from 'react-native';
 import { Stack, router } from 'expo-router';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import type { RootState } from '@/store';
-import { logout } from '@/store/slices/authSlice';
 import { useGetProgressQuery, useGetBadgesQuery } from '@/services/api';
+import { Settings } from 'lucide-react-native';
 
 export default function ProfileScreen() {
-  const dispatch = useDispatch();
   const user = useSelector((state: RootState) => state.auth.user);
   const {
     data: progress,
@@ -15,14 +14,13 @@ export default function ProfileScreen() {
   } = useGetProgressQuery();
   const { data: badges, isLoading: badgesLoading, isError: badgesError } = useGetBadgesQuery();
 
-  const handleLogout = () => {
-    dispatch(logout());
-    router.replace('/');
-  };
-
   const handleEditProfile = () => {
     // Placeholder for future implementation
     // TODO: Implement edit profile modal
+  };
+
+  const handleNavigateToSettings = () => {
+    router.push('/profile/settings');
   };
 
   const isLoading = progressLoading || badgesLoading;
@@ -142,12 +140,13 @@ export default function ProfileScreen() {
         <View style={styles.settingsSection}>
           <Text style={styles.sectionTitle}>Configuración</Text>
           <Pressable
-            style={styles.logoutButton}
-            onPress={handleLogout}
-            accessibilityLabel="Cerrar sesión"
+            style={styles.settingsButton}
+            onPress={handleNavigateToSettings}
+            accessibilityLabel="Ir a configuración"
             accessibilityRole="button"
           >
-            <Text style={styles.logoutText}>Cerrar Sesión</Text>
+            <Settings size={20} color="#3B82F6" />
+            <Text style={styles.settingsButtonText}>Configuración</Text>
           </Pressable>
         </View>
       </ScrollView>
@@ -341,16 +340,20 @@ const styles = StyleSheet.create({
   settingsSection: {
     padding: 24,
   },
-  logoutButton: {
+  settingsButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
     paddingVertical: 16,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#EF4444',
-    alignItems: 'center',
+    borderColor: '#3B82F6',
+    backgroundColor: '#1F2937',
+    gap: 8,
   },
-  logoutText: {
+  settingsButtonText: {
     fontSize: 16,
-    fontWeight: '500',
-    color: '#EF4444',
+    fontWeight: '600',
+    color: '#3B82F6',
   },
 });

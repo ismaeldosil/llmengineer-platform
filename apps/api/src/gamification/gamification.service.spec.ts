@@ -450,15 +450,13 @@ describe('GamificationService', () => {
         currentStreak: 2,
       };
 
-      mockPrismaService.streakLog.findUnique
-        .mockResolvedValueOnce(null)
-        .mockResolvedValueOnce({
-          id: 'log-1',
-          userId: mockUserId,
-          date: yesterday,
-          checkedIn: true,
-          bonusXp: 5,
-        });
+      mockPrismaService.streakLog.findUnique.mockResolvedValueOnce(null).mockResolvedValueOnce({
+        id: 'log-1',
+        userId: mockUserId,
+        date: yesterday,
+        checkedIn: true,
+        bonusXp: 5,
+      });
 
       const updatedProgress = {
         ...progressWith2Streak,
@@ -503,15 +501,13 @@ describe('GamificationService', () => {
         longestStreak: 10,
       };
 
-      mockPrismaService.streakLog.findUnique
-        .mockResolvedValueOnce(null)
-        .mockResolvedValueOnce({
-          id: 'log-1',
-          userId: mockUserId,
-          date: yesterday,
-          checkedIn: true,
-          bonusXp: 10,
-        });
+      mockPrismaService.streakLog.findUnique.mockResolvedValueOnce(null).mockResolvedValueOnce({
+        id: 'log-1',
+        userId: mockUserId,
+        date: yesterday,
+        checkedIn: true,
+        bonusXp: 10,
+      });
 
       mockPrismaService.userProgress.findUnique.mockResolvedValue(progressWithLowerLongest);
 
@@ -552,15 +548,13 @@ describe('GamificationService', () => {
         currentStreak: 6,
       };
 
-      mockPrismaService.streakLog.findUnique
-        .mockResolvedValueOnce(null)
-        .mockResolvedValueOnce({
-          id: 'log-1',
-          userId: mockUserId,
-          date: yesterday,
-          checkedIn: true,
-          bonusXp: 10,
-        });
+      mockPrismaService.streakLog.findUnique.mockResolvedValueOnce(null).mockResolvedValueOnce({
+        id: 'log-1',
+        userId: mockUserId,
+        date: yesterday,
+        checkedIn: true,
+        bonusXp: 10,
+      });
 
       mockPrismaService.userProgress.findUnique.mockResolvedValue(progressWith6Streak);
 
@@ -591,15 +585,13 @@ describe('GamificationService', () => {
         currentStreak: 13,
       };
 
-      mockPrismaService.streakLog.findUnique
-        .mockResolvedValueOnce(null)
-        .mockResolvedValueOnce({
-          id: 'log-1',
-          userId: mockUserId,
-          date: yesterday,
-          checkedIn: true,
-          bonusXp: 25,
-        });
+      mockPrismaService.streakLog.findUnique.mockResolvedValueOnce(null).mockResolvedValueOnce({
+        id: 'log-1',
+        userId: mockUserId,
+        date: yesterday,
+        checkedIn: true,
+        bonusXp: 25,
+      });
 
       mockPrismaService.userProgress.findUnique.mockResolvedValue(progressWith13Streak);
 
@@ -630,15 +622,13 @@ describe('GamificationService', () => {
         currentStreak: 29,
       };
 
-      mockPrismaService.streakLog.findUnique
-        .mockResolvedValueOnce(null)
-        .mockResolvedValueOnce({
-          id: 'log-1',
-          userId: mockUserId,
-          date: yesterday,
-          checkedIn: true,
-          bonusXp: 50,
-        });
+      mockPrismaService.streakLog.findUnique.mockResolvedValueOnce(null).mockResolvedValueOnce({
+        id: 'log-1',
+        userId: mockUserId,
+        date: yesterday,
+        checkedIn: true,
+        bonusXp: 50,
+      });
 
       mockPrismaService.userProgress.findUnique.mockResolvedValue(progressWith29Streak);
 
@@ -691,9 +681,7 @@ describe('GamificationService', () => {
       };
 
       mockPrismaService.badge.findMany.mockResolvedValue([lessonBadge]);
-      mockPrismaService.userBadge.findMany.mockResolvedValue([
-        { badgeId: lessonBadge.id },
-      ]);
+      mockPrismaService.userBadge.findMany.mockResolvedValue([{ badgeId: lessonBadge.id }]);
 
       const result = await service.checkAndAwardBadges(mockUserId);
 

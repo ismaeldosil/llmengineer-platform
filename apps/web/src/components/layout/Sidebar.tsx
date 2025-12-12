@@ -20,7 +20,13 @@ const DEFAULT_MODULES: Module[] = [
   { id: '1', title: 'Setup + Fundamentos', lessonsCompleted: 5, totalLessons: 5, isComplete: true },
   { id: '2', title: 'Plugins Core + Web', lessonsCompleted: 6, totalLessons: 6, isComplete: true },
   { id: '3', title: 'Desarrollo + Build', lessonsCompleted: 5, totalLessons: 5, isComplete: true },
-  { id: '4', title: 'Testing + App Store', lessonsCompleted: 0, totalLessons: 4, isComplete: false },
+  {
+    id: '4',
+    title: 'Testing + App Store',
+    lessonsCompleted: 0,
+    totalLessons: 4,
+    isComplete: false,
+  },
 ];
 
 export function Sidebar({ modules = DEFAULT_MODULES, currentModuleId }: SidebarProps) {
@@ -43,9 +49,7 @@ export function Sidebar({ modules = DEFAULT_MODULES, currentModuleId }: SidebarP
         onPress={() => router.push('/dashboard/' as any)}
       >
         <Icon icon={LayoutDashboard} size="md" variant={isDashboard ? 'primary' : 'secondary'} />
-        <Text style={[styles.navItemText, isDashboard && styles.navItemTextActive]}>
-          Dashboard
-        </Text>
+        <Text style={[styles.navItemText, isDashboard && styles.navItemTextActive]}>Dashboard</Text>
       </Pressable>
 
       {/* Modules Section */}
@@ -55,9 +59,10 @@ export function Sidebar({ modules = DEFAULT_MODULES, currentModuleId }: SidebarP
 
       {modules.map((module) => {
         const isActive = currentModuleId === module.id;
-        const progress = module.totalLessons > 0
-          ? Math.round((module.lessonsCompleted / module.totalLessons) * 100)
-          : 0;
+        const progress =
+          module.totalLessons > 0
+            ? Math.round((module.lessonsCompleted / module.totalLessons) * 100)
+            : 0;
 
         return (
           <Pressable

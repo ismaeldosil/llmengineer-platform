@@ -14,7 +14,9 @@ export class BadgeValidationDto {
   icon!: string;
 
   @IsString({ message: 'category debe ser una cadena de texto' })
-  @IsIn(['lessons', 'streaks', 'xp', 'quizzes', 'special'], { message: 'category debe ser lessons, streaks, xp, quizzes o special' })
+  @IsIn(['lessons', 'streaks', 'xp', 'quizzes', 'special'], {
+    message: 'category debe ser lessons, streaks, xp, quizzes o special',
+  })
   category!: 'lessons' | 'streaks' | 'xp' | 'quizzes' | 'special';
 
   @IsNumber({}, { message: 'requirement debe ser un número' })

@@ -480,14 +480,14 @@ describe('UsersController', () => {
       };
 
       mockUsersService.updateProfile.mockRejectedValue(
-        new BadRequestException('El nombre no puede estar vacío'),
+        new BadRequestException('El nombre no puede estar vacío')
       );
 
       await expect(controller.updateProfile(mockUser, updateDto)).rejects.toThrow(
-        BadRequestException,
+        BadRequestException
       );
       await expect(controller.updateProfile(mockUser, updateDto)).rejects.toThrow(
-        'El nombre no puede estar vacío',
+        'El nombre no puede estar vacío'
       );
     });
 
@@ -498,9 +498,7 @@ describe('UsersController', () => {
 
       mockUsersService.updateProfile.mockRejectedValue(new Error('Database error'));
 
-      await expect(controller.updateProfile(mockUser, updateDto)).rejects.toThrow(
-        'Database error',
-      );
+      await expect(controller.updateProfile(mockUser, updateDto)).rejects.toThrow('Database error');
     });
 
     it('should update profile for different users', async () => {
@@ -745,14 +743,18 @@ describe('UsersController', () => {
           { week: 3, count: 4 },
         ],
         quizAverage: 95.5,
-        xpHistory: Array(30).fill(null).map((_, i) => ({
-          date: `2024-01-${(i + 1).toString().padStart(2, '0')}`,
-          xp: 200,
-        })),
-        streakHistory: Array(30).fill(null).map((_, i) => ({
-          date: `2024-01-${(i + 1).toString().padStart(2, '0')}`,
-          streak: i + 1,
-        })),
+        xpHistory: Array(30)
+          .fill(null)
+          .map((_, i) => ({
+            date: `2024-01-${(i + 1).toString().padStart(2, '0')}`,
+            xp: 200,
+          })),
+        streakHistory: Array(30)
+          .fill(null)
+          .map((_, i) => ({
+            date: `2024-01-${(i + 1).toString().padStart(2, '0')}`,
+            streak: i + 1,
+          })),
         totalLessonsCompleted: 20,
         totalQuizzesTaken: 20,
         perfectQuizzes: 10,
