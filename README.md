@@ -13,6 +13,36 @@
 
 Plataforma gamificada de aprendizaje para LLM Engineering - Aprende a construir aplicaciones con LLMs en 8 semanas.
 
+## Curriculum del Curso
+
+### Semanas 1-2: Fundamentos (✅ Completado)
+| Lección | Tema | Contenido |
+|---------|------|-----------|
+| 1 | Intro to LLMs | Qué son los LLMs, tokenización, arquitectura transformer |
+| 2 | API Basics | OpenAI API, autenticación, primeras llamadas |
+| 3 | Prompt Engineering | Técnicas de prompting, few-shot, chain-of-thought |
+| 4 | Temperature & Sampling | Parámetros de generación, top-p, top-k |
+| 5 | System Prompts | Roles, personalización, mejores prácticas |
+| 6 | Context Management | Manejo de contexto, tokens, ventanas |
+| 7 | Structured Outputs | JSON mode, function calling, validación |
+| 8 | Error Handling | Manejo de errores, retries, rate limits |
+| 9 | Streaming | Respuestas en streaming, SSE |
+| 10 | Cost Optimization | Optimización de costos, caching, batching |
+
+### Semanas 3-8: Contenido Avanzado (✅ Completado)
+| Lección | Tema | Contenido |
+|---------|------|-----------|
+| 11 | RAG Fundamentals | Vector DBs, Embeddings, Chunking strategies |
+| 12 | RAG Advanced | Hybrid Search, Re-ranking, Query transformation |
+| 13 | Evaluation & Benchmarking | Métricas, LLM-as-Judge, Benchmarks estándar |
+| 14 | Agents & Tool Use | Function calling, ReAct pattern, Tool orchestration |
+| 15 | Agents Advanced | Multi-Agent Systems, LangGraph, CrewAI |
+| 16 | Security & Guardrails | Prompt injection, PII detection, Content moderation |
+| 17 | Fine-tuning & Adaptation | LoRA, QLoRA, Dataset preparation |
+| 18 | Production MLOps | Observability, Latency optimization, A/B testing |
+| 19 | Multimodal Models | Vision models, Audio processing, Document analysis |
+| 20 | Local Models & Edge | Ollama, Quantization, Edge deployment |
+
 ## Stack Tecnológico
 
 ### Frontend (apps/web)
