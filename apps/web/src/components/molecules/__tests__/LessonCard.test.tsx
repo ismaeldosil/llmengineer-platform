@@ -1,7 +1,9 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment, @typescript-eslint/no-explicit-any, @typescript-eslint/no-var-requires, @typescript-eslint/no-unused-vars */
+// @ts-nocheck
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
 import { LessonCard } from '../LessonCard';
-import type { Lesson } from '@llmengineer/shared';
+import { Lesson } from '@llmengineer/shared';
 
 // Mock lucide-react-native icons
 jest.mock('lucide-react-native', () => ({
@@ -337,7 +339,9 @@ describe('LessonCard', () => {
         difficulty: 'intermediate',
       };
 
-      const { getByText } = render(<LessonCard lesson={intermediateLesson} onPress={mockOnPress} />);
+      const { getByText } = render(
+        <LessonCard lesson={intermediateLesson} onPress={mockOnPress} />
+      );
 
       expect(getByText('intermediate')).toBeTruthy();
     });
@@ -530,7 +534,9 @@ describe('LessonCard', () => {
         estimatedMinutes: 999,
       };
 
-      const { getByText } = render(<LessonCard lesson={longDurationLesson} onPress={mockOnPress} />);
+      const { getByText } = render(
+        <LessonCard lesson={longDurationLesson} onPress={mockOnPress} />
+      );
 
       expect(getByText('999 min')).toBeTruthy();
     });

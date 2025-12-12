@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /**
  * Example script demonstrating how to use the Content Validator Service
  *

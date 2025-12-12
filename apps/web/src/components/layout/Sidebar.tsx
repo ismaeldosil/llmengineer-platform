@@ -36,6 +36,7 @@ export function Sidebar({ modules = DEFAULT_MODULES, currentModuleId }: SidebarP
   return (
     <View style={styles.container}>
       {/* Logo */}
+      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
       <Pressable style={styles.logoContainer} onPress={() => router.push('/dashboard/' as any)}>
         <View style={styles.logoIcon}>
           <Icon icon={Zap} size="lg" color="#22c55e" />
@@ -46,6 +47,7 @@ export function Sidebar({ modules = DEFAULT_MODULES, currentModuleId }: SidebarP
       {/* Dashboard Link */}
       <Pressable
         style={[styles.navItem, isDashboard && styles.navItemActive]}
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         onPress={() => router.push('/dashboard/' as any)}
       >
         <Icon icon={LayoutDashboard} size="md" variant={isDashboard ? 'primary' : 'secondary'} />
@@ -68,6 +70,7 @@ export function Sidebar({ modules = DEFAULT_MODULES, currentModuleId }: SidebarP
           <Pressable
             key={module.id}
             style={[styles.moduleItem, isActive && styles.moduleItemActive]}
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             onPress={() => router.push(`/lessons/?module=${module.id}` as any)}
           >
             <View style={styles.moduleIconContainer}>

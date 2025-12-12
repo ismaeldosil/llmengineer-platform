@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { Stack } from 'expo-router';
 import { Gamepad2 } from 'lucide-react-native';
 import { Icon } from '@/components/ui/Icon';
-import { GameCard, type GameCardProps } from '@/components/games/GameCard';
+import { GameCard } from '@/components/games/GameCard';
 
 interface Game {
   id: string;

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-var-requires, @typescript-eslint/no-unused-vars */
 import { render, fireEvent } from '@testing-library/react-native';
 import { SectionNavigation } from '../SectionNavigation';
 

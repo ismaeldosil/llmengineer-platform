@@ -8,7 +8,8 @@ export default function AuthLayout() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      router.replace('/dashboard');
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      router.replace('/dashboard/' as any);
     }
   }, [isAuthenticated]);
 

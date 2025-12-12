@@ -16,7 +16,7 @@ export interface GameCardProps {
 }
 
 export function GameCard({
-  id,
+  id: _id,
   slug,
   name,
   description,
@@ -29,6 +29,7 @@ export function GameCard({
 
   const handlePress = () => {
     if (isLocked) return;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     router.push(`/games/${slug}` as any);
   };
 
@@ -56,6 +57,7 @@ export function GameCard({
           isLocked && styles.cardLocked,
           {
             cursor: isLocked ? 'not-allowed' : 'pointer',
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
           } as any,
         ]}
         onPress={handlePress}
@@ -65,12 +67,7 @@ export function GameCard({
       >
         {/* Header with Icon and High Score */}
         <View style={styles.header}>
-          <View
-            style={[
-              styles.iconContainer,
-              isLocked && styles.iconContainerLocked,
-            ]}
-          >
+          <View style={[styles.iconContainer, isLocked && styles.iconContainerLocked]}>
             {isLocked ? (
               <Icon icon={Lock} size="lg" color="#64748b" />
             ) : (

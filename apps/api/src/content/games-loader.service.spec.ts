@@ -79,6 +79,7 @@ describe('GamesLoaderService', () => {
     service = module.get<GamesLoaderService>(GamesLoaderService);
 
     // Override the gamesBasePath for testing
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (service as any).gamesBasePath = testGamesDir;
 
     // Create test directory

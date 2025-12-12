@@ -69,9 +69,7 @@ export const GameHeader: React.FC<GameHeaderProps> = ({
           onPress={onPauseToggle}
         >
           <Icon icon={isPaused ? Play : Pause} size="sm" color="#f8fafc" />
-          <Text style={styles.pauseButtonText}>
-            {isPaused ? 'Resume' : 'Pause'}
-          </Text>
+          <Text style={styles.pauseButtonText}>{isPaused ? 'Resume' : 'Pause'}</Text>
         </Pressable>
       </View>
 

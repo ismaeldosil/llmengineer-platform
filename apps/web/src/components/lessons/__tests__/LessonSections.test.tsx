@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-var-requires, @typescript-eslint/no-unused-vars */
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import { LessonSections, Section } from '../LessonSections';
 
@@ -209,11 +210,7 @@ describe('LessonSections', () => {
 
   it('renders error state when no section data is available', () => {
     const { getByText } = render(
-      <LessonSections
-        sections={[]}
-        currentSection={0}
-        onSectionChange={mockOnSectionChange}
-      />
+      <LessonSections sections={[]} currentSection={0} onSectionChange={mockOnSectionChange} />
     );
 
     expect(getByText('No section data available')).toBeTruthy();

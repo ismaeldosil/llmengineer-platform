@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment, @typescript-eslint/no-explicit-any, @typescript-eslint/no-var-requires, @typescript-eslint/no-unused-vars */
+// @ts-nocheck
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
 import { Button } from '../Button';
@@ -369,7 +371,8 @@ describe('Button', () => {
     });
 
     it('should handle very long text', () => {
-      const longText = 'This is a very long button text that should still render correctly without breaking the layout or causing any issues';
+      const longText =
+        'This is a very long button text that should still render correctly without breaking the layout or causing any issues';
       const { getByText } = render(<Button onPress={mockOnPress}>{longText}</Button>);
 
       expect(getByText(longText)).toBeTruthy();

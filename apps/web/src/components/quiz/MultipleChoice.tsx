@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, Pressable, Animated } from 'react-native';
-import { useState, useRef, useEffect } from 'react';
+import { useRef, useEffect } from 'react';
 import { Circle, CheckCircle, XCircle } from 'lucide-react-native';
 import { Icon } from '@/components/ui/Icon';
 
@@ -42,13 +42,16 @@ export function MultipleChoice({
     if (disabled) return;
 
     // Animate the pressed option
+    const scaleAnim = scaleAnims[index];
+    if (!scaleAnim) return;
+
     Animated.sequence([
-      Animated.timing(scaleAnims[index], {
+      Animated.timing(scaleAnim, {
         toValue: 0.96,
         duration: 100,
         useNativeDriver: true,
       }),
-      Animated.spring(scaleAnims[index], {
+      Animated.spring(scaleAnim, {
         toValue: 1,
         friction: 3,
         tension: 40,
@@ -168,7 +171,7 @@ export function MultipleChoice({
           <Animated.View
             key={index}
             style={{
-              transform: [{ scale: scaleAnims[index] }],
+              transform: [{ scale: scaleAnims[index] ?? 1 }],
             }}
           >
             <Pressable
@@ -198,7 +201,9 @@ export function MultipleChoice({
                 <Icon icon={CheckCircle} size="md" color="#10B981" />
                 <View style={styles.feedbackTextContainer}>
                   <Text style={styles.feedbackTitle}>Correct!</Text>
-                  <Text style={styles.feedbackDescription}>Well done! That's the right answer.</Text>
+                  <Text style={styles.feedbackDescription}>
+                    Well done! That's the right answer.
+                  </Text>
                 </View>
               </>
             ) : (

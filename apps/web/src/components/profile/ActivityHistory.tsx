@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { BookOpen, Award, TrendingUp, Gamepad2, LucideIcon } from 'lucide-react-native';
 import { Icon } from '@/components/ui/Icon';
 import { Button } from '@/components/ui/Button';

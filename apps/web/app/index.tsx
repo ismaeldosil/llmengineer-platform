@@ -8,7 +8,8 @@ export default function Home() {
 
   // Si está autenticado, redirigir al dashboard
   if (isAuthenticated) {
-    return <Redirect href="/dashboard" />;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return <Redirect href={'/dashboard/' as any} />;
   }
 
   const handleLogin = () => {

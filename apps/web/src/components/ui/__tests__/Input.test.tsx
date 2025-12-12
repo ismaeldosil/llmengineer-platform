@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-var-requires, @typescript-eslint/no-unused-vars */
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
 import { Input } from '../Input';
@@ -69,17 +70,13 @@ describe('Input', () => {
     });
 
     it('should render error with correct testID', () => {
-      const { getByTestId } = render(
-        <Input error="Invalid email" testID="email-input" />
-      );
+      const { getByTestId } = render(<Input error="Invalid email" testID="email-input" />);
 
       expect(getByTestId('email-input-error')).toBeTruthy();
     });
 
     it('should apply error styles when error is present', () => {
-      const { getByTestId } = render(
-        <Input error="Error message" testID="error-input" />
-      );
+      const { getByTestId } = render(<Input error="Error message" testID="error-input" />);
 
       const input = getByTestId('error-input');
       expect(input.props.style).toBeDefined();
@@ -101,9 +98,7 @@ describe('Input', () => {
   describe('Text Input', () => {
     it('should call onChange when text is entered', () => {
       const mockOnChange = jest.fn();
-      const { getByTestId } = render(
-        <Input onChangeText={mockOnChange} testID="text-input" />
-      );
+      const { getByTestId } = render(<Input onChangeText={mockOnChange} testID="text-input" />);
 
       fireEvent.changeText(getByTestId('text-input'), 'Hello World');
 
@@ -112,9 +107,7 @@ describe('Input', () => {
 
     it('should handle multiple text changes', () => {
       const mockOnChange = jest.fn();
-      const { getByTestId } = render(
-        <Input onChangeText={mockOnChange} testID="text-input" />
-      );
+      const { getByTestId } = render(<Input onChangeText={mockOnChange} testID="text-input" />);
 
       fireEvent.changeText(getByTestId('text-input'), 'First');
       fireEvent.changeText(getByTestId('text-input'), 'Second');
@@ -125,9 +118,7 @@ describe('Input', () => {
 
     it('should handle empty text input', () => {
       const mockOnChange = jest.fn();
-      const { getByTestId } = render(
-        <Input onChangeText={mockOnChange} testID="text-input" />
-      );
+      const { getByTestId } = render(<Input onChangeText={mockOnChange} testID="text-input" />);
 
       fireEvent.changeText(getByTestId('text-input'), '');
 
@@ -136,9 +127,7 @@ describe('Input', () => {
 
     it('should handle special characters', () => {
       const mockOnChange = jest.fn();
-      const { getByTestId } = render(
-        <Input onChangeText={mockOnChange} testID="text-input" />
-      );
+      const { getByTestId } = render(<Input onChangeText={mockOnChange} testID="text-input" />);
 
       const specialText = '!@#$%^&*()_+-=[]{}|;:,.<>?';
       fireEvent.changeText(getByTestId('text-input'), specialText);
@@ -148,9 +137,7 @@ describe('Input', () => {
 
     it('should handle long text input', () => {
       const mockOnChange = jest.fn();
-      const { getByTestId } = render(
-        <Input onChangeText={mockOnChange} testID="text-input" />
-      );
+      const { getByTestId } = render(<Input onChangeText={mockOnChange} testID="text-input" />);
 
       const longText = 'a'.repeat(1000);
       fireEvent.changeText(getByTestId('text-input'), longText);
@@ -161,9 +148,7 @@ describe('Input', () => {
 
   describe('Placeholder', () => {
     it('should display placeholder text', () => {
-      const { getByPlaceholderText } = render(
-        <Input placeholder="Type something..." />
-      );
+      const { getByPlaceholderText } = render(<Input placeholder="Type something..." />);
 
       expect(getByPlaceholderText('Type something...')).toBeTruthy();
     });
@@ -175,9 +160,7 @@ describe('Input', () => {
     });
 
     it('should have correct placeholder color', () => {
-      const { getByTestId } = render(
-        <Input placeholder="Placeholder" testID="input" />
-      );
+      const { getByTestId } = render(<Input placeholder="Placeholder" testID="input" />);
 
       const input = getByTestId('input');
       expect(input.props.placeholderTextColor).toBe('#6B7280');
@@ -186,9 +169,7 @@ describe('Input', () => {
 
   describe('Label and Error Combined', () => {
     it('should show both label and error', () => {
-      const { getByText } = render(
-        <Input label="Password" error="Password is too short" />
-      );
+      const { getByText } = render(<Input label="Password" error="Password is too short" />);
 
       expect(getByText('Password')).toBeTruthy();
       expect(getByText('Password is too short')).toBeTruthy();
@@ -196,11 +177,7 @@ describe('Input', () => {
 
     it('should render complete input with label, placeholder, and error', () => {
       const { getByText, getByPlaceholderText } = render(
-        <Input
-          label="Email"
-          placeholder="user@example.com"
-          error="Invalid email format"
-        />
+        <Input label="Email" placeholder="user@example.com" error="Invalid email format" />
       );
 
       expect(getByText('Email')).toBeTruthy();
@@ -212,27 +189,21 @@ describe('Input', () => {
   describe('Custom Styles', () => {
     it('should apply custom style', () => {
       const customStyle = { backgroundColor: 'blue' };
-      const { getByTestId } = render(
-        <Input style={customStyle} testID="custom-input" />
-      );
+      const { getByTestId } = render(<Input style={customStyle} testID="custom-input" />);
 
       expect(getByTestId('custom-input')).toBeTruthy();
     });
 
     it('should merge custom styles with default styles', () => {
       const customStyle = { marginTop: 20 };
-      const { getByTestId } = render(
-        <Input style={customStyle} testID="styled-input" />
-      );
+      const { getByTestId } = render(<Input style={customStyle} testID="styled-input" />);
 
       expect(getByTestId('styled-input')).toBeTruthy();
     });
 
     it('should override default styles with custom styles', () => {
       const customStyle = { borderRadius: 20 };
-      const { getByTestId } = render(
-        <Input style={customStyle} testID="override-input" />
-      );
+      const { getByTestId } = render(<Input style={customStyle} testID="override-input" />);
 
       expect(getByTestId('override-input')).toBeTruthy();
     });
@@ -240,72 +211,56 @@ describe('Input', () => {
 
   describe('TextInput Props', () => {
     it('should pass through secureTextEntry prop', () => {
-      const { getByTestId } = render(
-        <Input secureTextEntry testID="password-input" />
-      );
+      const { getByTestId } = render(<Input secureTextEntry testID="password-input" />);
 
       const input = getByTestId('password-input');
       expect(input.props.secureTextEntry).toBe(true);
     });
 
     it('should pass through keyboardType prop', () => {
-      const { getByTestId } = render(
-        <Input keyboardType="email-address" testID="email-input" />
-      );
+      const { getByTestId } = render(<Input keyboardType="email-address" testID="email-input" />);
 
       const input = getByTestId('email-input');
       expect(input.props.keyboardType).toBe('email-address');
     });
 
     it('should pass through autoCapitalize prop', () => {
-      const { getByTestId } = render(
-        <Input autoCapitalize="none" testID="input" />
-      );
+      const { getByTestId } = render(<Input autoCapitalize="none" testID="input" />);
 
       const input = getByTestId('input');
       expect(input.props.autoCapitalize).toBe('none');
     });
 
     it('should pass through autoCorrect prop', () => {
-      const { getByTestId } = render(
-        <Input autoCorrect={false} testID="input" />
-      );
+      const { getByTestId } = render(<Input autoCorrect={false} testID="input" />);
 
       const input = getByTestId('input');
       expect(input.props.autoCorrect).toBe(false);
     });
 
     it('should pass through editable prop', () => {
-      const { getByTestId } = render(
-        <Input editable={false} testID="readonly-input" />
-      );
+      const { getByTestId } = render(<Input editable={false} testID="readonly-input" />);
 
       const input = getByTestId('readonly-input');
       expect(input.props.editable).toBe(false);
     });
 
     it('should pass through maxLength prop', () => {
-      const { getByTestId } = render(
-        <Input maxLength={100} testID="limited-input" />
-      );
+      const { getByTestId } = render(<Input maxLength={100} testID="limited-input" />);
 
       const input = getByTestId('limited-input');
       expect(input.props.maxLength).toBe(100);
     });
 
     it('should pass through multiline prop', () => {
-      const { getByTestId } = render(
-        <Input multiline testID="textarea-input" />
-      );
+      const { getByTestId } = render(<Input multiline testID="textarea-input" />);
 
       const input = getByTestId('textarea-input');
       expect(input.props.multiline).toBe(true);
     });
 
     it('should pass through numberOfLines prop', () => {
-      const { getByTestId } = render(
-        <Input multiline numberOfLines={4} testID="textarea-input" />
-      );
+      const { getByTestId } = render(<Input multiline numberOfLines={4} testID="textarea-input" />);
 
       const input = getByTestId('textarea-input');
       expect(input.props.numberOfLines).toBe(4);
@@ -315,9 +270,7 @@ describe('Input', () => {
   describe('Event Handlers', () => {
     it('should call onFocus when input is focused', () => {
       const mockOnFocus = jest.fn();
-      const { getByTestId } = render(
-        <Input onFocus={mockOnFocus} testID="input" />
-      );
+      const { getByTestId } = render(<Input onFocus={mockOnFocus} testID="input" />);
 
       fireEvent(getByTestId('input'), 'focus');
 
@@ -326,9 +279,7 @@ describe('Input', () => {
 
     it('should call onBlur when input loses focus', () => {
       const mockOnBlur = jest.fn();
-      const { getByTestId } = render(
-        <Input onBlur={mockOnBlur} testID="input" />
-      );
+      const { getByTestId } = render(<Input onBlur={mockOnBlur} testID="input" />);
 
       fireEvent(getByTestId('input'), 'blur');
 
@@ -337,9 +288,7 @@ describe('Input', () => {
 
     it('should call onSubmitEditing when submitted', () => {
       const mockOnSubmit = jest.fn();
-      const { getByTestId } = render(
-        <Input onSubmitEditing={mockOnSubmit} testID="input" />
-      );
+      const { getByTestId } = render(<Input onSubmitEditing={mockOnSubmit} testID="input" />);
 
       fireEvent(getByTestId('input'), 'submitEditing');
 
@@ -384,9 +333,7 @@ describe('Input', () => {
     });
 
     it('should handle null error gracefully', () => {
-      const { queryByTestId } = render(
-        <Input error={undefined} testID="input" />
-      );
+      const { queryByTestId } = render(<Input error={undefined} testID="input" />);
 
       expect(queryByTestId('input-error')).toBeNull();
     });

@@ -37,7 +37,7 @@ interface StatsGridProps {
 
 export function StatsGrid({
   totalXp,
-  level,
+  level: _level,
   levelTitle,
   currentStreak,
   progressPercent,

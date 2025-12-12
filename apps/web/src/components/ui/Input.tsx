@@ -10,14 +10,22 @@ interface InputProps extends TextInputProps {
 export function Input({ label, error, style, testID, ...props }: InputProps) {
   return (
     <View style={styles.container} testID={testID ? `${testID}-container` : 'input-container'}>
-      {label && <Text style={styles.label} testID={testID ? `${testID}-label` : 'input-label'}>{label}</Text>}
+      {label && (
+        <Text style={styles.label} testID={testID ? `${testID}-label` : 'input-label'}>
+          {label}
+        </Text>
+      )}
       <TextInput
         style={[styles.input, error ? styles.inputError : null, style]}
         placeholderTextColor="#6B7280"
         testID={testID}
         {...props}
       />
-      {error && <Text style={styles.error} testID={testID ? `${testID}-error` : 'input-error'}>{error}</Text>}
+      {error && (
+        <Text style={styles.error} testID={testID ? `${testID}-error` : 'input-error'}>
+          {error}
+        </Text>
+      )}
     </View>
   );
 }

@@ -9,7 +9,7 @@ interface PromptInputProps {
 }
 
 const countTokens = (text: string): number => {
-  return text.split(/[\s.,!?;:'"()\[\]{}]+/).filter(Boolean).length;
+  return text.split(/[\s.,!?;:'"()[\]{}]+/).filter(Boolean).length;
 };
 
 export function PromptInput({

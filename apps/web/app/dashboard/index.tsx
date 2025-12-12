@@ -3,11 +3,7 @@ import { View, Text, StyleSheet, ScrollView, RefreshControl, Alert, Platform } f
 import { Stack } from 'expo-router';
 import { useSelector } from 'react-redux';
 import type { RootState } from '@/store';
-import {
-  useGetProgressQuery,
-  useGetMeQuery,
-  useGetLessonsQuery,
-} from '@/services/api';
+import { useGetProgressQuery, useGetMeQuery, useGetLessonsQuery } from '@/services/api';
 import { useAuth } from '@/hooks/useAuth';
 import { MainLayout } from '@/components/layout';
 import { StatsGrid, GlobalProgress, ModuleCard } from '@/components/molecules';

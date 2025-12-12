@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-var-requires, @typescript-eslint/no-unused-vars */
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
 import { MatchCard } from '../MatchCard';
@@ -60,9 +61,7 @@ describe('MatchCard', () => {
   });
 
   it('should apply matched styling when matched', () => {
-    const { getByText } = render(
-      <MatchCard {...defaultProps} isMatched={true} isFlipped={true} />
-    );
+    const { getByText } = render(<MatchCard {...defaultProps} isMatched={true} isFlipped={true} />);
 
     const cardText = getByText('Neural Network');
     expect(cardText).toBeTruthy();

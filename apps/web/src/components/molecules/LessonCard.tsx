@@ -107,6 +107,7 @@ export function LessonCard({ lesson, onPress, status, isLocked = false }: Lesson
             borderColor: getBorderColor(),
             opacity: lessonStatus === 'locked' ? 0.6 : 1,
             cursor: lessonStatus === 'locked' ? 'not-allowed' : 'pointer',
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
           } as any,
         ]}
         onPress={handlePress}

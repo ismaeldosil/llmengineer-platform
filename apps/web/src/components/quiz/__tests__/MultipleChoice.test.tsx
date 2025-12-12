@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-var-requires, @typescript-eslint/no-unused-vars */
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import { MultipleChoice } from '../MultipleChoice';
@@ -273,21 +274,11 @@ describe('MultipleChoice', () => {
 
     it('should animate feedback appearance', async () => {
       const { getByText, rerender } = render(
-        <MultipleChoice
-          {...defaultProps}
-          selectedAnswer={1}
-          correctAnswer={1}
-          showResult={false}
-        />
+        <MultipleChoice {...defaultProps} selectedAnswer={1} correctAnswer={1} showResult={false} />
       );
 
       rerender(
-        <MultipleChoice
-          {...defaultProps}
-          selectedAnswer={1}
-          correctAnswer={1}
-          showResult={true}
-        />
+        <MultipleChoice {...defaultProps} selectedAnswer={1} correctAnswer={1} showResult={true} />
       );
 
       await waitFor(() => {
@@ -475,34 +466,19 @@ describe('MultipleChoice', () => {
   describe('Multiple Renders', () => {
     it('should handle toggling showResult', () => {
       const { getByText, queryByText, rerender } = render(
-        <MultipleChoice
-          {...defaultProps}
-          selectedAnswer={1}
-          correctAnswer={1}
-          showResult={false}
-        />
+        <MultipleChoice {...defaultProps} selectedAnswer={1} correctAnswer={1} showResult={false} />
       );
 
       expect(queryByText('Correct!')).toBeNull();
 
       rerender(
-        <MultipleChoice
-          {...defaultProps}
-          selectedAnswer={1}
-          correctAnswer={1}
-          showResult={true}
-        />
+        <MultipleChoice {...defaultProps} selectedAnswer={1} correctAnswer={1} showResult={true} />
       );
 
       expect(getByText('Correct!')).toBeTruthy();
 
       rerender(
-        <MultipleChoice
-          {...defaultProps}
-          selectedAnswer={1}
-          correctAnswer={1}
-          showResult={false}
-        />
+        <MultipleChoice {...defaultProps} selectedAnswer={1} correctAnswer={1} showResult={false} />
       );
 
       expect(queryByText('Correct!')).toBeNull();
@@ -510,23 +486,13 @@ describe('MultipleChoice', () => {
 
     it('should handle changing from correct to incorrect answer', () => {
       const { getByText, rerender } = render(
-        <MultipleChoice
-          {...defaultProps}
-          selectedAnswer={1}
-          correctAnswer={1}
-          showResult={true}
-        />
+        <MultipleChoice {...defaultProps} selectedAnswer={1} correctAnswer={1} showResult={true} />
       );
 
       expect(getByText('Correct!')).toBeTruthy();
 
       rerender(
-        <MultipleChoice
-          {...defaultProps}
-          selectedAnswer={0}
-          correctAnswer={1}
-          showResult={true}
-        />
+        <MultipleChoice {...defaultProps} selectedAnswer={0} correctAnswer={1} showResult={true} />
       );
 
       expect(getByText('Incorrect')).toBeTruthy();
@@ -538,10 +504,7 @@ describe('MultipleChoice', () => {
       expect(getByText('London')).toBeTruthy();
 
       rerender(
-        <MultipleChoice
-          {...defaultProps}
-          options={['Tokyo', 'Seoul', 'Beijing', 'Bangkok']}
-        />
+        <MultipleChoice {...defaultProps} options={['Tokyo', 'Seoul', 'Beijing', 'Bangkok']} />
       );
 
       expect(queryByText('London')).toBeNull();
