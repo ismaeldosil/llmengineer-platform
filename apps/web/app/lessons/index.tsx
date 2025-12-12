@@ -12,7 +12,8 @@ import { Stack, router } from 'expo-router';
 import { useGetLessonsQuery, useGetProgressQuery } from '@/services/api';
 import { LessonCard } from '@/components/molecules/LessonCard';
 import { MainLayout } from '@/components/layout';
-import { ChevronRight, BookOpen, CheckCircle2 } from 'lucide-react-native';
+import { LessonSearch } from '@/components/lessons';
+import { ChevronRight, BookOpen, CheckCircle2, Search } from 'lucide-react-native';
 import { Icon } from '@/components/ui/Icon';
 import { getLevelTitle, XP_PER_LEVEL, getXpProgressInLevel } from '@llmengineer/shared';
 import type { Lesson } from '@llmengineer/shared';
@@ -21,6 +22,7 @@ export default function LessonsScreen() {
   const { data: lessons, isLoading, error, refetch } = useGetLessonsQuery();
   const { data: progress } = useGetProgressQuery();
   const [refreshing, setRefreshing] = useState(false);
+  const [showSearch, setShowSearch] = useState(false);
 
   const totalXp = progress?.totalXp || 0;
   const level = progress?.level || 1;
@@ -108,6 +110,12 @@ export default function LessonsScreen() {
             Aprende los fundamentos de LLM Engineering paso a paso
           </Text>
         </View>
+        <Pressable
+          style={[styles.searchButton, showSearch && styles.searchButtonActive]}
+          onPress={() => setShowSearch(!showSearch)}
+        >
+          <Icon icon={Search} size="md" color={showSearch ? '#F9FAFB' : '#9CA3AF'} />
+        </Pressable>
       </View>
 
       {/* Progress Stats */}
@@ -140,6 +148,13 @@ export default function LessonsScreen() {
           <Text style={styles.progressText}>{progressPercent}% completado</Text>
         </View>
       </View>
+
+      {/* Search Panel */}
+      {showSearch && (
+        <View style={styles.searchPanel}>
+          <LessonSearch />
+        </View>
+      )}
     </View>
   );
 
@@ -369,5 +384,23 @@ const styles = StyleSheet.create({
   emptyText: {
     fontSize: 16,
     color: '#9CA3AF',
+  },
+  searchButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    backgroundColor: '#1F2937',
+    borderWidth: 1,
+    borderColor: '#374151',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  searchButtonActive: {
+    backgroundColor: '#3B82F6',
+    borderColor: '#3B82F6',
+  },
+  searchPanel: {
+    marginTop: 16,
+    marginBottom: 8,
   },
 });

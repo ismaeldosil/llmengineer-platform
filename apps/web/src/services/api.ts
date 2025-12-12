@@ -12,6 +12,20 @@ import type {
   SubmitQuizRequest,
 } from '@llmengineer/shared';
 
+export interface SearchResult {
+  lessonId: string;
+  lessonSlug: string;
+  lessonTitle: string;
+  week: number;
+  matchType: 'title' | 'description' | 'section' | 'keyPoint' | 'quiz';
+  sectionTitle?: string;
+  sectionIndex?: number;
+  questionIndex?: number;
+  matchedText: string;
+  contextBefore: string;
+  contextAfter: string;
+}
+
 const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3001';
 
 export const apiSlice = createApi({
@@ -84,6 +98,11 @@ export const apiSlice = createApi({
       }),
       invalidatesTags: ['Progress', 'Lessons', 'Badges'],
     }),
+    searchLessons: builder.query<SearchResult[], { query: string; limit?: number }>({
+      query: ({ query, limit = 20 }) =>
+        `/lessons/search?query=${encodeURIComponent(query)}&limit=${limit}`,
+      providesTags: ['Lessons'],
+    }),
 
     // Badges
     getBadges: builder.query<{ earned: Badge[]; locked: Badge[] }, void>({
@@ -134,6 +153,7 @@ export const {
   useGetNextLessonQuery,
   useGetLessonQuery,
   useCompleteLessonMutation,
+  useSearchLessonsQuery,
   useGetBadgesQuery,
   useGetLeaderboardQuery,
   useCheckinMutation,
