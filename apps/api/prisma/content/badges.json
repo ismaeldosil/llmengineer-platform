@@ -1,0 +1,150 @@
+{
+  "badges": [
+    {
+      "slug": "first-lesson",
+      "name": "Primera Lección",
+      "description": "Completa tu primera lección",
+      "icon": "🎯",
+      "category": "progress",
+      "requirement": {
+        "type": "lessons_completed",
+        "value": 1
+      },
+      "xpReward": 50
+    },
+    {
+      "slug": "quiz-master",
+      "name": "Quiz Master",
+      "description": "Obtén 100% en 5 quizzes",
+      "icon": "🏆",
+      "category": "mastery",
+      "requirement": {
+        "type": "perfect_quizzes",
+        "value": 5
+      },
+      "xpReward": 200
+    },
+    {
+      "slug": "week-complete",
+      "name": "Semana Completa",
+      "description": "Completa todas las lecciones de una semana",
+      "icon": "📚",
+      "category": "completion",
+      "requirement": {
+        "type": "week_completed",
+        "value": 1
+      },
+      "xpReward": 100
+    },
+    {
+      "slug": "streak-3",
+      "name": "Racha de 3",
+      "description": "Mantén una racha de 3 días consecutivos",
+      "icon": "🔥",
+      "category": "streak",
+      "requirement": {
+        "type": "streak",
+        "value": 3
+      },
+      "xpReward": 75
+    },
+    {
+      "slug": "streak-7",
+      "name": "Racha Semanal",
+      "description": "Mantén una racha de 7 días consecutivos",
+      "icon": "⚡",
+      "category": "streak",
+      "requirement": {
+        "type": "streak",
+        "value": 7
+      },
+      "xpReward": 150
+    },
+    {
+      "slug": "level-5",
+      "name": "Nivel 5",
+      "description": "Alcanza el nivel 5",
+      "icon": "🌟",
+      "category": "progress",
+      "requirement": {
+        "type": "level",
+        "value": 5
+      },
+      "xpReward": 100
+    },
+    {
+      "slug": "level-10",
+      "name": "Nivel 10",
+      "description": "Alcanza el nivel 10",
+      "icon": "💫",
+      "category": "progress",
+      "requirement": {
+        "type": "level",
+        "value": 10
+      },
+      "xpReward": 250
+    },
+    {
+      "slug": "ten-lessons",
+      "name": "Estudiante Dedicado",
+      "description": "Completa 10 lecciones",
+      "icon": "📖",
+      "category": "completion",
+      "requirement": {
+        "type": "lessons_completed",
+        "value": 10
+      },
+      "xpReward": 150
+    },
+    {
+      "slug": "all-weeks",
+      "name": "Curso Completo",
+      "description": "Completa todas las semanas del curso",
+      "icon": "🎓",
+      "category": "completion",
+      "requirement": {
+        "type": "all_weeks_completed",
+        "value": true
+      },
+      "xpReward": 500
+    },
+    {
+      "slug": "xp-1000",
+      "name": "1000 XP",
+      "description": "Acumula 1000 puntos de experiencia",
+      "icon": "💰",
+      "category": "progress",
+      "requirement": {
+        "type": "total_xp",
+        "value": 1000
+      },
+      "xpReward": 100
+    },
+    {
+      "slug": "early-bird",
+      "name": "Madrugador",
+      "description": "Badge secreto: Completa una lección antes de las 6 AM",
+      "icon": "🌅",
+      "category": "special",
+      "requirement": {
+        "type": "special",
+        "value": "early_bird"
+      },
+      "xpReward": 300,
+      "isSecret": true
+    },
+    {
+      "slug": "night-owl",
+      "name": "Ave Nocturna",
+      "description": "Badge secreto: Completa una lección después de las 12 AM",
+      "icon": "🦉",
+      "category": "special",
+      "requirement": {
+        "type": "special",
+        "value": "night_owl"
+      },
+      "xpReward": 300,
+      "isSecret": true
+    }
+  ]
+}

@@ -1,10 +1,11 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBearerAuth, ApiOkResponse } from '@nestjs/swagger';
+import { Controller, Get, Patch, Body, UseGuards } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiBearerAuth, ApiOkResponse, ApiBody } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { BadgesService } from '../badges/badges.service';
 import { UserBadgesResponseDto } from '../badges/dto/badge-response.dto';
+import { UpdateProfileDto, UserResponseDto } from './dto';
 
 @ApiTags('users')
 @ApiBearerAuth()
@@ -18,8 +19,23 @@ export class UsersController {
 
   @Get('me')
   @ApiOperation({ summary: 'Obtener usuario actual' })
-  async getMe(@CurrentUser() user: { id: string }) {
+  @ApiOkResponse({ type: UserResponseDto })
+  async getMe(@CurrentUser() user: { id: string }): Promise<UserResponseDto> {
     return this.usersService.findById(user.id);
+  }
+
+  @Patch('me')
+  @ApiOperation({ summary: 'Actualizar perfil del usuario' })
+  @ApiBody({ type: UpdateProfileDto })
+  @ApiOkResponse({
+    type: UserResponseDto,
+    description: 'Perfil actualizado exitosamente',
+  })
+  async updateProfile(
+    @CurrentUser() user: { id: string },
+    @Body() dto: UpdateProfileDto,
+  ): Promise<UserResponseDto> {
+    return this.usersService.updateProfile(user.id, dto);
   }
 
   @Get('me/progress')
