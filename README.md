@@ -112,6 +112,9 @@ npm run db:migrate -w @llmengineer/api   # Ejecuta migraciones
 npm run db:push -w @llmengineer/api      # Push schema a DB
 npm run db:studio -w @llmengineer/api    # Abre Prisma Studio
 
+# Contenido (sync lecciones)
+cd apps/api && npx ts-node scripts/sync-from-ts.ts  # Sync desde TypeScript
+
 # Linting
 npm run lint             # ESLint
 npm run typecheck        # TypeScript check
@@ -123,7 +126,10 @@ npm run typecheck        # TypeScript check
 llmengineer-platform/
 ├── apps/
 │   ├── api/                 # Backend NestJS
-│   │   ├── prisma/          # Schema y migraciones
+│   │   ├── prisma/
+│   │   │   ├── schema.prisma
+│   │   │   └── content/     # Contenido de lecciones (TypeScript)
+│   │   ├── scripts/         # Scripts de sincronización
 │   │   └── src/
 │   │       ├── auth/        # Autenticación
 │   │       ├── users/       # Usuarios y progreso
