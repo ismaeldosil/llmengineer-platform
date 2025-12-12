@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, Pressable, ScrollView, Platform, Alert } from 'react-native';
-import { useTokenTetris, TETROMINOS } from './useTokenTetris';
+import { useTokenTetris } from './useTokenTetris';
 import { TetrisBoard } from './TetrisBoard';
 import { TetrisPiece } from './TetrisPiece';
 

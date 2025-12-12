@@ -56,7 +56,20 @@ const getColorForXP = (xp: number): string => {
 // Format date for tooltip
 const formatDate = (dateStr: string): string => {
   const date = new Date(dateStr);
-  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const months = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
+  ];
   const month = months[date.getMonth()];
   return `${month || 'Unknown'} ${date.getDate()}, ${date.getFullYear()}`;
 };
@@ -69,7 +82,20 @@ const getDayOfWeek = (dateStr: string): number => {
 // Get month labels for the graph
 const getMonthLabels = (data: DayActivity[]): Array<{ month: string; index: number }> => {
   const labels: Array<{ month: string; index: number }> = [];
-  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const months = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
+  ];
   let lastMonth = -1;
 
   data.forEach((day, index) => {
@@ -122,10 +148,7 @@ const organizeDaysIntoGrid = (days: DayActivity[]): DayActivity[][] => {
   if (!firstDay) return [];
 
   const firstDayOfWeek = getDayOfWeek(firstDay.date);
-  const paddedDays: (DayActivity | null)[] = [
-    ...Array(firstDayOfWeek).fill(null),
-    ...days,
-  ];
+  const paddedDays: (DayActivity | null)[] = [...Array(firstDayOfWeek).fill(null), ...days];
 
   // Organize into columns (weeks)
   const columns: DayActivity[][] = [];
@@ -175,10 +198,7 @@ export function ActivityGraph({ data, onDayPress }: ActivityGraphProps) {
         {monthLabels.map((label, index) => (
           <View
             key={index}
-            style={[
-              styles.monthLabel,
-              { left: label.index * (SQUARE_SIZE + SQUARE_GAP) + 40 },
-            ]}
+            style={[styles.monthLabel, { left: label.index * (SQUARE_SIZE + SQUARE_GAP) + 40 }]}
           >
             <Text style={styles.monthLabelText}>{label.month}</Text>
           </View>
@@ -212,10 +232,7 @@ export function ActivityGraph({ data, onDayPress }: ActivityGraphProps) {
                 return (
                   <Pressable
                     key={dayIndex}
-                    style={[
-                      styles.square,
-                      { backgroundColor: getColorForXP(day.xp) },
-                    ]}
+                    style={[styles.square, { backgroundColor: getColorForXP(day.xp) }]}
                     onPress={() => handleDayPress(day)}
                     onPressOut={handlePressOut}
                   >
@@ -256,9 +273,7 @@ export function ActivityGraph({ data, onDayPress }: ActivityGraphProps) {
         >
           <Text style={styles.tooltipDate}>{formatDate(tooltip.day.date)}</Text>
           <Text style={styles.tooltipXP}>
-            {tooltip.day.xp === 0
-              ? 'No XP earned'
-              : `${tooltip.day.xp.toLocaleString()} XP`}
+            {tooltip.day.xp === 0 ? 'No XP earned' : `${tooltip.day.xp.toLocaleString()} XP`}
           </Text>
         </View>
       )}

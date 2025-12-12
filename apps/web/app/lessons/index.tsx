@@ -66,7 +66,8 @@ export default function LessonsScreen() {
 
   const totalLessons = lessons?.length || 0;
   const completedLessons = lessons?.filter((l) => l.isCompleted).length || 0;
-  const progressPercent = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
+  const progressPercent =
+    totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
 
   if (isLoading) {
     return (
@@ -167,7 +168,10 @@ export default function LessonsScreen() {
               </View>
               {item.lessons.map((lesson) => (
                 <View key={lesson.id} style={styles.lessonItem}>
-                  <LessonCard lesson={lesson} onPress={() => router.push(`/lessons/${lesson.id}`)} />
+                  <LessonCard
+                    lesson={lesson}
+                    onPress={() => router.push(`/lessons/${lesson.id}`)}
+                  />
                 </View>
               ))}
             </View>

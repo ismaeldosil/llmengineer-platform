@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-var-requires, @typescript-eslint/no-unused-vars */
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
 import { ModuleCard } from '../ModuleCard';
@@ -325,7 +326,9 @@ describe('ModuleCard', () => {
     expect(getTextCompleted('Revisar')).toBeTruthy();
 
     // Locked status
-    const { getByText: getTextLocked } = render(<ModuleCard {...mockModuleProps} status="locked" />);
+    const { getByText: getTextLocked } = render(
+      <ModuleCard {...mockModuleProps} status="locked" />
+    );
     expect(getTextLocked('Bloqueado')).toBeTruthy();
   });
 

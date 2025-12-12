@@ -243,7 +243,7 @@ export function FilteredExample() {
     },
   ];
 
-  const [filter, setFilter] = useState<Activity['type'] | 'all'>('all');
+  const [filter, _setFilter] = useState<Activity['type'] | 'all'>('all');
 
   const filteredActivities =
     filter === 'all' ? allActivities : allActivities.filter((a) => a.type === filter);

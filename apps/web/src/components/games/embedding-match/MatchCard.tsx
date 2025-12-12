@@ -11,7 +11,7 @@ export interface MatchCardProps {
 }
 
 export const MatchCard: React.FC<MatchCardProps> = ({
-  id,
+  id: _id,
   text,
   isFlipped,
   isMatched,
@@ -80,7 +80,7 @@ export const MatchCard: React.FC<MatchCardProps> = ({
         disabled={disabled || isFlipped || isMatched}
         style={({ pressed }) => [
           styles.cardWrapper,
-          (pressed && !isFlipped && !isMatched) && styles.cardPressed,
+          pressed && !isFlipped && !isMatched && styles.cardPressed,
         ]}
       >
         <View style={[styles.cardInner, getCardStyle()]}>
@@ -115,13 +115,7 @@ export const MatchCard: React.FC<MatchCardProps> = ({
               },
             ]}
           >
-            <Text
-              style={[
-                styles.cardText,
-                isMatched && styles.cardTextMatched,
-              ]}
-              numberOfLines={3}
-            >
+            <Text style={[styles.cardText, isMatched && styles.cardTextMatched]} numberOfLines={3}>
               {text}
             </Text>
           </Animated.View>

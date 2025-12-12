@@ -67,7 +67,7 @@ const DIFFICULTY_SETTINGS = {
 
 const TOTAL_PAIRS = 8;
 
-const shuffleArray = <T,>(array: T[]): T[] => {
+const shuffleArray = <T>(array: T[]): T[] => {
   const newArray = [...array];
   for (let i = newArray.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -171,61 +171,56 @@ export const useEmbeddingMatch = (): UseEmbeddingMatchReturn => {
     });
   }, []);
 
-  const checkMatch = useCallback(
-    (card1Id: string, card2Id: string) => {
-      setGameState((prev) => {
-        const card1 = prev.cards.find((c) => c.id === card1Id);
-        const card2 = prev.cards.find((c) => c.id === card2Id);
+  const checkMatch = useCallback((card1Id: string, card2Id: string) => {
+    setGameState((prev) => {
+      const card1 = prev.cards.find((c) => c.id === card1Id);
+      const card2 = prev.cards.find((c) => c.id === card2Id);
 
-        if (!card1 || !card2) return prev;
+      if (!card1 || !card2) return prev;
 
-        const isMatch = card1.pairId === card2.pairId;
-        const settings = DIFFICULTY_SETTINGS[prev.level];
+      const isMatch = card1.pairId === card2.pairId;
+      const settings = DIFFICULTY_SETTINGS[prev.level];
 
-        if (isMatch) {
-          // Calculate score with time bonus
-          const timeBonus = Math.floor(prev.timeRemaining / 10);
-          const baseScore = 100 * settings.scoreMultiplier;
-          const scoreGain = Math.floor(baseScore + timeBonus);
+      if (isMatch) {
+        // Calculate score with time bonus
+        const timeBonus = Math.floor(prev.timeRemaining / 10);
+        const baseScore = 100 * settings.scoreMultiplier;
+        const scoreGain = Math.floor(baseScore + timeBonus);
 
-          const newMatchedPairs = prev.matchedPairs + 1;
-          const isVictory = newMatchedPairs === TOTAL_PAIRS;
+        const newMatchedPairs = prev.matchedPairs + 1;
+        const isVictory = newMatchedPairs === TOTAL_PAIRS;
 
-          return {
-            ...prev,
-            cards: prev.cards.map((c) =>
-              c.id === card1Id || c.id === card2Id
-                ? { ...c, isMatched: true, isFlipped: true }
-                : c
+        return {
+          ...prev,
+          cards: prev.cards.map((c) =>
+            c.id === card1Id || c.id === card2Id ? { ...c, isMatched: true, isFlipped: true } : c
+          ),
+          selectedCards: [],
+          matchedPairs: newMatchedPairs,
+          score: prev.score + scoreGain,
+          attempts: prev.attempts + 1,
+          isGameOver: isVictory,
+          isVictory,
+        };
+      } else {
+        // Wrong match - flip back after delay
+        flipBackTimeoutRef.current = setTimeout(() => {
+          setGameState((current) => ({
+            ...current,
+            cards: current.cards.map((c) =>
+              c.id === card1Id || c.id === card2Id ? { ...c, isFlipped: false } : c
             ),
             selectedCards: [],
-            matchedPairs: newMatchedPairs,
-            score: prev.score + scoreGain,
-            attempts: prev.attempts + 1,
-            isGameOver: isVictory,
-            isVictory,
-          };
-        } else {
-          // Wrong match - flip back after delay
-          flipBackTimeoutRef.current = setTimeout(() => {
-            setGameState((current) => ({
-              ...current,
-              cards: current.cards.map((c) =>
-                c.id === card1Id || c.id === card2Id ? { ...c, isFlipped: false } : c
-              ),
-              selectedCards: [],
-            }));
-          }, 1000);
+          }));
+        }, 1000);
 
-          return {
-            ...prev,
-            attempts: prev.attempts + 1,
-          };
-        }
-      });
-    },
-    []
-  );
+        return {
+          ...prev,
+          attempts: prev.attempts + 1,
+        };
+      }
+    });
+  }, []);
 
   const handleCardPress = useCallback(
     (cardId: string) => {
@@ -239,9 +234,7 @@ export const useEmbeddingMatch = (): UseEmbeddingMatchReturn => {
         if (prev.selectedCards.length >= 2) return prev;
 
         const newSelectedCards = [...prev.selectedCards, cardId];
-        const newCards = prev.cards.map((c) =>
-          c.id === cardId ? { ...c, isFlipped: true } : c
-        );
+        const newCards = prev.cards.map((c) => (c.id === cardId ? { ...c, isFlipped: true } : c));
 
         // If this is the second card, check for match
         if (newSelectedCards.length === 2) {

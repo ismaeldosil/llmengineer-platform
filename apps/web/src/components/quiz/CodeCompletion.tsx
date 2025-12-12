@@ -57,9 +57,72 @@ export function CodeCompletion({
   // Syntax highlighting helper
   const highlightSyntax = (code: string) => {
     const keywords: Record<string, string[]> = {
-      javascript: ['const', 'let', 'var', 'function', 'async', 'await', 'return', 'if', 'else', 'for', 'while', 'class', 'export', 'import', 'from', 'new', 'this', 'typeof', 'instanceof'],
-      typescript: ['const', 'let', 'var', 'function', 'async', 'await', 'return', 'if', 'else', 'for', 'while', 'class', 'export', 'import', 'from', 'new', 'this', 'typeof', 'instanceof', 'interface', 'type', 'enum'],
-      python: ['def', 'class', 'if', 'else', 'elif', 'for', 'while', 'return', 'import', 'from', 'as', 'with', 'try', 'except', 'finally', 'async', 'await', 'lambda', 'yield'],
+      javascript: [
+        'const',
+        'let',
+        'var',
+        'function',
+        'async',
+        'await',
+        'return',
+        'if',
+        'else',
+        'for',
+        'while',
+        'class',
+        'export',
+        'import',
+        'from',
+        'new',
+        'this',
+        'typeof',
+        'instanceof',
+      ],
+      typescript: [
+        'const',
+        'let',
+        'var',
+        'function',
+        'async',
+        'await',
+        'return',
+        'if',
+        'else',
+        'for',
+        'while',
+        'class',
+        'export',
+        'import',
+        'from',
+        'new',
+        'this',
+        'typeof',
+        'instanceof',
+        'interface',
+        'type',
+        'enum',
+      ],
+      python: [
+        'def',
+        'class',
+        'if',
+        'else',
+        'elif',
+        'for',
+        'while',
+        'return',
+        'import',
+        'from',
+        'as',
+        'with',
+        'try',
+        'except',
+        'finally',
+        'async',
+        'await',
+        'lambda',
+        'yield',
+      ],
     };
 
     const langKeywords = keywords[language] || keywords.javascript;
@@ -68,11 +131,18 @@ export function CodeCompletion({
     const lines = code.split('\n');
 
     return lines.map((line, lineIndex) => {
-      const parts: Array<{ text: string; type: 'keyword' | 'string' | 'number' | 'comment' | 'text' }> = [];
-      let currentPos = 0;
+      const parts: Array<{
+        text: string;
+        type: 'keyword' | 'string' | 'number' | 'comment' | 'text';
+      }> = [];
+      const _currentPos = 0;
 
       // Simple regex-based tokenization
-      const tokens: Array<{ text: string; type: 'keyword' | 'string' | 'number' | 'comment' | 'text'; start: number }> = [];
+      const tokens: Array<{
+        text: string;
+        type: 'keyword' | 'string' | 'number' | 'comment' | 'text';
+        start: number;
+      }> = [];
 
       // Match comments
       const commentMatch = line.match(/\/\/.*/);
@@ -95,7 +165,7 @@ export function CodeCompletion({
       }
 
       // Match keywords
-      langKeywords.forEach(keyword => {
+      langKeywords.forEach((keyword) => {
         const keywordRegex = new RegExp(`\\b${keyword}\\b`, 'g');
         while ((match = keywordRegex.exec(line)) !== null) {
           tokens.push({ text: match[0], type: 'keyword', start: match.index });
@@ -107,7 +177,7 @@ export function CodeCompletion({
 
       // Build parts array
       let lastEnd = 0;
-      tokens.forEach(token => {
+      tokens.forEach((token) => {
         // Add text before token
         if (token.start > lastEnd) {
           parts.push({ text: line.substring(lastEnd, token.start), type: 'text' });
@@ -197,11 +267,16 @@ export function CodeCompletion({
                 />
               )}
               {/* Show after code on same line if both exist */}
-              {isLastLine && afterLines.length > 0 && afterLines[0].parts.map((part, partIndex) => (
-                <Text key={`after-inline-${partIndex}`} style={[styles.codeText, getTextStyle(part.type)]}>
-                  {part.text}
-                </Text>
-              ))}
+              {isLastLine &&
+                afterLines.length > 0 &&
+                afterLines[0].parts.map((part, partIndex) => (
+                  <Text
+                    key={`after-inline-${partIndex}`}
+                    style={[styles.codeText, getTextStyle(part.type)]}
+                  >
+                    {part.text}
+                  </Text>
+                ))}
             </View>
           );
         })}
@@ -240,9 +315,7 @@ export function CodeCompletion({
       <Text style={styles.question}>{question}</Text>
 
       {/* Code Block */}
-      <View style={styles.codeContainer}>
-        {renderCodeWithInput()}
-      </View>
+      <View style={styles.codeContainer}>{renderCodeWithInput()}</View>
 
       {/* Result Feedback */}
       {showResult && (

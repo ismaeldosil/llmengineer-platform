@@ -1,5 +1,3 @@
-import { resolve } from 'path';
-
 // Set test environment variables before any other imports
 // NOTE: Commented out DATABASE_URL to use main database for now due to Prisma connection issues
 // process.env.DATABASE_URL = 'postgresql://postgres:postgres@localhost:5432/llmengineer_test';

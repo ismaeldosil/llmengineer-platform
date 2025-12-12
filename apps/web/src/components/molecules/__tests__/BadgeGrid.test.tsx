@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-var-requires, @typescript-eslint/no-unused-vars */
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
 import { BadgeGrid, Badge, BadgeGridProps } from '../BadgeGrid';
@@ -63,7 +64,9 @@ describe('BadgeGrid', () => {
     });
 
     it('should render single badge', () => {
-      const { getByText } = render(<BadgeGrid badges={[mockBadges[0]!]} unlockedBadgeIds={['1']} />);
+      const { getByText } = render(
+        <BadgeGrid badges={[mockBadges[0]!]} unlockedBadgeIds={['1']} />
+      );
 
       expect(getByText('First Steps')).toBeTruthy();
       expect(getByText('🎯')).toBeTruthy();

@@ -10,7 +10,9 @@ interface EmbeddingMatchGameProps {
   onGameOver?: (score: number) => void;
 }
 
-export const EmbeddingMatchGame: React.FC<EmbeddingMatchGameProps> = ({ onGameOver }) => {
+export const EmbeddingMatchGame: React.FC<EmbeddingMatchGameProps> = ({
+  onGameOver: _onGameOver,
+}) => {
   const { gameState, actions } = useEmbeddingMatch();
   const [showLevelSelect, setShowLevelSelect] = useState(true);
 
@@ -29,21 +31,20 @@ export const EmbeddingMatchGame: React.FC<EmbeddingMatchGameProps> = ({ onGameOv
   };
 
   const handleGoHome = () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     router.push('/games' as any);
   };
 
   // Calculate accuracy
   const accuracy =
-    gameState.attempts > 0
-      ? ((gameState.matchedPairs / gameState.attempts) * 100)
-      : 100;
+    gameState.attempts > 0 ? (gameState.matchedPairs / gameState.attempts) * 100 : 100;
 
   const timeElapsed =
     gameState.level === 'easy'
       ? 180 - gameState.timeRemaining
       : gameState.level === 'medium'
-      ? 150 - gameState.timeRemaining
-      : 120 - gameState.timeRemaining;
+        ? 150 - gameState.timeRemaining
+        : 120 - gameState.timeRemaining;
 
   // Level Selection Screen
   if (showLevelSelect) {
@@ -51,50 +52,33 @@ export const EmbeddingMatchGame: React.FC<EmbeddingMatchGameProps> = ({ onGameOv
       <View style={styles.levelSelectContainer}>
         <View style={styles.levelSelectContent}>
           <Text style={styles.title}>Embedding Match</Text>
-          <Text style={styles.subtitle}>
-            Match LLM concepts with their related terms
-          </Text>
+          <Text style={styles.subtitle}>Match LLM concepts with their related terms</Text>
 
           <View style={styles.levelCards}>
-            <Pressable
-              style={styles.levelCard}
-              onPress={() => handleLevelSelect('easy')}
-            >
+            <Pressable style={styles.levelCard} onPress={() => handleLevelSelect('easy')}>
               <Text style={styles.levelEmoji}>🟢</Text>
               <Text style={styles.levelName}>Easy</Text>
-              <Text style={styles.levelDescription}>
-                3 minutes • Basic concepts
-              </Text>
+              <Text style={styles.levelDescription}>3 minutes • Basic concepts</Text>
               <View style={styles.levelStats}>
                 <Text style={styles.levelStat}>8 pairs</Text>
                 <Text style={styles.levelStat}>1x score</Text>
               </View>
             </Pressable>
 
-            <Pressable
-              style={styles.levelCard}
-              onPress={() => handleLevelSelect('medium')}
-            >
+            <Pressable style={styles.levelCard} onPress={() => handleLevelSelect('medium')}>
               <Text style={styles.levelEmoji}>🟡</Text>
               <Text style={styles.levelName}>Medium</Text>
-              <Text style={styles.levelDescription}>
-                2.5 minutes • Intermediate
-              </Text>
+              <Text style={styles.levelDescription}>2.5 minutes • Intermediate</Text>
               <View style={styles.levelStats}>
                 <Text style={styles.levelStat}>8 pairs</Text>
                 <Text style={styles.levelStat}>1.5x score</Text>
               </View>
             </Pressable>
 
-            <Pressable
-              style={styles.levelCard}
-              onPress={() => handleLevelSelect('hard')}
-            >
+            <Pressable style={styles.levelCard} onPress={() => handleLevelSelect('hard')}>
               <Text style={styles.levelEmoji}>🔴</Text>
               <Text style={styles.levelName}>Hard</Text>
-              <Text style={styles.levelDescription}>
-                2 minutes • Advanced
-              </Text>
+              <Text style={styles.levelDescription}>2 minutes • Advanced</Text>
               <View style={styles.levelStats}>
                 <Text style={styles.levelStat}>8 pairs</Text>
                 <Text style={styles.levelStat}>2x score</Text>
@@ -107,15 +91,9 @@ export const EmbeddingMatchGame: React.FC<EmbeddingMatchGameProps> = ({ onGameOv
             <Text style={styles.instructionsText}>
               • Tap cards to flip them and reveal concepts
             </Text>
-            <Text style={styles.instructionsText}>
-              • Find pairs that are semantically similar
-            </Text>
-            <Text style={styles.instructionsText}>
-              • Match all pairs before time runs out
-            </Text>
-            <Text style={styles.instructionsText}>
-              • Score higher with faster matches
-            </Text>
+            <Text style={styles.instructionsText}>• Find pairs that are semantically similar</Text>
+            <Text style={styles.instructionsText}>• Match all pairs before time runs out</Text>
+            <Text style={styles.instructionsText}>• Score higher with faster matches</Text>
           </View>
         </View>
       </View>
@@ -147,9 +125,7 @@ export const EmbeddingMatchGame: React.FC<EmbeddingMatchGameProps> = ({ onGameOv
         {gameState.isPaused && (
           <View style={styles.pausedOverlay}>
             <Text style={styles.pausedText}>Game Paused</Text>
-            <Text style={styles.pausedSubtext}>
-              Tap the pause button to resume
-            </Text>
+            <Text style={styles.pausedSubtext}>Tap the pause button to resume</Text>
           </View>
         )}
 

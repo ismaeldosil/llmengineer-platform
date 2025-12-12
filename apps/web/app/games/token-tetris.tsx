@@ -1,12 +1,12 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Stack, router } from 'expo-router';
+import { Stack } from 'expo-router';
 import { TokenTetrisGame } from '@/components/games/token-tetris/TokenTetrisGame';
 
 export default function TokenTetrisScreen() {
   const handleGameOver = (score: number) => {
-    console.log('Game Over! Final Score:', score);
     // TODO: Submit score to leaderboard API when implemented
+    void score;
   };
 
   return (

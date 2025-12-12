@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-var-requires, @typescript-eslint/no-unused-vars */
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
 import { ActivityGraph, DayActivity } from '../ActivityGraph';
@@ -95,13 +96,9 @@ describe('ActivityGraph', () => {
 
   it('should call onDayPress when a day is pressed', () => {
     const mockOnDayPress = jest.fn();
-    const testData: DayActivity[] = [
-      { date: getDateString(1), xp: 100 },
-    ];
+    const testData: DayActivity[] = [{ date: getDateString(1), xp: 100 }];
 
-    const { UNSAFE_root } = render(
-      <ActivityGraph data={testData} onDayPress={mockOnDayPress} />
-    );
+    const { UNSAFE_root } = render(<ActivityGraph data={testData} onDayPress={mockOnDayPress} />);
 
     // Find all Pressable components (activity squares)
     const pressables = UNSAFE_root.findAllByType('Pressable' as any);
@@ -154,9 +151,7 @@ describe('ActivityGraph', () => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const dateStr = today.toISOString().split('T')[0] || '';
-    const testData: DayActivity[] = [
-      { date: dateStr, xp: 100 },
-    ];
+    const testData: DayActivity[] = [{ date: dateStr, xp: 100 }];
 
     const { getByText } = render(<ActivityGraph data={testData} />);
 
@@ -179,9 +174,7 @@ describe('ActivityGraph', () => {
   });
 
   it('should render without onDayPress handler', () => {
-    const testData: DayActivity[] = [
-      { date: getDateString(1), xp: 100 },
-    ];
+    const testData: DayActivity[] = [{ date: getDateString(1), xp: 100 }];
 
     const { getByText } = render(<ActivityGraph data={testData} />);
 
@@ -213,9 +206,7 @@ describe('ActivityGraph', () => {
   });
 
   it('should display correct color for 0 XP', () => {
-    const testData: DayActivity[] = [
-      { date: getDateString(1), xp: 0 },
-    ];
+    const testData: DayActivity[] = [{ date: getDateString(1), xp: 0 }];
 
     const { getByText } = render(<ActivityGraph data={testData} />);
 
@@ -224,9 +215,7 @@ describe('ActivityGraph', () => {
   });
 
   it('should display correct color for 1-50 XP', () => {
-    const testData: DayActivity[] = [
-      { date: getDateString(1), xp: 30 },
-    ];
+    const testData: DayActivity[] = [{ date: getDateString(1), xp: 30 }];
 
     const { getByText } = render(<ActivityGraph data={testData} />);
 
@@ -235,9 +224,7 @@ describe('ActivityGraph', () => {
   });
 
   it('should display correct color for 51-100 XP', () => {
-    const testData: DayActivity[] = [
-      { date: getDateString(1), xp: 80 },
-    ];
+    const testData: DayActivity[] = [{ date: getDateString(1), xp: 80 }];
 
     const { getByText } = render(<ActivityGraph data={testData} />);
 
@@ -246,9 +233,7 @@ describe('ActivityGraph', () => {
   });
 
   it('should display correct color for 101-200 XP', () => {
-    const testData: DayActivity[] = [
-      { date: getDateString(1), xp: 150 },
-    ];
+    const testData: DayActivity[] = [{ date: getDateString(1), xp: 150 }];
 
     const { getByText } = render(<ActivityGraph data={testData} />);
 
@@ -257,9 +242,7 @@ describe('ActivityGraph', () => {
   });
 
   it('should display correct color for 201+ XP', () => {
-    const testData: DayActivity[] = [
-      { date: getDateString(1), xp: 300 },
-    ];
+    const testData: DayActivity[] = [{ date: getDateString(1), xp: 300 }];
 
     const { getByText } = render(<ActivityGraph data={testData} />);
 

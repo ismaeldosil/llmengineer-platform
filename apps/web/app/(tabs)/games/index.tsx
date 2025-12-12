@@ -82,6 +82,7 @@ export default function GamesHubScreen() {
     }
 
     // Navigate to game screen
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     router.push(`/games/${game.slug}` as any);
   };
 

@@ -4,7 +4,11 @@ export { StreakBanner } from './StreakBanner';
 export { DashboardHeader } from './DashboardHeader';
 export { QuickActionsGrid, type QuickAction } from './QuickActionsGrid';
 export { NextLessonWidget } from './NextLessonWidget';
-export { LeaderboardWidget, type LeaderboardWidgetProps, type LeaderboardEntry } from './LeaderboardWidget';
+export {
+  LeaderboardWidget,
+  type LeaderboardWidgetProps,
+  type LeaderboardEntry,
+} from './LeaderboardWidget';
 export { StatsGrid } from './StatsGrid';
 export { GlobalProgress } from './GlobalProgress';
 export { ModuleCard, type ModuleCardProps, type ModuleStatus } from './ModuleCard';

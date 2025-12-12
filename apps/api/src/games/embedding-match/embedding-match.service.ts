@@ -53,7 +53,8 @@ export class EmbeddingMatchService {
     // Handle both default and named exports from JSON
     const data = Array.isArray(semanticPairsData)
       ? semanticPairsData
-      : (semanticPairsData as any).default || [];
+      : // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (semanticPairsData as any).default || [];
     this.semanticPairs = data as SemanticPair[];
   }
 

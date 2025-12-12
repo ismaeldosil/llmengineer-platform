@@ -1,10 +1,6 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import {
-  calculateLevel,
-  getLevelTitle,
-  getXpProgressInLevel,
-} from '@llmengineer/shared';
+import { calculateLevel, getLevelTitle, getXpProgressInLevel } from '@llmengineer/shared';
 import {
   UpdateProfileDto,
   UserStatsDto,

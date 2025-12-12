@@ -26,9 +26,7 @@ describe('EmbeddingMatchController', () => {
       ],
     }).compile();
 
-    controller = module.get<EmbeddingMatchController>(
-      EmbeddingMatchController
-    );
+    controller = module.get<EmbeddingMatchController>(EmbeddingMatchController);
     service = module.get<EmbeddingMatchService>(EmbeddingMatchService);
   });
 
@@ -133,10 +131,7 @@ describe('EmbeddingMatchController', () => {
       const result = controller.verifyMatch(dto);
 
       expect(result).toEqual(mockResponse);
-      expect(service.verifyMatch).toHaveBeenCalledWith(
-        dto.cardId1,
-        dto.cardId2
-      );
+      expect(service.verifyMatch).toHaveBeenCalledWith(dto.cardId1, dto.cardId2);
       expect(service.verifyMatch).toHaveBeenCalledTimes(1);
     });
 
@@ -169,9 +164,7 @@ describe('EmbeddingMatchController', () => {
         throw new BadRequestException('Cannot match a card with itself');
       });
 
-      expect(() => controller.verifyMatch(dto)).toThrow(
-        BadRequestException
-      );
+      expect(() => controller.verifyMatch(dto)).toThrow(BadRequestException);
     });
 
     it('should throw NotFoundException for invalid card IDs', () => {

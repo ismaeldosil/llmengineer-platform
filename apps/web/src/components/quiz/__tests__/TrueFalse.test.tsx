@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-var-requires, @typescript-eslint/no-unused-vars */
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import { TrueFalse } from '../TrueFalse';
@@ -23,11 +24,7 @@ describe('TrueFalse', () => {
 
   it('should render Verdadero and Falso buttons', () => {
     const { getByText } = render(
-      <TrueFalse
-        question="Test question"
-        selectedAnswer={null}
-        onSelect={mockOnSelect}
-      />
+      <TrueFalse question="Test question" selectedAnswer={null} onSelect={mockOnSelect} />
     );
 
     expect(getByText('Verdadero')).toBeTruthy();
@@ -36,11 +33,7 @@ describe('TrueFalse', () => {
 
   it('should call onSelect with true when Verdadero button is pressed', () => {
     const { getByText } = render(
-      <TrueFalse
-        question="Test question"
-        selectedAnswer={null}
-        onSelect={mockOnSelect}
-      />
+      <TrueFalse question="Test question" selectedAnswer={null} onSelect={mockOnSelect} />
     );
 
     const trueButton = getByText('Verdadero');
@@ -52,11 +45,7 @@ describe('TrueFalse', () => {
 
   it('should call onSelect with false when Falso button is pressed', () => {
     const { getByText } = render(
-      <TrueFalse
-        question="Test question"
-        selectedAnswer={null}
-        onSelect={mockOnSelect}
-      />
+      <TrueFalse question="Test question" selectedAnswer={null} onSelect={mockOnSelect} />
     );
 
     const falseButton = getByText('Falso');
@@ -141,11 +130,7 @@ describe('TrueFalse', () => {
 
   it('should allow changing answer when not disabled', () => {
     const { getByText } = render(
-      <TrueFalse
-        question="Test question"
-        selectedAnswer={null}
-        onSelect={mockOnSelect}
-      />
+      <TrueFalse question="Test question" selectedAnswer={null} onSelect={mockOnSelect} />
     );
 
     const trueButton = getByText('Verdadero');
@@ -161,23 +146,13 @@ describe('TrueFalse', () => {
 
   it('should highlight selected button', () => {
     const { getByText, rerender } = render(
-      <TrueFalse
-        question="Test question"
-        selectedAnswer={null}
-        onSelect={mockOnSelect}
-      />
+      <TrueFalse question="Test question" selectedAnswer={null} onSelect={mockOnSelect} />
     );
 
     const trueButton = getByText('Verdadero');
     fireEvent.press(trueButton);
 
-    rerender(
-      <TrueFalse
-        question="Test question"
-        selectedAnswer={true}
-        onSelect={mockOnSelect}
-      />
-    );
+    rerender(<TrueFalse question="Test question" selectedAnswer={true} onSelect={mockOnSelect} />);
 
     expect(mockOnSelect).toHaveBeenCalledWith(true);
   });
@@ -210,31 +185,17 @@ describe('TrueFalse', () => {
 
   it('should maintain selected state across renders', () => {
     const { getByText, rerender } = render(
-      <TrueFalse
-        question="Test question"
-        selectedAnswer={true}
-        onSelect={mockOnSelect}
-      />
+      <TrueFalse question="Test question" selectedAnswer={true} onSelect={mockOnSelect} />
     );
 
-    rerender(
-      <TrueFalse
-        question="Test question"
-        selectedAnswer={true}
-        onSelect={mockOnSelect}
-      />
-    );
+    rerender(<TrueFalse question="Test question" selectedAnswer={true} onSelect={mockOnSelect} />);
 
     expect(getByText('Verdadero')).toBeTruthy();
   });
 
   it('should handle rapid button presses', () => {
     const { getByText } = render(
-      <TrueFalse
-        question="Test question"
-        selectedAnswer={null}
-        onSelect={mockOnSelect}
-      />
+      <TrueFalse question="Test question" selectedAnswer={null} onSelect={mockOnSelect} />
     );
 
     fireEvent.press(getByText('Verdadero'));
@@ -247,11 +208,7 @@ describe('TrueFalse', () => {
 
   it('should render with preselected answer', () => {
     const { getByText } = render(
-      <TrueFalse
-        question="Test question"
-        selectedAnswer={false}
-        onSelect={mockOnSelect}
-      />
+      <TrueFalse question="Test question" selectedAnswer={false} onSelect={mockOnSelect} />
     );
 
     expect(getByText('Falso')).toBeTruthy();
@@ -295,11 +252,7 @@ describe('TrueFalse', () => {
       'This is a very long question that tests whether the component can handle lengthy text without breaking the layout or causing display issues.';
 
     const { getByText } = render(
-      <TrueFalse
-        question={longQuestion}
-        selectedAnswer={null}
-        onSelect={mockOnSelect}
-      />
+      <TrueFalse question={longQuestion} selectedAnswer={null} onSelect={mockOnSelect} />
     );
 
     expect(getByText(/This is a very long question/)).toBeTruthy();
@@ -337,11 +290,7 @@ describe('TrueFalse', () => {
 
   it('should handle null selectedAnswer', () => {
     const { getByText } = render(
-      <TrueFalse
-        question="Test question"
-        selectedAnswer={null}
-        onSelect={mockOnSelect}
-      />
+      <TrueFalse question="Test question" selectedAnswer={null} onSelect={mockOnSelect} />
     );
 
     expect(getByText('Verdadero')).toBeTruthy();
@@ -383,11 +332,7 @@ describe('TrueFalse', () => {
 
   it('should animate button press', () => {
     const { getByText } = render(
-      <TrueFalse
-        question="Test question"
-        selectedAnswer={null}
-        onSelect={mockOnSelect}
-      />
+      <TrueFalse question="Test question" selectedAnswer={null} onSelect={mockOnSelect} />
     );
 
     fireEvent.press(getByText('Verdadero'));

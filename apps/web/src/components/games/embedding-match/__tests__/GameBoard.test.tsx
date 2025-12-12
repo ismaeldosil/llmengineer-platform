@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-var-requires, @typescript-eslint/no-unused-vars */
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
 import { GameBoard, Card } from '../GameBoard';
@@ -49,9 +50,7 @@ describe('GameBoard', () => {
 
   it('should call onCardPress when a card is tapped', () => {
     const onCardPressMock = jest.fn();
-    const { getAllByText } = render(
-      <GameBoard {...defaultProps} onCardPress={onCardPressMock} />
-    );
+    const { getAllByText } = render(<GameBoard {...defaultProps} onCardPress={onCardPressMock} />);
 
     const cards = getAllByText('LLM');
     fireEvent.press(cards[0]);
@@ -76,9 +75,7 @@ describe('GameBoard', () => {
       index === 0 ? { ...card, isFlipped: true } : card
     );
 
-    const { getByText } = render(
-      <GameBoard {...defaultProps} cards={flippedCards} />
-    );
+    const { getByText } = render(<GameBoard {...defaultProps} cards={flippedCards} />);
 
     expect(getByText('Neural Network')).toBeTruthy();
   });
@@ -88,9 +85,7 @@ describe('GameBoard', () => {
       index < 2 ? { ...card, isFlipped: true, isMatched: true } : card
     );
 
-    const { getByText } = render(
-      <GameBoard {...defaultProps} cards={matchedCards} />
-    );
+    const { getByText } = render(<GameBoard {...defaultProps} cards={matchedCards} />);
 
     expect(getByText('Neural Network')).toBeTruthy();
     expect(getByText('Deep Learning')).toBeTruthy();

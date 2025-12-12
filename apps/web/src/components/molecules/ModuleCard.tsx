@@ -71,6 +71,7 @@ export function ModuleCard({
 
   const handlePress = () => {
     if (moduleStatus === 'locked') return;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     router.push(`/lessons/?module=${id}` as any);
   };
 
@@ -141,6 +142,7 @@ export function ModuleCard({
             borderColor: getBorderColor(),
             opacity: moduleStatus === 'locked' ? 0.6 : 1,
             cursor: moduleStatus === 'locked' ? 'not-allowed' : 'pointer',
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
           } as any,
         ]}
         onPress={handlePress}

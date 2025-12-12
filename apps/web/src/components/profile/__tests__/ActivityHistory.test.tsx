@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-var-requires, @typescript-eslint/no-unused-vars */
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
 import { ActivityHistory, Activity } from '../ActivityHistory';
@@ -266,7 +267,9 @@ describe('ActivityHistory', () => {
     });
 
     it('does not render loading text when loading is false', () => {
-      const { queryByText } = render(<ActivityHistory activities={mockActivities} loading={false} />);
+      const { queryByText } = render(
+        <ActivityHistory activities={mockActivities} loading={false} />
+      );
 
       expect(queryByText('Cargando...')).toBeNull();
     });

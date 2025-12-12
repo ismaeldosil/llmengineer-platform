@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-var-requires, @typescript-eslint/no-unused-vars */
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import { EditProfileModal } from '../EditProfileModal';
@@ -217,9 +218,7 @@ describe('EditProfileModal', () => {
     });
 
     it('should show loading state while saving', async () => {
-      mockOnSave.mockImplementation(
-        () => new Promise((resolve) => setTimeout(resolve, 100))
-      );
+      mockOnSave.mockImplementation(() => new Promise((resolve) => setTimeout(resolve, 100)));
       const { getByTestId } = render(<EditProfileModal {...defaultProps} />);
 
       fireEvent.changeText(getByTestId('display-name-input'), 'New Name');
@@ -233,9 +232,7 @@ describe('EditProfileModal', () => {
     });
 
     it('should disable buttons while saving', async () => {
-      mockOnSave.mockImplementation(
-        () => new Promise((resolve) => setTimeout(resolve, 100))
-      );
+      mockOnSave.mockImplementation(() => new Promise((resolve) => setTimeout(resolve, 100)));
       const { getByTestId } = render(<EditProfileModal {...defaultProps} />);
 
       fireEvent.changeText(getByTestId('display-name-input'), 'New Name');
@@ -376,9 +373,7 @@ describe('EditProfileModal', () => {
     });
 
     it('should not allow cancel while saving', async () => {
-      mockOnSave.mockImplementation(
-        () => new Promise((resolve) => setTimeout(resolve, 100))
-      );
+      mockOnSave.mockImplementation(() => new Promise((resolve) => setTimeout(resolve, 100)));
       const { getByTestId } = render(<EditProfileModal {...defaultProps} />);
 
       fireEvent.changeText(getByTestId('display-name-input'), 'New Name');
@@ -408,15 +403,11 @@ describe('EditProfileModal', () => {
     });
 
     it('should update input when currentDisplayName prop changes', () => {
-      const { getByDisplayValue, rerender } = render(
-        <EditProfileModal {...defaultProps} />
-      );
+      const { getByDisplayValue, rerender } = render(<EditProfileModal {...defaultProps} />);
 
       expect(getByDisplayValue('John Doe')).toBeTruthy();
 
-      rerender(
-        <EditProfileModal {...defaultProps} currentDisplayName="Jane Smith" />
-      );
+      rerender(<EditProfileModal {...defaultProps} currentDisplayName="Jane Smith" />);
 
       expect(getByDisplayValue('Jane Smith')).toBeTruthy();
     });
@@ -431,9 +422,7 @@ describe('EditProfileModal', () => {
     });
 
     it('should not close on requestClose while saving', async () => {
-      mockOnSave.mockImplementation(
-        () => new Promise((resolve) => setTimeout(resolve, 100))
-      );
+      mockOnSave.mockImplementation(() => new Promise((resolve) => setTimeout(resolve, 100)));
       const { getByTestId } = render(<EditProfileModal {...defaultProps} />);
 
       fireEvent.changeText(getByTestId('display-name-input'), 'New Name');
@@ -488,9 +477,7 @@ describe('EditProfileModal', () => {
     });
 
     it('should handle empty string as currentDisplayName', () => {
-      const { getByTestId } = render(
-        <EditProfileModal {...defaultProps} currentDisplayName="" />
-      );
+      const { getByTestId } = render(<EditProfileModal {...defaultProps} currentDisplayName="" />);
 
       const input = getByTestId('display-name-input');
       expect(input.props.value).toBe('');
@@ -534,9 +521,7 @@ describe('EditProfileModal', () => {
     });
 
     it('should disable input while saving', async () => {
-      mockOnSave.mockImplementation(
-        () => new Promise((resolve) => setTimeout(resolve, 100))
-      );
+      mockOnSave.mockImplementation(() => new Promise((resolve) => setTimeout(resolve, 100)));
       const { getByTestId } = render(<EditProfileModal {...defaultProps} />);
 
       fireEvent.changeText(getByTestId('display-name-input'), 'New Name');

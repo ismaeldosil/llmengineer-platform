@@ -45,7 +45,12 @@ export function Button({
   };
 
   return (
-    <Pressable style={buttonStyle} onPress={handlePress} disabled={disabled || loading} testID={testID}>
+    <Pressable
+      style={buttonStyle}
+      onPress={handlePress}
+      disabled={disabled || loading}
+      testID={testID}
+    >
       {loading ? (
         <ActivityIndicator
           color={variant === 'primary' ? '#FFFFFF' : '#3B82F6'}
