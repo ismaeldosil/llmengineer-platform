@@ -1,13 +1,12 @@
 import { useState, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, RefreshControl, Alert, Platform } from 'react-native';
-import { Stack, router } from 'expo-router';
+import { Stack } from 'expo-router';
 import { useSelector } from 'react-redux';
 import type { RootState } from '@/store';
 import {
   useGetProgressQuery,
   useGetMeQuery,
   useGetLessonsQuery,
-  useCheckinMutation,
 } from '@/services/api';
 import { useAuth } from '@/hooks/useAuth';
 import { MainLayout } from '@/components/layout';
@@ -27,7 +26,10 @@ interface Module {
 }
 
 const MODULE_INFO: Record<number, { title: string; description: string }> = {
-  1: { title: 'Setup + Fundamentos', description: 'Configurar el environment y entender la arquitectura' },
+  1: {
+    title: 'Setup + Fundamentos',
+    description: 'Configurar el environment y entender la arquitectura',
+  },
   2: { title: 'Plugins Core + Web', description: 'Dominar los plugins principales' },
   3: { title: 'Desarrollo + Build', description: 'Compilar y desplegar para Android e iOS' },
   4: { title: 'Testing + App Store', description: 'Preparar y publicar en las tiendas de apps' },
@@ -49,7 +51,6 @@ export default function DashboardScreen() {
     isLoading: lessonsLoading,
     refetch: refetchLessons,
   } = useGetLessonsQuery();
-  const [checkin] = useCheckinMutation();
 
   const displayName = user?.displayName || userData?.displayName || 'Developer';
   const totalXp = progress?.totalXp || 0;
@@ -74,7 +75,8 @@ export default function DashboardScreen() {
 
   const totalLessons = lessons?.length || 0;
   const completedLessons = lessons?.filter((l) => l.isCompleted).length || 0;
-  const progressPercent = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
+  const progressPercent =
+    totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
 
   const handleLogout = () => {
     if (Platform.OS === 'web') {
@@ -125,9 +127,7 @@ export default function DashboardScreen() {
           {/* Welcome Header */}
           <View style={styles.welcomeSection}>
             <View style={styles.welcomeHeader}>
-              <Text style={styles.welcomeTitle}>
-                ¡Bienvenido, {displayName}!{' '}
-              </Text>
+              <Text style={styles.welcomeTitle}>¡Bienvenido, {displayName}! </Text>
               <Icon icon={Rocket} size="lg" color="#a855f7" />
             </View>
             <Text style={styles.welcomeSubtitle}>
@@ -158,15 +158,16 @@ export default function DashboardScreen() {
             <Text style={styles.sectionTitle}>Módulos del Curso</Text>
             <View style={styles.modulesGrid}>
               {modules.map((module) => (
-                <ModuleCard
-                  key={module.id}
-                  id={module.id}
-                  title={module.title}
-                  description={module.description}
-                  lessonsCompleted={module.lessonsCompleted}
-                  totalLessons={module.totalLessons}
-                  isComplete={module.isComplete}
-                />
+                <View key={module.id} style={styles.moduleCardWrapper}>
+                  <ModuleCard
+                    id={module.id}
+                    title={module.title}
+                    description={module.description}
+                    lessonsCompleted={module.lessonsCompleted}
+                    totalLessons={module.totalLessons}
+                    isComplete={module.isComplete}
+                  />
+                </View>
               ))}
             </View>
           </View>
@@ -181,10 +182,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingBottom: 40,
+    paddingBottom: 48,
   },
   welcomeSection: {
-    paddingHorizontal: 24,
+    paddingHorizontal: 30,
     paddingTop: 24,
   },
   welcomeHeader: {
@@ -202,7 +203,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   modulesSection: {
-    paddingHorizontal: 24,
+    paddingHorizontal: 30,
     marginTop: 32,
   },
   sectionTitle: {
@@ -215,5 +216,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 16,
+    justifyContent: 'space-between',
+  },
+  moduleCardWrapper: {
+    width: '48.5%',
+    marginBottom: 0,
   },
 });

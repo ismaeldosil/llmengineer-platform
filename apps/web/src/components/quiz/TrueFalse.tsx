@@ -1,56 +1,73 @@
 import { View, Text, StyleSheet, Pressable, Animated } from 'react-native';
-import { useState, useRef, useEffect } from 'react';
-import type { QuizQuestion } from '@llmengineer/shared';
+import { useRef, useEffect } from 'react';
+import { Check, X } from 'lucide-react-native';
+import { Icon } from '@/components/ui/Icon';
 
 interface TrueFalseProps {
-  question: QuizQuestion;
-  onAnswer: (selectedAnswer: string) => void;
+  question: string;
+  selectedAnswer: boolean | null;
+  onSelect: (answer: boolean) => void;
   disabled?: boolean;
-  showFeedback?: boolean;
-  selectedAnswer?: string;
+  correctAnswer?: boolean; // For showing result
+  showResult?: boolean;
 }
 
 export function TrueFalse({
   question,
-  onAnswer,
-  disabled = false,
-  showFeedback = false,
   selectedAnswer,
+  onSelect,
+  disabled = false,
+  correctAnswer,
+  showResult = false,
 }: TrueFalseProps) {
-  const [selected, setSelected] = useState<string | undefined>(selectedAnswer);
-  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const scaleAnimTrue = useRef(new Animated.Value(1)).current;
+  const scaleAnimFalse = useRef(new Animated.Value(1)).current;
+  const feedbackAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    if (showFeedback) {
-      Animated.timing(fadeAnim, {
+    if (showResult) {
+      Animated.timing(feedbackAnim, {
         toValue: 1,
         duration: 300,
         useNativeDriver: true,
       }).start();
     } else {
-      fadeAnim.setValue(0);
+      feedbackAnim.setValue(0);
     }
-  }, [showFeedback, fadeAnim]);
+  }, [showResult, feedbackAnim]);
 
-  const handlePress = (answer: string) => {
+  const handlePress = (answer: boolean) => {
     if (disabled) return;
-    setSelected(answer);
-    onAnswer(answer);
+
+    const scaleAnim = answer ? scaleAnimTrue : scaleAnimFalse;
+
+    // Animate the pressed button
+    Animated.sequence([
+      Animated.timing(scaleAnim, {
+        toValue: 0.96,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+      Animated.timing(scaleAnim, {
+        toValue: 1,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+    ]).start();
+
+    onSelect(answer);
   };
 
-  const getButtonStyle = (answer: string) => {
-    const isSelected = selected === answer;
-    const isCorrect = answer === question.correctAnswer;
+  const getButtonStyle = (answer: boolean) => {
+    const isSelected = selectedAnswer === answer;
+    const isCorrect = correctAnswer === answer;
 
-    if (showFeedback) {
-      if (isSelected && isCorrect) {
+    if (showResult) {
+      if (isCorrect) {
         return styles.correctButton;
       }
       if (isSelected && !isCorrect) {
         return styles.incorrectButton;
-      }
-      if (isCorrect) {
-        return styles.correctButton;
       }
     }
 
@@ -61,12 +78,32 @@ export function TrueFalse({
     return null;
   };
 
-  const getButtonTextStyle = (answer: string) => {
-    const isSelected = selected === answer;
-    const isCorrect = answer === question.correctAnswer;
+  const getIconColor = (answer: boolean) => {
+    const isSelected = selectedAnswer === answer;
+    const isCorrect = correctAnswer === answer;
 
-    if (showFeedback) {
-      if ((isSelected && isCorrect) || isCorrect) {
+    if (showResult) {
+      if (isCorrect) {
+        return '#10B981'; // Green
+      }
+      if (isSelected && !isCorrect) {
+        return '#EF4444'; // Red
+      }
+    }
+
+    if (isSelected) {
+      return '#3B82F6'; // Blue
+    }
+
+    return '#9CA3AF'; // Gray
+  };
+
+  const getTextStyle = (answer: boolean) => {
+    const isSelected = selectedAnswer === answer;
+    const isCorrect = correctAnswer === answer;
+
+    if (showResult) {
+      if (isCorrect) {
         return styles.correctText;
       }
       if (isSelected && !isCorrect) {
@@ -83,37 +120,43 @@ export function TrueFalse({
 
   return (
     <View style={styles.container}>
-      <Text style={styles.question}>{question.question}</Text>
+      <Text style={styles.question}>{question}</Text>
 
       <View style={styles.buttonsContainer}>
-        <Pressable
-          style={[styles.button, styles.trueButton, getButtonStyle('true')]}
-          onPress={() => handlePress('true')}
-          disabled={disabled}
-        >
-          <Text style={[styles.buttonText, getButtonTextStyle('true')]}>True</Text>
-        </Pressable>
+        <Animated.View style={{ flex: 1, transform: [{ scale: scaleAnimTrue }] }}>
+          <Pressable
+            style={[styles.button, styles.trueButton, getButtonStyle(true)]}
+            onPress={() => handlePress(true)}
+            disabled={disabled}
+          >
+            <Icon icon={Check} size="lg" color={getIconColor(true)} />
+            <Text style={[styles.buttonText, getTextStyle(true)]}>Verdadero</Text>
+          </Pressable>
+        </Animated.View>
 
-        <Pressable
-          style={[styles.button, styles.falseButton, getButtonStyle('false')]}
-          onPress={() => handlePress('false')}
-          disabled={disabled}
-        >
-          <Text style={[styles.buttonText, getButtonTextStyle('false')]}>False</Text>
-        </Pressable>
+        <Animated.View style={{ flex: 1, transform: [{ scale: scaleAnimFalse }] }}>
+          <Pressable
+            style={[styles.button, styles.falseButton, getButtonStyle(false)]}
+            onPress={() => handlePress(false)}
+            disabled={disabled}
+          >
+            <Icon icon={X} size="lg" color={getIconColor(false)} />
+            <Text style={[styles.buttonText, getTextStyle(false)]}>Falso</Text>
+          </Pressable>
+        </Animated.View>
       </View>
 
-      {showFeedback && (
-        <Animated.View style={[styles.feedback, { opacity: fadeAnim }]}>
-          {selected === question.correctAnswer ? (
+      {showResult && correctAnswer !== undefined && (
+        <Animated.View style={[styles.feedback, { opacity: feedbackAnim }]}>
+          {selectedAnswer === correctAnswer ? (
             <View style={styles.feedbackContent}>
-              <Text style={styles.feedbackIcon}>✓</Text>
-              <Text style={styles.feedbackTextCorrect}>Correct!</Text>
+              <Icon icon={Check} size="md" variant="success" />
+              <Text style={styles.feedbackTextCorrect}>¡Correcto!</Text>
             </View>
           ) : (
             <View style={styles.feedbackContent}>
-              <Text style={styles.feedbackIcon}>✗</Text>
-              <Text style={styles.feedbackTextIncorrect}>Incorrect</Text>
+              <Icon icon={X} size="md" variant="error" />
+              <Text style={styles.feedbackTextIncorrect}>Incorrecto</Text>
             </View>
           )}
         </Animated.View>
@@ -138,14 +181,15 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   button: {
-    flex: 1,
-    paddingVertical: 20,
+    paddingVertical: 24,
+    paddingHorizontal: 16,
     borderRadius: 12,
     borderWidth: 2,
     borderColor: '#374151',
     backgroundColor: '#1F2937',
     alignItems: 'center',
     justifyContent: 'center',
+    gap: 8,
   },
   trueButton: {
     // Base style for true button
@@ -166,7 +210,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#EF444410',
   },
   buttonText: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '600',
     color: '#E5E7EB',
   },
@@ -190,9 +234,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
-  },
-  feedbackIcon: {
-    fontSize: 24,
   },
   feedbackTextCorrect: {
     fontSize: 16,

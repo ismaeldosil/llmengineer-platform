@@ -40,9 +40,7 @@ describe('GlobalProgress', () => {
   });
 
   it('should render subtitle when provided', () => {
-    const { getByText } = render(
-      <GlobalProgress {...mockProps} subtitle="Continúa aprendiendo" />
-    );
+    const { getByText } = render(<GlobalProgress {...mockProps} subtitle="Continúa aprendiendo" />);
 
     expect(getByText('Continúa aprendiendo')).toBeTruthy();
   });
@@ -73,34 +71,26 @@ describe('GlobalProgress', () => {
   });
 
   it('should handle zero current progress', () => {
-    const { getByText } = render(
-      <GlobalProgress {...mockProps} current={0} total={50} />
-    );
+    const { getByText } = render(<GlobalProgress {...mockProps} current={0} total={50} />);
 
     expect(getByText('0 de 50 lecciones completadas')).toBeTruthy();
   });
 
   it('should handle complete progress', () => {
-    const { getByText } = render(
-      <GlobalProgress {...mockProps} current={50} total={50} />
-    );
+    const { getByText } = render(<GlobalProgress {...mockProps} current={50} total={50} />);
 
     expect(getByText('50 de 50 lecciones completadas')).toBeTruthy();
   });
 
   it('should handle zero total (avoid division by zero)', () => {
-    const { getByText } = render(
-      <GlobalProgress {...mockProps} current={0} total={0} />
-    );
+    const { getByText } = render(<GlobalProgress {...mockProps} current={0} total={0} />);
 
     expect(getByText('0 de 0 lecciones completadas')).toBeTruthy();
     // Should not crash, progressPercent should be 0
   });
 
   it('should handle loading state', () => {
-    const { getByText } = render(
-      <GlobalProgress {...mockProps} isLoading={true} />
-    );
+    const { getByText } = render(<GlobalProgress {...mockProps} isLoading={true} />);
 
     expect(getByText('Mi Progreso Global')).toBeTruthy();
     expect(getByText('15 de 50 lecciones completadas')).toBeTruthy();
@@ -149,13 +139,10 @@ describe('GlobalProgress', () => {
     rerender(<GlobalProgress {...mockProps} current={25} total={50} />);
 
     // Should call withSpring with new percentage (25/50 * 100 = 50%)
-    expect(withSpring).toHaveBeenCalledWith(
-      50,
-      {
-        damping: 15,
-        stiffness: 100,
-      }
-    );
+    expect(withSpring).toHaveBeenCalledWith(50, {
+      damping: 15,
+      stiffness: 100,
+    });
   });
 
   it('should handle different progress values', () => {
@@ -169,16 +156,12 @@ describe('GlobalProgress', () => {
     );
     expect(getText2('75 de 100 lecciones completadas')).toBeTruthy();
 
-    const { getByText: getText3 } = render(
-      <GlobalProgress {...mockProps} current={1} total={1} />
-    );
+    const { getByText: getText3 } = render(<GlobalProgress {...mockProps} current={1} total={1} />);
     expect(getText3('1 de 1 lecciones completadas')).toBeTruthy();
   });
 
   it('should render with custom title', () => {
-    const { getByText } = render(
-      <GlobalProgress {...mockProps} title="Tu Avance Total" />
-    );
+    const { getByText } = render(<GlobalProgress {...mockProps} title="Tu Avance Total" />);
 
     expect(getByText('Tu Avance Total')).toBeTruthy();
   });
@@ -199,9 +182,7 @@ describe('GlobalProgress', () => {
   });
 
   it('should handle large numbers', () => {
-    const { getByText } = render(
-      <GlobalProgress {...mockProps} current={500} total={1000} />
-    );
+    const { getByText } = render(<GlobalProgress {...mockProps} current={500} total={1000} />);
 
     expect(getByText('500 de 1000 lecciones completadas')).toBeTruthy();
   });
@@ -225,9 +206,7 @@ describe('GlobalProgress', () => {
   });
 
   it('should handle progress greater than total (edge case)', () => {
-    const { getByText } = render(
-      <GlobalProgress {...mockProps} current={60} total={50} />
-    );
+    const { getByText } = render(<GlobalProgress {...mockProps} current={60} total={50} />);
 
     // Should still render without crashing
     expect(getByText('60 de 50 lecciones completadas')).toBeTruthy();
@@ -235,9 +214,7 @@ describe('GlobalProgress', () => {
   });
 
   it('should handle negative values gracefully (edge case)', () => {
-    const { getByText } = render(
-      <GlobalProgress {...mockProps} current={-5} total={50} />
-    );
+    const { getByText } = render(<GlobalProgress {...mockProps} current={-5} total={50} />);
 
     // Should render without crashing
     expect(getByText('-5 de 50 lecciones completadas')).toBeTruthy();
@@ -252,9 +229,7 @@ describe('GlobalProgress', () => {
   });
 
   it('should maintain state through loading transitions', () => {
-    const { rerender, getByText } = render(
-      <GlobalProgress {...mockProps} isLoading={true} />
-    );
+    const { rerender, getByText } = render(<GlobalProgress {...mockProps} isLoading={true} />);
 
     expect(getByText('15 de 50 lecciones completadas')).toBeTruthy();
 
@@ -264,9 +239,7 @@ describe('GlobalProgress', () => {
   });
 
   it('should handle single lesson completed', () => {
-    const { getByText } = render(
-      <GlobalProgress {...mockProps} current={1} total={100} />
-    );
+    const { getByText } = render(<GlobalProgress {...mockProps} current={1} total={100} />);
 
     expect(getByText('1 de 100 lecciones completadas')).toBeTruthy();
   });

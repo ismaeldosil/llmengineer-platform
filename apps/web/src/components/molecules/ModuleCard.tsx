@@ -240,13 +240,11 @@ export function ModuleCard({
 
 const styles = StyleSheet.create({
   card: {
-    flex: 1,
-    minWidth: 280,
+    width: '100%',
     borderRadius: 16,
     padding: 20,
     borderWidth: 2,
     position: 'relative',
-    // Hover effects will be applied via web CSS
   },
   pulsingIndicator: {
     position: 'absolute',

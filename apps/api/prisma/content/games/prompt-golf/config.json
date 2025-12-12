@@ -1,0 +1,58 @@
+{
+  "slug": "prompt-golf",
+  "name": "Prompt Golf",
+  "description": "Crea el prompt más corto que funcione",
+  "icon": "⛳",
+  "isActive": true,
+  "levels": [
+    {
+      "level": 1,
+      "name": "Par 3",
+      "config": {
+        "maxTokens": 30,
+        "targetOutput": "basic",
+        "difficulty": "easy"
+      }
+    },
+    {
+      "level": 2,
+      "name": "Par 4",
+      "config": {
+        "maxTokens": 40,
+        "targetOutput": "intermediate",
+        "difficulty": "medium"
+      }
+    },
+    {
+      "level": 3,
+      "name": "Par 5",
+      "config": {
+        "maxTokens": 50,
+        "targetOutput": "advanced",
+        "difficulty": "medium"
+      }
+    },
+    {
+      "level": 4,
+      "name": "Championship",
+      "config": {
+        "maxTokens": 60,
+        "targetOutput": "expert",
+        "difficulty": "hard"
+      }
+    },
+    {
+      "level": 5,
+      "name": "Masters",
+      "config": {
+        "maxTokens": 80,
+        "targetOutput": "master",
+        "difficulty": "expert"
+      }
+    }
+  ],
+  "rewards": {
+    "xpPerLevel": 150,
+    "bonusForPerfect": 75
+  }
+}

@@ -136,7 +136,10 @@ export class BadgesService {
     }
 
     // Check streak requirement
-    if (requirement.streak !== undefined && progress.currentStreak >= (requirement.streak as number)) {
+    if (
+      requirement.streak !== undefined &&
+      progress.currentStreak >= (requirement.streak as number)
+    ) {
       return true;
     }
 

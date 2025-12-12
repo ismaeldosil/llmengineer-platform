@@ -55,7 +55,7 @@ export function GlobalProgress({
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 24,
+    paddingHorizontal: 30,
     marginTop: 32,
   },
   header: {

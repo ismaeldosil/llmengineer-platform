@@ -4,6 +4,7 @@ export interface LessonSection {
   title: string;
   content: string;
   codeExample?: string;
+  keyPoints?: string[];
 }
 
 export interface Lesson {

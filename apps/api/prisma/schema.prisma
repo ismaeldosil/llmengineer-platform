@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-arm64-openssl-3.0.x", "linux-musl-openssl-3.0.x"]
 }
 
 datasource db {
@@ -134,4 +135,23 @@ model StreakLog {
 
   @@unique([userId, date])
   @@map("streak_logs")
+}
+
+model LeaderboardSnapshot {
+  id        String   @id @default(cuid())
+  userId    String
+  rank      Int
+  xp        Int
+  type      LeaderboardSnapshotType @default(GLOBAL)
+  date      DateTime @db.Date
+  createdAt DateTime @default(now())
+
+  @@unique([userId, date, type])
+  @@index([date, type])
+  @@map("leaderboard_snapshots")
+}
+
+enum LeaderboardSnapshotType {
+  GLOBAL
+  WEEKLY
 }

@@ -1,14 +1,30 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBearerAuth, ApiOkResponse } from '@nestjs/swagger';
+import { Controller, Get, Patch, Body, UseGuards, Query } from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiBearerAuth,
+  ApiOkResponse,
+  ApiBody,
+  ApiResponse,
+  ApiQuery,
+} from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { BadgesService } from '../badges/badges.service';
 import { UserBadgesResponseDto } from '../badges/dto/badge-response.dto';
+import {
+  UpdateProfileDto,
+  UserResponseDto,
+  UserStatsDto,
+  XpHistoryQueryDto,
+  XpHistoryResponseDto,
+} from './dto';
 
 @ApiTags('users')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
+@ApiResponse({ status: 429, description: 'Demasiadas solicitudes. Intenta de nuevo más tarde.' })
 @Controller('users')
 export class UsersController {
   constructor(
@@ -18,8 +34,23 @@ export class UsersController {
 
   @Get('me')
   @ApiOperation({ summary: 'Obtener usuario actual' })
-  async getMe(@CurrentUser() user: { id: string }) {
+  @ApiOkResponse({ type: UserResponseDto })
+  async getMe(@CurrentUser() user: { id: string }): Promise<UserResponseDto> {
     return this.usersService.findById(user.id);
+  }
+
+  @Patch('me')
+  @ApiOperation({ summary: 'Actualizar perfil del usuario' })
+  @ApiBody({ type: UpdateProfileDto })
+  @ApiOkResponse({
+    type: UserResponseDto,
+    description: 'Perfil actualizado exitosamente',
+  })
+  async updateProfile(
+    @CurrentUser() user: { id: string },
+    @Body() dto: UpdateProfileDto
+  ): Promise<UserResponseDto> {
+    return this.usersService.updateProfile(user.id, dto);
   }
 
   @Get('me/progress')
@@ -43,5 +74,50 @@ export class UsersController {
       badges,
       total: badges.length,
     };
+  }
+
+  @Get('me/stats')
+  @ApiOperation({ summary: 'Get detailed user statistics' })
+  @ApiOkResponse({
+    type: UserStatsDto,
+    description: 'Detailed user statistics including study time, quizzes, and XP history',
+  })
+  async getStats(@CurrentUser() user: { id: string }): Promise<UserStatsDto> {
+    return this.usersService.getStats(user.id);
+  }
+
+  @Get('me/xp-history')
+  @ApiOperation({
+    summary: 'Get XP earning history',
+    description:
+      'Returns XP earning history with source tracking and statistics. Supports filtering by date range or number of days.',
+  })
+  @ApiQuery({
+    name: 'days',
+    required: false,
+    type: Number,
+    description: 'Number of days to retrieve (default: 30, max: 90)',
+  })
+  @ApiQuery({
+    name: 'startDate',
+    required: false,
+    type: String,
+    description: 'Start date in YYYY-MM-DD format (optional, overrides days parameter)',
+  })
+  @ApiQuery({
+    name: 'endDate',
+    required: false,
+    type: String,
+    description: 'End date in YYYY-MM-DD format (optional, requires startDate)',
+  })
+  @ApiOkResponse({
+    type: XpHistoryResponseDto,
+    description: 'XP earning history with statistics',
+  })
+  async getXpHistory(
+    @CurrentUser() user: { id: string },
+    @Query() query: XpHistoryQueryDto
+  ): Promise<XpHistoryResponseDto> {
+    return this.usersService.getXpHistory(user.id, query);
   }
 }

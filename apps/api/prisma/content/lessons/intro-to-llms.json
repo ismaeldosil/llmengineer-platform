@@ -1,0 +1,70 @@
+{
+  "slug": "intro-to-llms",
+  "sections": [
+    {
+      "title": "¿Qué es un Large Language Model?",
+      "content": "Un **Large Language Model (LLM)** es un tipo de modelo de inteligencia artificial diseñado para entender y generar lenguaje humano natural. Estos modelos se entrenan con enormes cantidades de texto (billones de palabras) y aprenden patrones estadísticos del lenguaje.\n\nLos LLMs más conocidos incluyen:\n- **GPT-4** de OpenAI\n- **Claude** de Anthropic\n- **Gemini** de Google\n- **LLaMA** de Meta",
+      "keyPoints": [
+        "Entrenados con billones de tokens de texto",
+        "Capaces de entender contexto y generar texto coherente",
+        "Base para chatbots, asistentes y herramientas de desarrollo"
+      ]
+    },
+    {
+      "title": "¿Cómo funcionan los LLMs?",
+      "content": "Los LLMs utilizan una arquitectura llamada **Transformer** que les permite procesar texto de manera eficiente. El proceso básico es:\n\n1. **Tokenización**: El texto se divide en tokens (palabras o subpalabras)\n2. **Embeddings**: Cada token se convierte en un vector numérico\n3. **Atención**: El modelo analiza las relaciones entre todos los tokens\n4. **Generación**: Predice el siguiente token más probable\n\n```python\n# Ejemplo conceptual de cómo un LLM procesa texto\ntokens = tokenize(\"Hola, ¿cómo estás?\")\n# [\"Hola\", \",\", \"¿\", \"cómo\", \"estás\", \"?\"]\n\nembeddings = embed(tokens)\n# Vectores de 1536 dimensiones para cada token\n\noutput = model.generate(embeddings)\n# \"Muy bien, gracias por preguntar.\"\n```",
+      "keyPoints": [
+        "Arquitectura Transformer como base",
+        "Predicción de tokens secuencial",
+        "Mecanismo de atención para entender contexto"
+      ]
+    },
+    {
+      "title": "Casos de uso de LLMs",
+      "content": "Los LLMs tienen aplicaciones en múltiples áreas:\n\n**Desarrollo de Software:**\n- Generación de código\n- Debugging y code review\n- Documentación automática\n\n**Contenido:**\n- Redacción y edición de textos\n- Traducción\n- Resúmenes automáticos\n\n**Asistentes:**\n- Chatbots de atención al cliente\n- Asistentes virtuales\n- Tutores educativos\n\n**Análisis:**\n- Extracción de información\n- Clasificación de textos\n- Análisis de sentimiento",
+      "keyPoints": [
+        "Versatilidad en múltiples dominios",
+        "Automatización de tareas de texto",
+        "Potencial para mejorar productividad"
+      ]
+    },
+    {
+      "title": "Limitaciones a considerar",
+      "content": "Es importante entender las limitaciones de los LLMs:\n\n**Alucinaciones**: Los LLMs pueden generar información falsa pero que suena convincente. Siempre verifica datos importantes.\n\n**Conocimiento limitado**: El conocimiento del modelo está limitado a su fecha de entrenamiento.\n\n**Contexto limitado**: Existe un límite en la cantidad de texto que pueden procesar (ventana de contexto).\n\n**Sesgo**: Pueden reflejar sesgos presentes en los datos de entrenamiento.\n\n**Costos**: El uso de APIs de LLMs tiene costos asociados por token procesado.",
+      "keyPoints": [
+        "Las alucinaciones son un riesgo real",
+        "Verificar información crítica",
+        "Considerar costos y limitaciones de contexto"
+      ]
+    }
+  ],
+  "quiz": {
+    "questions": [
+      {
+        "type": "multiple_choice",
+        "question": "¿Qué arquitectura utilizan los LLMs modernos?",
+        "options": ["RNN", "CNN", "Transformer", "LSTM"],
+        "correctAnswer": 2,
+        "explanation": "Los LLMs modernos utilizan la arquitectura Transformer, introducida en el paper 'Attention is All You Need' de 2017."
+      },
+      {
+        "type": "true_false",
+        "question": "Los LLMs siempre generan información 100% precisa y verificada.",
+        "correctAnswer": false,
+        "explanation": "Los LLMs pueden 'alucinar' y generar información incorrecta que suena plausible. Siempre es importante verificar datos críticos."
+      },
+      {
+        "type": "multiple_choice",
+        "question": "¿Qué es la tokenización en el contexto de LLMs?",
+        "options": [
+          "Encriptar el texto",
+          "Dividir el texto en unidades más pequeñas",
+          "Traducir el texto",
+          "Comprimir el texto"
+        ],
+        "correctAnswer": 1,
+        "explanation": "La tokenización es el proceso de dividir el texto en tokens (palabras, subpalabras o caracteres) que el modelo puede procesar."
+      }
+    ]
+  }
+}
