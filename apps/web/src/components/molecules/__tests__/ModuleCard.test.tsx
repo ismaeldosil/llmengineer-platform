@@ -14,6 +14,8 @@ jest.mock('lucide-react-native', () => ({
   CheckCircle2: 'CheckCircle2',
   BookOpen: 'BookOpen',
   ChevronRight: 'ChevronRight',
+  Lock: 'Lock',
+  Clock: 'Clock',
 }));
 
 // Mock Icon component
@@ -58,9 +60,7 @@ describe('ModuleCard', () => {
   });
 
   it('should show 0% when no lessons completed', () => {
-    const { getByText } = render(
-      <ModuleCard {...mockModuleProps} lessonsCompleted={0} />
-    );
+    const { getByText } = render(<ModuleCard {...mockModuleProps} lessonsCompleted={0} />);
 
     expect(getByText('0%')).toBeTruthy();
     expect(getByText('0/10 lecciones')).toBeTruthy();
@@ -103,25 +103,19 @@ describe('ModuleCard', () => {
   });
 
   it('should show "Comenzar" button text when no lessons completed', () => {
-    const { getByText } = render(
-      <ModuleCard {...mockModuleProps} lessonsCompleted={0} />
-    );
+    const { getByText } = render(<ModuleCard {...mockModuleProps} lessonsCompleted={0} />);
 
     expect(getByText('Comenzar')).toBeTruthy();
   });
 
   it('should show "Continuar" button text when some lessons completed', () => {
-    const { getByText } = render(
-      <ModuleCard {...mockModuleProps} lessonsCompleted={5} />
-    );
+    const { getByText } = render(<ModuleCard {...mockModuleProps} lessonsCompleted={5} />);
 
     expect(getByText('Continuar')).toBeTruthy();
   });
 
   it('should show "Revisar" button text when module is complete', () => {
-    const { getByText } = render(
-      <ModuleCard {...mockModuleProps} isComplete={true} />
-    );
+    const { getByText } = render(<ModuleCard {...mockModuleProps} isComplete={true} />);
 
     expect(getByText('Revisar')).toBeTruthy();
   });
@@ -182,19 +176,17 @@ describe('ModuleCard', () => {
   });
 
   it('should handle long titles with truncation', () => {
-    const longTitle = 'This is a very long module title that should be truncated after two lines to prevent the card from becoming too wide and affecting the overall layout of the dashboard';
-    const { getByText } = render(
-      <ModuleCard {...mockModuleProps} title={longTitle} />
-    );
+    const longTitle =
+      'This is a very long module title that should be truncated after two lines to prevent the card from becoming too wide and affecting the overall layout of the dashboard';
+    const { getByText } = render(<ModuleCard {...mockModuleProps} title={longTitle} />);
 
     expect(getByText(longTitle)).toBeTruthy();
   });
 
   it('should handle long descriptions with truncation', () => {
-    const longDescription = 'This is a very long description that should be truncated after two lines to prevent the card from becoming too tall and affecting the overall layout. It contains many details about the module.';
-    const { getByText } = render(
-      <ModuleCard {...mockModuleProps} description={longDescription} />
-    );
+    const longDescription =
+      'This is a very long description that should be truncated after two lines to prevent the card from becoming too tall and affecting the overall layout. It contains many details about the module.';
+    const { getByText } = render(<ModuleCard {...mockModuleProps} description={longDescription} />);
 
     expect(getByText(longDescription)).toBeTruthy();
   });
@@ -209,9 +201,7 @@ describe('ModuleCard', () => {
   });
 
   it('should handle module with iconEmoji prop (even though not rendered)', () => {
-    const { getByText } = render(
-      <ModuleCard {...mockModuleProps} iconEmoji="🚀" />
-    );
+    const { getByText } = render(<ModuleCard {...mockModuleProps} iconEmoji="🚀" />);
 
     // Component should render normally, iconEmoji is accepted but not used
     expect(getByText('Introduction to Prompt Engineering')).toBeTruthy();
@@ -278,5 +268,70 @@ describe('ModuleCard', () => {
 
     expect(getByText('45/100 lecciones')).toBeTruthy();
     expect(getByText('45%')).toBeTruthy();
+  });
+
+  // New tests for locked state
+  it('should render locked module correctly', () => {
+    const { getByText, queryByText } = render(<ModuleCard {...mockModuleProps} isLocked={true} />);
+
+    expect(getByText('Bloqueado')).toBeTruthy();
+    expect(queryByText('Icon(Lock)')).toBeTruthy();
+  });
+
+  it('should not navigate when locked module is pressed', () => {
+    const { getByText } = render(<ModuleCard {...mockModuleProps} isLocked={true} />);
+
+    const card = getByText('Introduction to Prompt Engineering');
+    fireEvent.press(card.parent?.parent?.parent);
+
+    expect(router.push).not.toHaveBeenCalled();
+  });
+
+  it('should show "Bloqueado" for locked modules', () => {
+    const { getByText } = render(<ModuleCard {...mockModuleProps} status="locked" />);
+
+    expect(getByText('Bloqueado')).toBeTruthy();
+  });
+
+  it('should show in_progress status with correct styling', () => {
+    const { getByText } = render(<ModuleCard {...mockModuleProps} status="in_progress" />);
+
+    expect(getByText('Continuar')).toBeTruthy();
+  });
+
+  it('should display estimated time when provided', () => {
+    const { getByText } = render(<ModuleCard {...mockModuleProps} estimatedMinutes={45} />);
+
+    expect(getByText('45 min')).toBeTruthy();
+  });
+
+  it('should handle all module statuses', () => {
+    // Available status
+    const { getByText: getTextAvailable } = render(
+      <ModuleCard {...mockModuleProps} status="available" lessonsCompleted={0} />
+    );
+    expect(getTextAvailable('Comenzar')).toBeTruthy();
+
+    // In progress status
+    const { getByText: getTextInProgress } = render(
+      <ModuleCard {...mockModuleProps} status="in_progress" />
+    );
+    expect(getTextInProgress('Continuar')).toBeTruthy();
+
+    // Completed status
+    const { getByText: getTextCompleted } = render(
+      <ModuleCard {...mockModuleProps} status="completed" />
+    );
+    expect(getTextCompleted('Revisar')).toBeTruthy();
+
+    // Locked status
+    const { getByText: getTextLocked } = render(<ModuleCard {...mockModuleProps} status="locked" />);
+    expect(getTextLocked('Bloqueado')).toBeTruthy();
+  });
+
+  it('should display iconEmoji when provided', () => {
+    const { getByText } = render(<ModuleCard {...mockModuleProps} iconEmoji="🚀" />);
+
+    expect(getByText('🚀')).toBeTruthy();
   });
 });
