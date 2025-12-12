@@ -2,7 +2,7 @@
 // @ts-nocheck
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
-import { LeaderboardWidget, type LeaderboardEntry } from '../LeaderboardWidget';
+import { LeaderboardWidget, LeaderboardEntry } from '../LeaderboardWidget';
 
 describe('LeaderboardWidget', () => {
   const mockTopUsers: LeaderboardEntry[] = [
@@ -287,11 +287,13 @@ describe('LeaderboardWidget', () => {
   });
 
   it('should display current user avatar with first letter', () => {
-    const { getByText } = render(
+    const { getAllByText } = render(
       <LeaderboardWidget topUsers={mockTopUsers} currentUser={mockCurrentUser} />
     );
 
-    expect(getByText('C')).toBeTruthy();
+    // There should be 2 'C' elements: one for Charlie (rank 3) and one for CurrentUser
+    const cElements = getAllByText('C');
+    expect(cElements.length).toBe(2);
   });
 
   it('should not show current user when currentUser is undefined', () => {
