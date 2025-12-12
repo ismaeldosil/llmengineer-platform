@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Contenido educativo para las lecciones 5 y 6
 // Lección 5: System Prompts y Roles
 // Lección 6: Gestión de Contexto

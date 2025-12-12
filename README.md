@@ -153,10 +153,15 @@ llmengineer-platform/
 ### Auth
 - `POST /api/auth/register` - Registro
 - `POST /api/auth/login` - Login
+- `GET /api/auth/me` - Usuario autenticado actual
 
 ### Users
 - `GET /api/users/me` - Usuario actual
+- `PATCH /api/users/me` - Actualizar perfil
 - `GET /api/users/me/progress` - Progreso del usuario
+- `GET /api/users/me/badges` - Insignias del usuario
+- `GET /api/users/me/stats` - Estadísticas del usuario
+- `GET /api/users/me/xp-history` - Historial de XP
 
 ### Lessons
 - `GET /api/lessons` - Listar lecciones
@@ -164,10 +169,10 @@ llmengineer-platform/
 - `POST /api/lessons/:id/complete` - Completar lección
 
 ### Badges
-- `GET /api/badges` - Insignias del usuario
+- `GET /api/badges` - Todas las insignias disponibles
 
 ### Leaderboard
-- `GET /api/leaderboard?type=global|weekly` - Ranking
+- `GET /api/leaderboard?type=global|weekly&limit=50&offset=0` - Ranking
 
 ### Streaks
 - `POST /api/streaks/checkin` - Check-in diario

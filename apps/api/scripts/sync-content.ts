@@ -1,3 +1,6 @@
+import * as dotenv from 'dotenv';
+dotenv.config();
+
 import { PrismaClient, Difficulty } from '@prisma/client';
 import * as fs from 'fs';
 import * as path from 'path';
