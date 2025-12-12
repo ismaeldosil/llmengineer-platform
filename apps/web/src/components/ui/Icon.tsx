@@ -2,7 +2,14 @@ import React from 'react';
 import type { LucideIcon } from 'lucide-react-native';
 
 export type IconSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
-export type IconVariant = 'default' | 'primary' | 'secondary' | 'success' | 'warning' | 'error' | 'muted';
+export type IconVariant =
+  | 'default'
+  | 'primary'
+  | 'secondary'
+  | 'success'
+  | 'warning'
+  | 'error'
+  | 'muted';
 
 const sizeMap: Record<IconSize, number> = {
   xs: 12,
@@ -41,11 +48,5 @@ export function Icon({
   const iconSize = sizeMap[size];
   const iconColor = color || colorMap[variant];
 
-  return (
-    <LucideIconComponent
-      size={iconSize}
-      color={iconColor}
-      strokeWidth={strokeWidth}
-    />
-  );
+  return <LucideIconComponent size={iconSize} color={iconColor} strokeWidth={strokeWidth} />;
 }

@@ -8,6 +8,7 @@ import { LeaderboardQueryDto, LeaderboardResponseDto, LeaderboardType } from './
 @ApiTags('leaderboard')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
+@ApiResponse({ status: 429, description: 'Demasiadas solicitudes. Intenta de nuevo más tarde.' })
 @Controller('leaderboard')
 export class LeaderboardController {
   constructor(private leaderboardService: LeaderboardService) {}

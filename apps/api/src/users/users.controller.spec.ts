@@ -14,6 +14,7 @@ describe('UsersController', () => {
     findById: jest.fn(),
     getProgress: jest.fn(),
     updateProfile: jest.fn(),
+    getStats: jest.fn(),
   };
 
   const mockBadgesService = {
@@ -585,6 +586,238 @@ describe('UsersController', () => {
       const result = await controller.updateProfile(mockUser, updateDto);
 
       expect(result.displayName).toBe('John Doe 123');
+    });
+  });
+
+  describe('GET /users/me/stats', () => {
+    const mockStatsData = {
+      totalStudyTime: 120,
+      lessonsPerWeek: [
+        { week: 1, count: 5 },
+        { week: 2, count: 3 },
+      ],
+      quizAverage: 87.5,
+      xpHistory: [
+        { date: '2024-01-15', xp: 150 },
+        { date: '2024-01-16', xp: 200 },
+      ],
+      streakHistory: [
+        { date: '2024-01-15', streak: 1 },
+        { date: '2024-01-16', streak: 2 },
+      ],
+      totalLessonsCompleted: 8,
+      totalQuizzesTaken: 6,
+      perfectQuizzes: 2,
+      currentLevel: 3,
+      currentXp: 1200,
+      xpToNextLevel: 300,
+    };
+
+    it('should return detailed user statistics', async () => {
+      mockUsersService.getStats.mockResolvedValue(mockStatsData);
+
+      const result = await controller.getStats(mockUser);
+
+      expect(result).toEqual(mockStatsData);
+      expect(service.getStats).toHaveBeenCalledWith('user-123');
+      expect(service.getStats).toHaveBeenCalledTimes(1);
+    });
+
+    it('should return all required stat fields', async () => {
+      mockUsersService.getStats.mockResolvedValue(mockStatsData);
+
+      const result = await controller.getStats(mockUser);
+
+      expect(result).toHaveProperty('totalStudyTime');
+      expect(result).toHaveProperty('lessonsPerWeek');
+      expect(result).toHaveProperty('quizAverage');
+      expect(result).toHaveProperty('xpHistory');
+      expect(result).toHaveProperty('streakHistory');
+      expect(result).toHaveProperty('totalLessonsCompleted');
+      expect(result).toHaveProperty('totalQuizzesTaken');
+      expect(result).toHaveProperty('perfectQuizzes');
+      expect(result).toHaveProperty('currentLevel');
+      expect(result).toHaveProperty('currentXp');
+      expect(result).toHaveProperty('xpToNextLevel');
+    });
+
+    it('should call service with correct user id', async () => {
+      mockUsersService.getStats.mockResolvedValue(mockStatsData);
+
+      await controller.getStats(mockUser);
+
+      expect(service.getStats).toHaveBeenCalledWith('user-123');
+    });
+
+    it('should return correct study time', async () => {
+      mockUsersService.getStats.mockResolvedValue(mockStatsData);
+
+      const result = await controller.getStats(mockUser);
+
+      expect(result.totalStudyTime).toBe(120);
+      expect(typeof result.totalStudyTime).toBe('number');
+    });
+
+    it('should return lessons per week array', async () => {
+      mockUsersService.getStats.mockResolvedValue(mockStatsData);
+
+      const result = await controller.getStats(mockUser);
+
+      expect(Array.isArray(result.lessonsPerWeek)).toBe(true);
+      expect(result.lessonsPerWeek).toHaveLength(2);
+      expect(result.lessonsPerWeek[0]).toHaveProperty('week');
+      expect(result.lessonsPerWeek[0]).toHaveProperty('count');
+    });
+
+    it('should return quiz statistics', async () => {
+      mockUsersService.getStats.mockResolvedValue(mockStatsData);
+
+      const result = await controller.getStats(mockUser);
+
+      expect(result.quizAverage).toBe(87.5);
+      expect(result.totalQuizzesTaken).toBe(6);
+      expect(result.perfectQuizzes).toBe(2);
+    });
+
+    it('should return XP history array', async () => {
+      mockUsersService.getStats.mockResolvedValue(mockStatsData);
+
+      const result = await controller.getStats(mockUser);
+
+      expect(Array.isArray(result.xpHistory)).toBe(true);
+      expect(result.xpHistory).toHaveLength(2);
+      expect(result.xpHistory[0]).toHaveProperty('date');
+      expect(result.xpHistory[0]).toHaveProperty('xp');
+    });
+
+    it('should return streak history array', async () => {
+      mockUsersService.getStats.mockResolvedValue(mockStatsData);
+
+      const result = await controller.getStats(mockUser);
+
+      expect(Array.isArray(result.streakHistory)).toBe(true);
+      expect(result.streakHistory).toHaveLength(2);
+      expect(result.streakHistory[0]).toHaveProperty('date');
+      expect(result.streakHistory[0]).toHaveProperty('streak');
+    });
+
+    it('should return current level and XP info', async () => {
+      mockUsersService.getStats.mockResolvedValue(mockStatsData);
+
+      const result = await controller.getStats(mockUser);
+
+      expect(result.currentLevel).toBe(3);
+      expect(result.currentXp).toBe(1200);
+      expect(result.xpToNextLevel).toBe(300);
+    });
+
+    it('should handle new user with minimal stats', async () => {
+      const newUserStats = {
+        totalStudyTime: 0,
+        lessonsPerWeek: [],
+        quizAverage: 0,
+        xpHistory: [],
+        streakHistory: [],
+        totalLessonsCompleted: 0,
+        totalQuizzesTaken: 0,
+        perfectQuizzes: 0,
+        currentLevel: 1,
+        currentXp: 0,
+        xpToNextLevel: 500,
+      };
+
+      mockUsersService.getStats.mockResolvedValue(newUserStats);
+
+      const result = await controller.getStats(mockUser);
+
+      expect(result.totalStudyTime).toBe(0);
+      expect(result.lessonsPerWeek).toEqual([]);
+      expect(result.xpHistory).toEqual([]);
+      expect(result.currentLevel).toBe(1);
+    });
+
+    it('should handle advanced user with many stats', async () => {
+      const advancedUserStats = {
+        totalStudyTime: 500,
+        lessonsPerWeek: [
+          { week: 1, count: 5 },
+          { week: 2, count: 5 },
+          { week: 3, count: 4 },
+        ],
+        quizAverage: 95.5,
+        xpHistory: Array(30).fill(null).map((_, i) => ({
+          date: `2024-01-${(i + 1).toString().padStart(2, '0')}`,
+          xp: 200,
+        })),
+        streakHistory: Array(30).fill(null).map((_, i) => ({
+          date: `2024-01-${(i + 1).toString().padStart(2, '0')}`,
+          streak: i + 1,
+        })),
+        totalLessonsCompleted: 20,
+        totalQuizzesTaken: 20,
+        perfectQuizzes: 10,
+        currentLevel: 10,
+        currentXp: 5000,
+        xpToNextLevel: 0,
+      };
+
+      mockUsersService.getStats.mockResolvedValue(advancedUserStats);
+
+      const result = await controller.getStats(mockUser);
+
+      expect(result.totalLessonsCompleted).toBe(20);
+      expect(result.currentLevel).toBe(10);
+      expect(result.xpHistory).toHaveLength(30);
+    });
+
+    it('should propagate service errors', async () => {
+      mockUsersService.getStats.mockRejectedValue(new Error('Database error'));
+
+      await expect(controller.getStats(mockUser)).rejects.toThrow('Database error');
+      expect(service.getStats).toHaveBeenCalledWith('user-123');
+    });
+
+    it('should handle different user ids', async () => {
+      const user1 = { id: 'user-1' };
+      const user2 = { id: 'user-2' };
+
+      const stats1 = { ...mockStatsData, currentXp: 1000 };
+      const stats2 = { ...mockStatsData, currentXp: 2000 };
+
+      mockUsersService.getStats.mockResolvedValueOnce(stats1);
+      mockUsersService.getStats.mockResolvedValueOnce(stats2);
+
+      const result1 = await controller.getStats(user1);
+      const result2 = await controller.getStats(user2);
+
+      expect(result1.currentXp).toBe(1000);
+      expect(result2.currentXp).toBe(2000);
+      expect(service.getStats).toHaveBeenCalledWith('user-1');
+      expect(service.getStats).toHaveBeenCalledWith('user-2');
+    });
+
+    it('should return stats with correct data types', async () => {
+      mockUsersService.getStats.mockResolvedValue(mockStatsData);
+
+      const result = await controller.getStats(mockUser);
+
+      expect(typeof result.totalStudyTime).toBe('number');
+      expect(Array.isArray(result.lessonsPerWeek)).toBe(true);
+      expect(typeof result.quizAverage).toBe('number');
+      expect(Array.isArray(result.xpHistory)).toBe(true);
+      expect(Array.isArray(result.streakHistory)).toBe(true);
+      expect(typeof result.totalLessonsCompleted).toBe('number');
+      expect(typeof result.totalQuizzesTaken).toBe('number');
+      expect(typeof result.perfectQuizzes).toBe('number');
+      expect(typeof result.currentLevel).toBe('number');
+      expect(typeof result.currentXp).toBe('number');
+      expect(typeof result.xpToNextLevel).toBe('number');
+    });
+
+    it('should handle service returning progress not found error', async () => {
+      mockUsersService.getStats.mockRejectedValue(new Error('User progress not found'));
+
+      await expect(controller.getStats(mockUser)).rejects.toThrow('User progress not found');
     });
   });
 });

@@ -1,5 +1,5 @@
 import { Controller, Get, UseGuards } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBearerAuth, ApiOkResponse } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiBearerAuth, ApiOkResponse, ApiResponse } from '@nestjs/swagger';
 import { BadgesService } from './badges.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
@@ -8,6 +8,7 @@ import { AllBadgesResponseDto } from './dto/badge-response.dto';
 @ApiTags('badges')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
+@ApiResponse({ status: 429, description: 'Demasiadas solicitudes. Intenta de nuevo más tarde.' })
 @Controller('badges')
 export class BadgesController {
   constructor(private badgesService: BadgesService) {}

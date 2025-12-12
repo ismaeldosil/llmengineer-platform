@@ -1,5 +1,5 @@
 import { Controller, Post, UseGuards } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
 import { StreaksService } from './streaks.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
@@ -7,6 +7,7 @@ import { CurrentUser } from '../auth/decorators/current-user.decorator';
 @ApiTags('streaks')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
+@ApiResponse({ status: 429, description: 'Demasiadas solicitudes. Intenta de nuevo más tarde.' })
 @Controller('streaks')
 export class StreaksController {
   constructor(private streaksService: StreaksService) {}
