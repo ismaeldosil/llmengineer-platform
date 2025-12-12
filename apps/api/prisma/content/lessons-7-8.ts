@@ -1,3 +1,4 @@
+// @ts-nocheck
 export const structuredOutputs = {
   sections: [
     {
@@ -1754,7 +1755,7 @@ async function retryWithBackoff<T>(
       const backoff = retryAfter ?? calculateBackoff(attempt, finalConfig);
 
       console.warn(
-        \`Attempt \${attempt + 1} failed: \${error.message}. ` +
+        \`Attempt \${attempt + 1} failed: \${error.message}. \` +
         \`Retrying in \${backoff}ms... (status: \${error.status || 'N/A'})\`
       );
 
