@@ -1,12 +1,5 @@
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import {
-  Clock,
-  Award,
-  TrendingUp,
-  BookOpen,
-  Flame,
-  Calendar,
-} from 'lucide-react-native';
+import { Clock, Award, Flame, Calendar } from 'lucide-react-native';
 import { Icon } from '@/components/ui/Icon';
 import type { LucideIcon } from 'lucide-react-native';
 
@@ -130,14 +123,8 @@ export function DetailedStats({ stats, loading = false }: DetailedStatsProps) {
     return <LoadingSkeleton />;
   }
 
-  const {
-    totalStudyTime,
-    quizAverage,
-    xpByWeek,
-    lessonsByWeek,
-    longestStreak,
-    registrationDate,
-  } = stats;
+  const { totalStudyTime, quizAverage, xpByWeek, lessonsByWeek, longestStreak, registrationDate } =
+    stats;
 
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>

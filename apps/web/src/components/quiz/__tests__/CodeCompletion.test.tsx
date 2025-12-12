@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-var-requires, @typescript-eslint/no-unused-vars */
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import { CodeCompletion } from '../CodeCompletion';
@@ -98,9 +99,7 @@ describe('CodeCompletion', () => {
     });
 
     it('should allow deleting text', () => {
-      const { getByDisplayValue } = render(
-        <CodeCompletion {...defaultProps} userAnswer="async" />
-      );
+      const { getByDisplayValue } = render(<CodeCompletion {...defaultProps} userAnswer="async" />);
       const input = getByDisplayValue('async');
 
       fireEvent.changeText(input, 'asy');
@@ -548,10 +547,7 @@ describe('CodeCompletion', () => {
       expect(getByText('Completa el código para definir una función asíncrona')).toBeTruthy();
 
       rerender(
-        <CodeCompletion
-          {...defaultProps}
-          question="Complete the code to define a constant"
-        />
+        <CodeCompletion {...defaultProps} question="Complete the code to define a constant" />
       );
 
       expect(getByText('Complete the code to define a constant')).toBeTruthy();
@@ -563,9 +559,7 @@ describe('CodeCompletion', () => {
       // "const" appears twice in default template
       expect(getAllByText('const').length).toBe(2);
 
-      rerender(
-        <CodeCompletion {...defaultProps} codeTemplate="const x = _____; return x;" />
-      );
+      rerender(<CodeCompletion {...defaultProps} codeTemplate="const x = _____; return x;" />);
 
       // After rerender, "const" appears once
       expect(getAllByText('const').length).toBe(1);

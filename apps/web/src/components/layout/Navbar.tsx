@@ -1,6 +1,6 @@
 import { View, Text, Pressable, StyleSheet, Platform } from 'react-native';
 import { router } from 'expo-router';
-import { Bell, Zap, ChevronLeft, Settings, LogOut } from 'lucide-react-native';
+import { Bell, Zap, ChevronLeft, LogOut } from 'lucide-react-native';
 import { Icon } from '@/components/ui/Icon';
 
 interface NavbarProps {
@@ -27,7 +27,7 @@ export function Navbar({
   onLogout,
 }: NavbarProps) {
   return (
-    <View style={styles.container}>
+    <View style={styles.container} testID="navbar">
       {/* Left side - Back button or title */}
       <View style={styles.leftSection}>
         {showBack ? (
@@ -74,7 +74,7 @@ export function Navbar({
 
         {/* Settings / Logout */}
         {onLogout && (
-          <Pressable style={styles.iconButton} onPress={onLogout}>
+          <Pressable style={styles.iconButton} onPress={onLogout} testID="logout-button">
             <Icon icon={LogOut} size="md" variant="secondary" />
           </Pressable>
         )}

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-var-requires, @typescript-eslint/no-unused-vars */
 import React from 'react';
 import { render } from '@testing-library/react-native';
 import { DetailedStats, type DetailedStatsProps } from '../DetailedStats';

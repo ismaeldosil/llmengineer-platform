@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-var-requires, @typescript-eslint/no-unused-vars */
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
 import { GameCard } from '../GameCard';
@@ -281,11 +282,7 @@ describe('GameCard', () => {
   });
 
   it('should display custom unlock requirements', () => {
-    const customRequirements = [
-      'Completa el tutorial',
-      'Alcanza nivel 5',
-      'Gana 3 juegos',
-    ];
+    const customRequirements = ['Completa el tutorial', 'Alcanza nivel 5', 'Gana 3 juegos'];
 
     customRequirements.forEach((requirement) => {
       const { getByText } = render(

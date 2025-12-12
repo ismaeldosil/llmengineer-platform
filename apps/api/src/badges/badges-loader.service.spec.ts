@@ -146,6 +146,7 @@ describe('BadgesLoaderService', () => {
     });
 
     it('should return false when xpReward is not a number', () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const badge = { ...mockValidBadge, xpReward: '50' as any };
       expect(service.validateBadgeStructure(badge)).toBe(false);
     });
@@ -168,6 +169,7 @@ describe('BadgesLoaderService', () => {
     it('should return false when requirement.type is missing', () => {
       const badge = {
         ...mockValidBadge,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         requirement: { value: 1 } as any,
       };
       expect(service.validateBadgeStructure(badge)).toBe(false);
@@ -176,6 +178,7 @@ describe('BadgesLoaderService', () => {
     it('should return false when requirement.value is missing', () => {
       const badge = {
         ...mockValidBadge,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         requirement: { type: 'lessons_completed' } as any,
       };
       expect(service.validateBadgeStructure(badge)).toBe(false);
@@ -206,12 +209,14 @@ describe('BadgesLoaderService', () => {
     });
 
     it('should return false when isSecret is not a boolean', () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const badge = { ...mockValidBadge, isSecret: 'yes' as any };
       expect(service.validateBadgeStructure(badge)).toBe(false);
     });
 
     it('should return true when isSecret is undefined', () => {
       const badge = { ...mockValidBadge };
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       delete (badge as any).isSecret;
       expect(service.validateBadgeStructure(badge)).toBe(true);
     });

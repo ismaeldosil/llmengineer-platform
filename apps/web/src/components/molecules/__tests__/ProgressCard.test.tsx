@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-var-requires, @typescript-eslint/no-unused-vars */
 import React from 'react';
 import { render } from '@testing-library/react-native';
 import { ProgressCard } from '../ProgressCard';
@@ -152,9 +153,7 @@ describe('ProgressCard', () => {
     });
 
     it('should animate progress bar on mount', () => {
-      const { getByText } = render(
-        <ProgressCard totalXp={250} level={1} lessonsCompleted={5} />
-      );
+      const { getByText } = render(<ProgressCard totalXp={250} level={1} lessonsCompleted={5} />);
 
       // Progress bar should be rendered
       expect(getByText('250 / 500 XP para nivel 2')).toBeTruthy();

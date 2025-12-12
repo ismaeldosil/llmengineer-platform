@@ -31,11 +31,13 @@ export function Skeleton({
     const style: ViewStyle = {};
 
     if (width !== undefined) {
-      style.width = typeof width === 'number' ? width : width;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      style.width = width as any;
     }
 
     if (height !== undefined) {
-      style.height = typeof height === 'number' ? height : height;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      style.height = height as any;
     }
 
     // Default dimensions based on variant

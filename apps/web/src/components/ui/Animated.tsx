@@ -1,5 +1,5 @@
 import React from 'react';
-import { View } from 'react-native';
+import { View, Platform, ViewStyle } from 'react-native';
 
 export type AnimationType = 'fadeIn' | 'slideUp' | 'scaleIn' | 'glow' | 'bounce' | 'pulse';
 
@@ -28,24 +28,38 @@ export function Animated({
   className = '',
 }: AnimatedProps) {
   const animationName = animationMap[animation];
-  const animationStyle = {
-    animationName,
-    animationDuration: `${duration}s`,
-    animationDelay: `${delay}s`,
-    animationFillMode: 'both' as const,
-    animationTimingFunction: 'ease-out' as const,
+
+  // Web-only animation styles - not supported on native
+  const getAnimationStyle = (): ViewStyle => {
+    if (Platform.OS !== 'web') {
+      return {};
+    }
+
+    const baseStyle = {
+      animationName,
+      animationDuration: `${duration}s`,
+      animationDelay: `${delay}s`,
+      animationFillMode: 'both',
+      animationTimingFunction:
+        animation === 'glow' || animation === 'bounce' || animation === 'pulse'
+          ? 'ease-in-out'
+          : 'ease-out',
+    };
+
+    if (animation === 'glow' || animation === 'bounce' || animation === 'pulse') {
+      return {
+        ...baseStyle,
+        animationIterationCount: 'infinite',
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any;
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return baseStyle as any;
   };
 
-  // For infinite animations
-  if (animation === 'glow' || animation === 'bounce' || animation === 'pulse') {
-    animationStyle.animationTimingFunction = 'ease-in-out';
-    Object.assign(animationStyle, {
-      animationIterationCount: 'infinite',
-    });
-  }
-
   return (
-    <View style={animationStyle} className={className}>
+    <View style={getAnimationStyle()} className={className}>
       {children}
     </View>
   );

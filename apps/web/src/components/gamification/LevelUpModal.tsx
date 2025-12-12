@@ -7,7 +7,6 @@ import Animated, {
   withSpring,
   withDelay,
   withSequence,
-  Easing,
 } from 'react-native-reanimated';
 
 interface LevelUpModalProps {

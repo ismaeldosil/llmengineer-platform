@@ -66,7 +66,8 @@ export default function LessonsScreen() {
 
   const totalLessons = lessons?.length || 0;
   const completedLessons = lessons?.filter((l) => l.isCompleted).length || 0;
-  const progressPercent = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
+  const progressPercent =
+    totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
 
   if (isLoading) {
     return (
@@ -88,7 +89,8 @@ export default function LessonsScreen() {
     <View style={styles.headerSection}>
       {/* Breadcrumb */}
       <View style={styles.breadcrumb}>
-        <Pressable onPress={() => router.push('/dashboard')} style={styles.breadcrumbItem}>
+        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+        <Pressable onPress={() => router.push('/dashboard/' as any)} style={styles.breadcrumbItem}>
           <Text style={styles.breadcrumbLink}>Dashboard</Text>
         </Pressable>
         <Icon icon={ChevronRight} size="sm" color="#6B7280" />
@@ -167,7 +169,10 @@ export default function LessonsScreen() {
               </View>
               {item.lessons.map((lesson) => (
                 <View key={lesson.id} style={styles.lessonItem}>
-                  <LessonCard lesson={lesson} onPress={() => router.push(`/lessons/${lesson.id}`)} />
+                  <LessonCard
+                    lesson={lesson}
+                    onPress={() => router.push(`/lessons/${lesson.id}`)}
+                  />
                 </View>
               ))}
             </View>

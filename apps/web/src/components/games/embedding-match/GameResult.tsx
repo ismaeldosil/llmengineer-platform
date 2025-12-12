@@ -36,7 +36,7 @@ export const GameResult: React.FC<GameResultProps> = ({
   };
 
   const getResultMessage = (): string => {
-    if (!isVictory) return 'Time\'s Up!';
+    if (!isVictory) return "Time's Up!";
     if (accuracy >= 90 && timeElapsed <= 60) return 'Perfect!';
     if (accuracy >= 80) return 'Excellent!';
     if (accuracy >= 70) return 'Great Job!';
@@ -65,11 +65,7 @@ export const GameResult: React.FC<GameResultProps> = ({
         {/* Header */}
         <View style={styles.header}>
           <View style={[styles.iconContainer, { backgroundColor: getResultColor() + '20' }]}>
-            <Icon
-              icon={isVictory ? Trophy : Clock}
-              size="xl"
-              color={getResultColor()}
-            />
+            <Icon icon={isVictory ? Trophy : Clock} size="xl" color={getResultColor()} />
           </View>
           <Text style={[styles.resultTitle, { color: getResultColor() }]}>
             {getResultMessage()}
@@ -124,40 +120,25 @@ export const GameResult: React.FC<GameResultProps> = ({
 
           <View style={styles.levelInfo}>
             <Text style={styles.levelLabel}>Level:</Text>
-            <Text style={styles.levelValue}>
-              {level.charAt(0).toUpperCase() + level.slice(1)}
-            </Text>
+            <Text style={styles.levelValue}>{level.charAt(0).toUpperCase() + level.slice(1)}</Text>
           </View>
         </View>
 
         {/* Actions */}
         <View style={styles.actions}>
-          <Pressable
-            style={[styles.button, styles.primaryButton]}
-            onPress={onPlayAgain}
-          >
+          <Pressable style={[styles.button, styles.primaryButton]} onPress={onPlayAgain}>
             <Icon icon={RotateCcw} size="sm" color="#ffffff" />
             <Text style={styles.buttonText}>Play Again</Text>
           </Pressable>
 
           <View style={styles.secondaryActions}>
-            <Pressable
-              style={[styles.button, styles.secondaryButton]}
-              onPress={onChangeLevel}
-            >
-              <Text style={[styles.buttonText, styles.secondaryButtonText]}>
-                Change Level
-              </Text>
+            <Pressable style={[styles.button, styles.secondaryButton]} onPress={onChangeLevel}>
+              <Text style={[styles.buttonText, styles.secondaryButtonText]}>Change Level</Text>
             </Pressable>
 
-            <Pressable
-              style={[styles.button, styles.secondaryButton]}
-              onPress={onGoHome}
-            >
+            <Pressable style={[styles.button, styles.secondaryButton]} onPress={onGoHome}>
               <Icon icon={Home} size="sm" color="#94a3b8" />
-              <Text style={[styles.buttonText, styles.secondaryButtonText]}>
-                Home
-              </Text>
+              <Text style={[styles.buttonText, styles.secondaryButtonText]}>Home</Text>
             </Pressable>
           </View>
         </View>

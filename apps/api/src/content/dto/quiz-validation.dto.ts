@@ -1,13 +1,4 @@
-import {
-  IsString,
-  IsIn,
-  IsOptional,
-  IsArray,
-  IsNumber,
-  IsBoolean,
-  ValidateIf,
-  ArrayMinSize,
-} from 'class-validator';
+import { IsString, IsIn, IsOptional, IsArray, ValidateIf, ArrayMinSize } from 'class-validator';
 
 export class QuizValidationDto {
   @IsString({ message: 'type debe ser una cadena de texto' })

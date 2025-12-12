@@ -1,14 +1,4 @@
-import {
-  IsString,
-  IsNumber,
-  IsIn,
-  IsOptional,
-  MaxLength,
-  Min,
-  Max,
-  IsInt,
-  IsPositive,
-} from 'class-validator';
+import { IsString, IsNumber, IsIn, MaxLength, Min, Max, IsInt, IsPositive } from 'class-validator';
 
 export class LessonValidationDto {
   @IsString({ message: 'slug debe ser una cadena de texto' })

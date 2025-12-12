@@ -8,7 +8,7 @@ import { GameValidationDto } from './dto/game-validation.dto';
 export interface GameLevel {
   level: number;
   name: string;
-  config: Record<string, any>;
+  config: Record<string, unknown>;
 }
 
 export interface GameRewards {

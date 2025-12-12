@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-var-requires, @typescript-eslint/no-unused-vars */
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
 import { GameResult } from '../GameResult';
@@ -48,9 +49,7 @@ describe('GameResult', () => {
 
   it('should call onPlayAgain when Play Again is pressed', () => {
     const onPlayAgainMock = jest.fn();
-    const { getByText } = render(
-      <GameResult {...defaultProps} onPlayAgain={onPlayAgainMock} />
-    );
+    const { getByText } = render(<GameResult {...defaultProps} onPlayAgain={onPlayAgainMock} />);
 
     fireEvent.press(getByText('Play Again'));
     expect(onPlayAgainMock).toHaveBeenCalledTimes(1);
@@ -68,18 +67,14 @@ describe('GameResult', () => {
 
   it('should call onGoHome when Home is pressed', () => {
     const onGoHomeMock = jest.fn();
-    const { getByText } = render(
-      <GameResult {...defaultProps} onGoHome={onGoHomeMock} />
-    );
+    const { getByText } = render(<GameResult {...defaultProps} onGoHome={onGoHomeMock} />);
 
     fireEvent.press(getByText('Home'));
     expect(onGoHomeMock).toHaveBeenCalledTimes(1);
   });
 
   it('should show Perfect message for high accuracy and fast time', () => {
-    const { getByText } = render(
-      <GameResult {...defaultProps} accuracy={95} timeElapsed={50} />
-    );
+    const { getByText } = render(<GameResult {...defaultProps} accuracy={95} timeElapsed={50} />);
     expect(getByText('Perfect!')).toBeTruthy();
   });
 

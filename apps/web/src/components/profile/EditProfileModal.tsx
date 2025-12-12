@@ -140,9 +140,7 @@ export function EditProfileModal({
               editable={!isLoading}
             />
 
-            <Text style={styles.characterCount}>
-              {displayName.length} / 50 characters
-            </Text>
+            <Text style={styles.characterCount}>{displayName.length} / 50 characters</Text>
 
             {successMessage && (
               <View style={styles.successContainer} testID="success-message">

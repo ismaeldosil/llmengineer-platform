@@ -73,6 +73,7 @@ export class ContentValidatorService {
       return result;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const quizData = data as any;
 
     // Transform plain object to DTO instance

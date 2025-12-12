@@ -135,7 +135,8 @@ export default function RegisterScreen() {
       dispatch(setCredentials({ user: result.user, token: result.accessToken }));
 
       // Navigate to dashboard
-      router.replace('/dashboard');
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      router.replace('/dashboard/' as any);
     } catch (err) {
       console.error('Registration failed:', err);
     }

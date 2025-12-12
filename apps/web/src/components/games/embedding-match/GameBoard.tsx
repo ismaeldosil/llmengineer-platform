@@ -16,11 +16,7 @@ export interface GameBoardProps {
   disabled?: boolean;
 }
 
-export const GameBoard: React.FC<GameBoardProps> = ({
-  cards,
-  onCardPress,
-  disabled = false,
-}) => {
+export const GameBoard: React.FC<GameBoardProps> = ({ cards, onCardPress, disabled = false }) => {
   return (
     <View style={styles.container}>
       <View style={styles.grid}>
@@ -54,6 +50,7 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   cardContainer: {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     width: '23%' as any,
     minWidth: 80,
     maxWidth: 140,

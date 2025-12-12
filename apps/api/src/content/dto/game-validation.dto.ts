@@ -1,13 +1,5 @@
 import { Type } from 'class-transformer';
-import {
-  IsString,
-  IsBoolean,
-  IsArray,
-  ValidateNested,
-  IsNumber,
-  IsObject,
-  IsOptional,
-} from 'class-validator';
+import { IsString, IsBoolean, IsArray, ValidateNested, IsNumber, IsObject } from 'class-validator';
 
 export class GameLevelDto {
   @IsNumber()
@@ -17,7 +9,7 @@ export class GameLevelDto {
   name: string;
 
   @IsObject()
-  config: Record<string, any>;
+  config: Record<string, unknown>;
 }
 
 export class GameRewardsDto {

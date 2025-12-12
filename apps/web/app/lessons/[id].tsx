@@ -59,11 +59,19 @@ export default function LessonDetailScreen() {
         <ScrollView style={styles.container}>
           {/* Breadcrumb */}
           <View style={styles.breadcrumb}>
-            <Pressable onPress={() => router.push('/dashboard')} style={styles.breadcrumbItem}>
+            <Pressable
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              onPress={() => router.push('/dashboard/' as any)}
+              style={styles.breadcrumbItem}
+            >
               <Text style={styles.breadcrumbLink}>Dashboard</Text>
             </Pressable>
             <Icon icon={ChevronRight} size="sm" color="#6B7280" />
-            <Pressable onPress={() => router.push('/lessons')} style={styles.breadcrumbItem}>
+            <Pressable
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              onPress={() => router.push('/lessons/' as any)}
+              style={styles.breadcrumbItem}
+            >
               <Text style={styles.breadcrumbLink}>Lecciones</Text>
             </Pressable>
             <Icon icon={ChevronRight} size="sm" color="#6B7280" />

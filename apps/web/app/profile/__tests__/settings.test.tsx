@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-var-requires, @typescript-eslint/no-unused-vars */
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import { Provider } from 'react-redux';
@@ -191,7 +191,9 @@ describe('SettingsScreen', () => {
 
       expect(getByText('Créditos')).toBeTruthy();
       expect(
-        getByText('LLM Engineer Platform es una plataforma educativa gamificada para aprender LLM Engineering.')
+        getByText(
+          'LLM Engineer Platform es una plataforma educativa gamificada para aprender LLM Engineering.'
+        )
       ).toBeTruthy();
       expect(getByText('Desarrollado con React Native, Expo Router y NestJS.')).toBeTruthy();
     });

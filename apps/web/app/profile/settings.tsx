@@ -1,10 +1,9 @@
 import { View, Text, StyleSheet, ScrollView, Pressable, Modal } from 'react-native';
 import { Stack, router } from 'expo-router';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { useState } from 'react';
-import type { RootState } from '@/store';
 import { logout } from '@/store/slices/authSlice';
-import { Settings, Bell, Palette, Globe, LogOut, Info, ChevronRight } from 'lucide-react-native';
+import { Bell, Palette, Globe, LogOut, Info, ChevronRight } from 'lucide-react-native';
 
 export default function SettingsScreen() {
   const dispatch = useDispatch();
@@ -109,7 +108,8 @@ export default function SettingsScreen() {
           <View style={styles.creditsContainer}>
             <Text style={styles.creditsTitle}>Créditos</Text>
             <Text style={styles.creditsText}>
-              LLM Engineer Platform es una plataforma educativa gamificada para aprender LLM Engineering.
+              LLM Engineer Platform es una plataforma educativa gamificada para aprender LLM
+              Engineering.
             </Text>
             <Text style={styles.creditsText}>
               Desarrollado con React Native, Expo Router y NestJS.
@@ -141,9 +141,7 @@ export default function SettingsScreen() {
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Cerrar Sesión</Text>
-            <Text style={styles.modalMessage}>
-              ¿Estás seguro de que quieres cerrar sesión?
-            </Text>
+            <Text style={styles.modalMessage}>¿Estás seguro de que quieres cerrar sesión?</Text>
             <View style={styles.modalActions}>
               <Pressable
                 style={[styles.modalButton, styles.cancelButton]}

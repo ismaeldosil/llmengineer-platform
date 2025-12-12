@@ -197,9 +197,7 @@ export function MarkdownContent({ content, baseStyle = {} }: MarkdownContentProp
           case 'codeBlock':
             return (
               <View key={blockIndex} style={styles.codeBlock}>
-                {block.language && (
-                  <Text style={styles.codeLanguage}>{block.language}</Text>
-                )}
+                {block.language && <Text style={styles.codeLanguage}>{block.language}</Text>}
                 <Text style={styles.codeText}>{block.content}</Text>
               </View>
             );

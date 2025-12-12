@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /**
  * Example implementation of the LessonSections component
  * This file demonstrates how to use the lesson sections system

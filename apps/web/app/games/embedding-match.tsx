@@ -5,8 +5,8 @@ import { EmbeddingMatchGame } from '@/components/games/embedding-match';
 
 export default function EmbeddingMatchScreen() {
   const handleGameOver = (score: number) => {
-    console.log('Game Over! Final Score:', score);
     // TODO: Submit score to leaderboard API when implemented
+    void score;
   };
 
   return (
