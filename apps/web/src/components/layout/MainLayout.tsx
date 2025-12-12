@@ -83,6 +83,7 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     backgroundColor: '#111827',
+    paddingRight: 8,
   },
   mobileContainer: {
     flex: 1,
