@@ -20,6 +20,8 @@ jest.mock('lucide-react-native', () => ({
   BookOpen: 'BookOpen',
   CheckCircle2: 'CheckCircle2',
   Zap: 'Zap',
+  ChevronLeft: 'ChevronLeft',
+  ChevronRight: 'ChevronRight',
 }));
 
 // Mock Icon component
@@ -97,10 +99,10 @@ describe('Sidebar', () => {
   });
 
   describe('Modules Section', () => {
-    it('should render MÓDULOS section header', () => {
+    it('should render MODULOS section header', () => {
       const { getByText } = render(<Sidebar />);
 
-      expect(getByText('MÓDULOS')).toBeTruthy();
+      expect(getByText('MODULOS')).toBeTruthy();
     });
 
     it('should render default modules when no modules prop provided', () => {
@@ -361,7 +363,7 @@ describe('Sidebar', () => {
     it('should handle empty modules array', () => {
       const { getByText, queryByText } = render(<Sidebar modules={[]} />);
 
-      expect(getByText('MÓDULOS')).toBeTruthy();
+      expect(getByText('MODULOS')).toBeTruthy();
       expect(queryByText('Setup + Fundamentos')).toBeNull();
     });
 
@@ -483,6 +485,87 @@ describe('Sidebar', () => {
       const { getAllByText } = render(<Sidebar modules={modules} />);
 
       expect(getAllByText(/First|Second|Third/)).toHaveLength(3);
+    });
+  });
+
+  describe('Collapsed Mode', () => {
+    it('should hide text elements when collapsed', () => {
+      const { queryByText } = render(<Sidebar isCollapsed={true} />);
+
+      expect(queryByText('LLM Engineer')).toBeNull();
+      expect(queryByText('Dashboard')).toBeNull();
+      expect(queryByText('MODULOS')).toBeNull();
+    });
+
+    it('should show text elements when not collapsed', () => {
+      const { getByText } = render(<Sidebar isCollapsed={false} />);
+
+      expect(getByText('LLM Engineer')).toBeTruthy();
+      expect(getByText('Dashboard')).toBeTruthy();
+    });
+
+    it('should hide module titles when collapsed', () => {
+      const modules = [
+        {
+          id: '1',
+          title: 'Test Module',
+          lessonsCompleted: 3,
+          totalLessons: 5,
+          isComplete: false,
+        },
+      ];
+
+      const { queryByText } = render(<Sidebar modules={modules} isCollapsed={true} />);
+
+      expect(queryByText('Test Module')).toBeNull();
+      expect(queryByText('3/5 lecciones')).toBeNull();
+    });
+
+    it('should hide completion badges when collapsed', () => {
+      const modules = [
+        {
+          id: '1',
+          title: 'Complete Module',
+          lessonsCompleted: 5,
+          totalLessons: 5,
+          isComplete: true,
+        },
+      ];
+
+      const { queryByText } = render(<Sidebar modules={modules} isCollapsed={true} />);
+
+      expect(queryByText('100%')).toBeNull();
+    });
+  });
+
+  describe('Toggle Button', () => {
+    it('should render toggle button when onToggleCollapse is provided', () => {
+      const onToggle = jest.fn();
+      const { getByText } = render(<Sidebar onToggleCollapse={onToggle} />);
+
+      expect(getByText('Colapsar')).toBeTruthy();
+    });
+
+    it('should not render toggle button when onToggleCollapse is not provided', () => {
+      const { queryByText } = render(<Sidebar />);
+
+      expect(queryByText('Colapsar')).toBeNull();
+    });
+
+    it('should call onToggleCollapse when toggle button is pressed', () => {
+      const onToggle = jest.fn();
+      const { getByText } = render(<Sidebar onToggleCollapse={onToggle} />);
+
+      fireEvent.press(getByText('Colapsar'));
+
+      expect(onToggle).toHaveBeenCalledTimes(1);
+    });
+
+    it('should hide toggle text when collapsed', () => {
+      const onToggle = jest.fn();
+      const { queryByText } = render(<Sidebar isCollapsed={true} onToggleCollapse={onToggle} />);
+
+      expect(queryByText('Colapsar')).toBeNull();
     });
   });
 });

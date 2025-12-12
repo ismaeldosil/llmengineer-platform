@@ -4,6 +4,16 @@ import { render } from '@testing-library/react-native';
 import { Platform, Text } from 'react-native';
 import { MainLayout } from '../MainLayout';
 
+// Mock useSidebarCollapsed hook
+jest.mock('@/hooks/useSidebarCollapsed', () => ({
+  useSidebarCollapsed: () => ({
+    isCollapsed: false,
+    isLoaded: true,
+    toggleCollapsed: jest.fn(),
+    setCollapsed: jest.fn(),
+  }),
+}));
+
 // Mock Sidebar component
 jest.mock('../Sidebar', () => ({
   Sidebar: ({ currentModuleId }: any) => {

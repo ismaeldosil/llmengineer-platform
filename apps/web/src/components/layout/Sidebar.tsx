@@ -1,7 +1,15 @@
 import { View, Text, Pressable, StyleSheet, Platform } from 'react-native';
 import { router, usePathname } from 'expo-router';
-import { LayoutDashboard, BookOpen, CheckCircle2, Zap } from 'lucide-react-native';
+import {
+  LayoutDashboard,
+  BookOpen,
+  CheckCircle2,
+  Zap,
+  ChevronLeft,
+  ChevronRight,
+} from 'lucide-react-native';
 import { Icon } from '@/components/ui/Icon';
+import { useState } from 'react';
 
 interface Module {
   id: string;
@@ -14,6 +22,8 @@ interface Module {
 interface SidebarProps {
   modules?: Module[];
   currentModuleId?: string;
+  isCollapsed?: boolean;
+  onToggleCollapse?: () => void;
 }
 
 const DEFAULT_MODULES: Module[] = [
@@ -29,35 +39,98 @@ const DEFAULT_MODULES: Module[] = [
   },
 ];
 
-export function Sidebar({ modules = DEFAULT_MODULES, currentModuleId }: SidebarProps) {
+const EXPANDED_WIDTH = 260;
+const COLLAPSED_WIDTH = 72;
+
+interface TooltipProps {
+  text: string;
+  children: React.ReactNode;
+  show: boolean;
+}
+
+function Tooltip({ text, children, show }: TooltipProps) {
+  const [isHovered, setIsHovered] = useState(false);
+
+  if (Platform.OS !== 'web') {
+    return <>{children}</>;
+  }
+
+  return (
+    <View
+      style={styles.tooltipWrapper}
+      // @ts-expect-error - web only events
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      {children}
+      {show && isHovered && (
+        <View style={styles.tooltip}>
+          <Text style={styles.tooltipText}>{text}</Text>
+        </View>
+      )}
+    </View>
+  );
+}
+
+export function Sidebar({
+  modules = DEFAULT_MODULES,
+  currentModuleId,
+  isCollapsed = false,
+  onToggleCollapse,
+}: SidebarProps) {
   const pathname = usePathname();
   const isDashboard = pathname === '/dashboard' || pathname === '/';
 
   return (
-    <View style={styles.container}>
+    <View
+      style={[
+        styles.container,
+        { width: isCollapsed ? COLLAPSED_WIDTH : EXPANDED_WIDTH },
+        isCollapsed && styles.containerCollapsed,
+      ]}
+    >
       {/* Logo */}
-      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-      <Pressable style={styles.logoContainer} onPress={() => router.push('/dashboard/' as any)}>
-        <View style={styles.logoIcon}>
-          <Icon icon={Zap} size="lg" color="#22c55e" />
-        </View>
-        <Text style={styles.logoText}>LLM Engineer</Text>
-      </Pressable>
+      <Tooltip text="LLM Engineer" show={isCollapsed}>
+        <Pressable
+          style={[styles.logoContainer, isCollapsed && styles.logoContainerCollapsed]}
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          onPress={() => router.push('/dashboard/' as any)}
+        >
+          <View style={styles.logoIcon}>
+            <Icon icon={Zap} size="lg" color="#22c55e" />
+          </View>
+          {!isCollapsed && <Text style={styles.logoText}>LLM Engineer</Text>}
+        </Pressable>
+      </Tooltip>
 
       {/* Dashboard Link */}
-      <Pressable
-        style={[styles.navItem, isDashboard && styles.navItemActive]}
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        onPress={() => router.push('/dashboard/' as any)}
-      >
-        <Icon icon={LayoutDashboard} size="md" variant={isDashboard ? 'primary' : 'secondary'} />
-        <Text style={[styles.navItemText, isDashboard && styles.navItemTextActive]}>Dashboard</Text>
-      </Pressable>
+      <Tooltip text="Dashboard" show={isCollapsed}>
+        <Pressable
+          style={[
+            styles.navItem,
+            isDashboard && styles.navItemActive,
+            isCollapsed && styles.navItemCollapsed,
+          ]}
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          onPress={() => router.push('/dashboard/' as any)}
+        >
+          <Icon icon={LayoutDashboard} size="md" variant={isDashboard ? 'primary' : 'secondary'} />
+          {!isCollapsed && (
+            <Text style={[styles.navItemText, isDashboard && styles.navItemTextActive]}>
+              Dashboard
+            </Text>
+          )}
+        </Pressable>
+      </Tooltip>
 
       {/* Modules Section */}
-      <View style={styles.sectionHeader}>
-        <Text style={styles.sectionTitle}>MÓDULOS</Text>
-      </View>
+      {!isCollapsed && (
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>MODULOS</Text>
+        </View>
+      )}
+
+      {isCollapsed && <View style={styles.collapsedDivider} />}
 
       {modules.map((module) => {
         const isActive = currentModuleId === module.id;
@@ -67,52 +140,85 @@ export function Sidebar({ modules = DEFAULT_MODULES, currentModuleId }: SidebarP
             : 0;
 
         return (
-          <Pressable
-            key={module.id}
-            style={[styles.moduleItem, isActive && styles.moduleItemActive]}
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            onPress={() => router.push(`/lessons/?module=${module.id}` as any)}
-          >
-            <View style={styles.moduleIconContainer}>
-              {module.isComplete ? (
-                <Icon icon={CheckCircle2} size="md" color="#22c55e" />
-              ) : (
-                <Icon icon={BookOpen} size="md" variant="secondary" />
-              )}
-            </View>
-            <View style={styles.moduleInfo}>
-              <Text
-                style={[styles.moduleTitle, isActive && styles.moduleTitleActive]}
-                numberOfLines={1}
-              >
-                {module.title}
-              </Text>
-              {!module.isComplete && (
-                <Text style={styles.moduleProgress}>
-                  {module.lessonsCompleted}/{module.totalLessons} lecciones
-                </Text>
-              )}
-            </View>
-            {module.isComplete && (
-              <View style={styles.completeBadge}>
-                <Text style={styles.completeBadgeText}>{progress}%</Text>
+          <Tooltip key={module.id} text={module.title} show={isCollapsed}>
+            <Pressable
+              style={[
+                styles.moduleItem,
+                isActive && styles.moduleItemActive,
+                isCollapsed && styles.moduleItemCollapsed,
+              ]}
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              onPress={() => router.push(`/lessons/?module=${module.id}` as any)}
+            >
+              <View style={[styles.moduleIconContainer, isCollapsed && styles.moduleIconCollapsed]}>
+                {module.isComplete ? (
+                  <Icon icon={CheckCircle2} size="md" color="#22c55e" />
+                ) : (
+                  <Icon icon={BookOpen} size="md" variant="secondary" />
+                )}
               </View>
-            )}
-          </Pressable>
+              {!isCollapsed && (
+                <>
+                  <View style={styles.moduleInfo}>
+                    <Text
+                      style={[styles.moduleTitle, isActive && styles.moduleTitleActive]}
+                      numberOfLines={1}
+                    >
+                      {module.title}
+                    </Text>
+                    {!module.isComplete && (
+                      <Text style={styles.moduleProgress}>
+                        {module.lessonsCompleted}/{module.totalLessons} lecciones
+                      </Text>
+                    )}
+                  </View>
+                  {module.isComplete && (
+                    <View style={styles.completeBadge}>
+                      <Text style={styles.completeBadgeText}>{progress}%</Text>
+                    </View>
+                  )}
+                </>
+              )}
+            </Pressable>
+          </Tooltip>
         );
       })}
+
+      {/* Spacer */}
+      <View style={styles.spacer} />
+
+      {/* Toggle Button */}
+      {onToggleCollapse && (
+        <Tooltip text={isCollapsed ? 'Expandir' : 'Colapsar'} show={isCollapsed}>
+          <Pressable
+            style={[styles.toggleButton, isCollapsed && styles.toggleButtonCollapsed]}
+            onPress={onToggleCollapse}
+          >
+            <Icon icon={isCollapsed ? ChevronRight : ChevronLeft} size="sm" variant="secondary" />
+            {!isCollapsed && <Text style={styles.toggleText}>Colapsar</Text>}
+          </Pressable>
+        </Tooltip>
+      )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    width: 260,
     backgroundColor: '#0f172a',
     borderRightWidth: 1,
     borderRightColor: '#1e293b',
     paddingVertical: 16,
-    ...(Platform.OS === 'web' ? { height: '100vh' as unknown as number } : { flex: 1 }),
+    ...(Platform.OS === 'web'
+      ? {
+          height: '100vh' as unknown as number,
+          transition: 'width 0.2s ease-in-out' as unknown as undefined,
+          overflow: 'hidden' as unknown as 'visible',
+        }
+      : { flex: 1 }),
+  },
+  containerCollapsed: {
+    alignItems: 'center',
   },
   logoContainer: {
     flexDirection: 'row',
@@ -120,6 +226,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 12,
     marginBottom: 8,
+  },
+  logoContainerCollapsed: {
+    paddingHorizontal: 0,
+    justifyContent: 'center',
   },
   logoIcon: {
     width: 40,
@@ -142,6 +252,12 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     marginHorizontal: 12,
     borderRadius: 8,
+  },
+  navItemCollapsed: {
+    paddingHorizontal: 0,
+    marginHorizontal: 0,
+    width: 48,
+    justifyContent: 'center',
   },
   navItemActive: {
     backgroundColor: '#1e3a8a',
@@ -166,6 +282,12 @@ const styles = StyleSheet.create({
     color: '#64748b',
     letterSpacing: 1,
   },
+  collapsedDivider: {
+    width: 32,
+    height: 1,
+    backgroundColor: '#1e293b',
+    marginVertical: 16,
+  },
   moduleItem: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -177,6 +299,12 @@ const styles = StyleSheet.create({
   moduleItemActive: {
     backgroundColor: '#1e293b',
   },
+  moduleItemCollapsed: {
+    paddingHorizontal: 0,
+    marginHorizontal: 0,
+    width: 48,
+    justifyContent: 'center',
+  },
   moduleIconContainer: {
     width: 32,
     height: 32,
@@ -184,6 +312,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#1e293b',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  moduleIconCollapsed: {
+    backgroundColor: 'transparent',
   },
   moduleInfo: {
     flex: 1,
@@ -212,5 +343,51 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '600',
     color: '#22c55e',
+  },
+  spacer: {
+    flex: 1,
+  },
+  toggleButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    marginHorizontal: 12,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#1e293b',
+  },
+  toggleButtonCollapsed: {
+    paddingHorizontal: 0,
+    marginHorizontal: 0,
+    width: 48,
+    justifyContent: 'center',
+    borderWidth: 0,
+  },
+  toggleText: {
+    fontSize: 13,
+    fontWeight: '500',
+    color: '#64748b',
+    marginLeft: 8,
+  },
+  tooltipWrapper: {
+    position: 'relative',
+  },
+  tooltip: {
+    position: 'absolute',
+    left: '100%' as unknown as number,
+    top: '50%' as unknown as number,
+    transform: [{ translateY: -12 }],
+    marginLeft: 8,
+    backgroundColor: '#1e293b',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 6,
+    zIndex: 1000,
+  },
+  tooltipText: {
+    fontSize: 13,
+    color: '#f8fafc',
+    fontWeight: '500',
   },
 });
