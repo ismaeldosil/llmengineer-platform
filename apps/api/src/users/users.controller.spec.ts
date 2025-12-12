@@ -1,7 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { BadRequestException } from '@nestjs/common';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { BadgesService } from '../badges/badges.service';
+import { UpdateProfileDto } from './dto';
 
 describe('UsersController', () => {
   let controller: UsersController;
@@ -11,6 +13,7 @@ describe('UsersController', () => {
   const mockUsersService = {
     findById: jest.fn(),
     getProgress: jest.fn(),
+    updateProfile: jest.fn(),
   };
 
   const mockBadgesService = {
@@ -398,6 +401,190 @@ describe('UsersController', () => {
 
       expect(result.badges[0].earnedAt).toBeDefined();
       expect(result.badges[1].earnedAt).toBeDefined();
+    });
+  });
+
+  describe('PATCH /users/me', () => {
+    it('should update user profile successfully', async () => {
+      const updateDto: UpdateProfileDto = {
+        displayName: 'Updated Name',
+      };
+
+      const updatedUser = {
+        id: 'user-123',
+        email: 'test@example.com',
+        displayName: 'Updated Name',
+        createdAt: new Date('2024-01-01'),
+      };
+
+      mockUsersService.updateProfile.mockResolvedValue(updatedUser);
+
+      const result = await controller.updateProfile(mockUser, updateDto);
+
+      expect(result).toEqual(updatedUser);
+      expect(service.updateProfile).toHaveBeenCalledWith('user-123', updateDto);
+      expect(service.updateProfile).toHaveBeenCalledTimes(1);
+    });
+
+    it('should call service with correct user id and dto', async () => {
+      const updateDto: UpdateProfileDto = {
+        displayName: 'New Name',
+      };
+
+      const updatedUser = { ...mockUserData, displayName: 'New Name' };
+      mockUsersService.updateProfile.mockResolvedValue(updatedUser);
+
+      await controller.updateProfile(mockUser, updateDto);
+
+      expect(service.updateProfile).toHaveBeenCalledWith('user-123', updateDto);
+    });
+
+    it('should return updated user without password', async () => {
+      const updateDto: UpdateProfileDto = {
+        displayName: 'New Name',
+      };
+
+      const updatedUser = {
+        id: 'user-123',
+        email: 'test@example.com',
+        displayName: 'New Name',
+        createdAt: new Date(),
+      };
+
+      mockUsersService.updateProfile.mockResolvedValue(updatedUser);
+
+      const result = await controller.updateProfile(mockUser, updateDto);
+
+      expect(result).not.toHaveProperty('password');
+      expect(result).toHaveProperty('id');
+      expect(result).toHaveProperty('email');
+      expect(result).toHaveProperty('displayName');
+      expect(result).toHaveProperty('createdAt');
+    });
+
+    it('should handle empty update DTO', async () => {
+      const updateDto: UpdateProfileDto = {};
+
+      mockUsersService.updateProfile.mockResolvedValue(mockUserData);
+
+      const result = await controller.updateProfile(mockUser, updateDto);
+
+      expect(result).toEqual(mockUserData);
+      expect(service.updateProfile).toHaveBeenCalledWith('user-123', {});
+    });
+
+    it('should propagate validation errors from service', async () => {
+      const updateDto: UpdateProfileDto = {
+        displayName: '   ',
+      };
+
+      mockUsersService.updateProfile.mockRejectedValue(
+        new BadRequestException('El nombre no puede estar vacío'),
+      );
+
+      await expect(controller.updateProfile(mockUser, updateDto)).rejects.toThrow(
+        BadRequestException,
+      );
+      await expect(controller.updateProfile(mockUser, updateDto)).rejects.toThrow(
+        'El nombre no puede estar vacío',
+      );
+    });
+
+    it('should handle service errors', async () => {
+      const updateDto: UpdateProfileDto = {
+        displayName: 'New Name',
+      };
+
+      mockUsersService.updateProfile.mockRejectedValue(new Error('Database error'));
+
+      await expect(controller.updateProfile(mockUser, updateDto)).rejects.toThrow(
+        'Database error',
+      );
+    });
+
+    it('should update profile for different users', async () => {
+      const user1 = { id: 'user-1' };
+      const user2 = { id: 'user-2' };
+
+      const updateDto1: UpdateProfileDto = { displayName: 'User One' };
+      const updateDto2: UpdateProfileDto = { displayName: 'User Two' };
+
+      const updatedUser1 = { ...mockUserData, id: 'user-1', displayName: 'User One' };
+      const updatedUser2 = { ...mockUserData, id: 'user-2', displayName: 'User Two' };
+
+      mockUsersService.updateProfile.mockResolvedValueOnce(updatedUser1);
+      mockUsersService.updateProfile.mockResolvedValueOnce(updatedUser2);
+
+      const result1 = await controller.updateProfile(user1, updateDto1);
+      const result2 = await controller.updateProfile(user2, updateDto2);
+
+      expect(result1.id).toBe('user-1');
+      expect(result1.displayName).toBe('User One');
+      expect(result2.id).toBe('user-2');
+      expect(result2.displayName).toBe('User Two');
+      expect(service.updateProfile).toHaveBeenCalledWith('user-1', updateDto1);
+      expect(service.updateProfile).toHaveBeenCalledWith('user-2', updateDto2);
+    });
+
+    it('should preserve email field in response', async () => {
+      const updateDto: UpdateProfileDto = {
+        displayName: 'New Name',
+      };
+
+      const updatedUser = {
+        id: 'user-123',
+        email: 'original@example.com',
+        displayName: 'New Name',
+        createdAt: new Date(),
+      };
+
+      mockUsersService.updateProfile.mockResolvedValue(updatedUser);
+
+      const result = await controller.updateProfile(mockUser, updateDto);
+
+      expect(result.email).toBe('original@example.com');
+    });
+
+    it('should return UserResponseDto structure', async () => {
+      const updateDto: UpdateProfileDto = {
+        displayName: 'Test User',
+      };
+
+      const updatedUser = {
+        id: 'user-123',
+        email: 'test@example.com',
+        displayName: 'Test User',
+        createdAt: new Date('2024-01-15T10:00:00Z'),
+      };
+
+      mockUsersService.updateProfile.mockResolvedValue(updatedUser);
+
+      const result = await controller.updateProfile(mockUser, updateDto);
+
+      // Check that response matches UserResponseDto structure
+      expect(result).toMatchObject({
+        id: expect.any(String),
+        email: expect.any(String),
+        displayName: expect.any(String),
+        createdAt: expect.any(Date),
+      });
+    });
+
+    it('should handle alphanumeric displayName with spaces', async () => {
+      const updateDto: UpdateProfileDto = {
+        displayName: 'John Doe 123',
+      };
+
+      const updatedUser = {
+        ...mockUserData,
+        displayName: 'John Doe 123',
+      };
+
+      mockUsersService.updateProfile.mockResolvedValue(updatedUser);
+
+      const result = await controller.updateProfile(mockUser, updateDto);
+
+      expect(result.displayName).toBe('John Doe 123');
     });
   });
 });

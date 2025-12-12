@@ -1,59 +1,74 @@
 import { View, Text, StyleSheet, Pressable, Animated } from 'react-native';
 import { useState, useRef, useEffect } from 'react';
-import type { QuizQuestion, QuizOption } from '@llmengineer/shared';
+import { Circle, CheckCircle, XCircle } from 'lucide-react-native';
+import { Icon } from '@/components/ui/Icon';
 
 interface MultipleChoiceProps {
-  question: QuizQuestion;
-  onAnswer: (selectedAnswer: string) => void;
+  question: string;
+  options: string[];
+  selectedAnswer: number | null;
+  onSelect: (index: number) => void;
   disabled?: boolean;
-  showFeedback?: boolean;
-  selectedAnswer?: string;
+  correctAnswer?: number;
+  showResult?: boolean;
 }
 
 export function MultipleChoice({
   question,
-  onAnswer,
-  disabled = false,
-  showFeedback = false,
+  options,
   selectedAnswer,
+  onSelect,
+  disabled = false,
+  correctAnswer,
+  showResult = false,
 }: MultipleChoiceProps) {
-  const [selected, setSelected] = useState<string | undefined>(selectedAnswer);
-  const fadeAnim = useRef(new Animated.Value(0)).current;
-
-  const options = question.options || [];
-  const optionLabels = ['A', 'B', 'C', 'D'];
+  const optionLabels = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+  const scaleAnims = useRef(options.map(() => new Animated.Value(1))).current;
+  const feedbackAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    if (showFeedback) {
-      Animated.timing(fadeAnim, {
+    if (showResult) {
+      Animated.timing(feedbackAnim, {
         toValue: 1,
         duration: 300,
         useNativeDriver: true,
       }).start();
     } else {
-      fadeAnim.setValue(0);
+      feedbackAnim.setValue(0);
     }
-  }, [showFeedback, fadeAnim]);
+  }, [showResult, feedbackAnim]);
 
-  const handlePress = (optionId: string) => {
+  const handlePress = (index: number) => {
     if (disabled) return;
-    setSelected(optionId);
-    onAnswer(optionId);
+
+    // Animate the pressed option
+    Animated.sequence([
+      Animated.timing(scaleAnims[index], {
+        toValue: 0.96,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+      Animated.spring(scaleAnims[index], {
+        toValue: 1,
+        friction: 3,
+        tension: 40,
+        useNativeDriver: true,
+      }),
+    ]).start();
+
+    onSelect(index);
   };
 
-  const getOptionStyle = (option: QuizOption) => {
-    const isSelected = selected === option.id;
-    const isCorrect = option.id === question.correctAnswer;
+  const getOptionStyle = (index: number) => {
+    const isSelected = selectedAnswer === index;
+    const isCorrect = correctAnswer === index;
 
-    if (showFeedback) {
-      if (isSelected && isCorrect) {
+    if (showResult) {
+      if (isCorrect) {
         return styles.correctOption;
       }
       if (isSelected && !isCorrect) {
         return styles.incorrectOption;
-      }
-      if (isCorrect) {
-        return styles.correctOption;
       }
     }
 
@@ -64,12 +79,12 @@ export function MultipleChoice({
     return null;
   };
 
-  const getOptionTextStyle = (option: QuizOption) => {
-    const isSelected = selected === option.id;
-    const isCorrect = option.id === question.correctAnswer;
+  const getOptionTextStyle = (index: number) => {
+    const isSelected = selectedAnswer === index;
+    const isCorrect = correctAnswer === index;
 
-    if (showFeedback) {
-      if ((isSelected && isCorrect) || isCorrect) {
+    if (showResult) {
+      if (isCorrect) {
         return styles.correctText;
       }
       if (isSelected && !isCorrect) {
@@ -84,45 +99,120 @@ export function MultipleChoice({
     return null;
   };
 
+  const getOptionIcon = (index: number) => {
+    const isSelected = selectedAnswer === index;
+    const isCorrect = correctAnswer === index;
+
+    if (showResult) {
+      if (isCorrect) {
+        return <Icon icon={CheckCircle} size="sm" color="#10B981" />;
+      }
+      if (isSelected && !isCorrect) {
+        return <Icon icon={XCircle} size="sm" color="#EF4444" />;
+      }
+    }
+
+    if (isSelected) {
+      return <Icon icon={CheckCircle} size="sm" color="#3B82F6" />;
+    }
+
+    return <Icon icon={Circle} size="sm" color="#6B7280" />;
+  };
+
+  const getLabelStyle = (index: number) => {
+    const isSelected = selectedAnswer === index;
+    const isCorrect = correctAnswer === index;
+
+    if (showResult) {
+      if (isCorrect) {
+        return styles.correctLabel;
+      }
+      if (isSelected && !isCorrect) {
+        return styles.incorrectLabel;
+      }
+    }
+
+    if (isSelected) {
+      return styles.selectedLabel;
+    }
+
+    return null;
+  };
+
+  const getLabelTextStyle = (index: number) => {
+    const isSelected = selectedAnswer === index;
+    const isCorrect = correctAnswer === index;
+
+    if (showResult) {
+      if (isCorrect) {
+        return styles.correctLabelText;
+      }
+      if (isSelected && !isCorrect) {
+        return styles.incorrectLabelText;
+      }
+    }
+
+    if (isSelected) {
+      return styles.selectedLabelText;
+    }
+
+    return null;
+  };
+
   return (
     <View style={styles.container}>
-      <Text style={styles.question}>{question.question}</Text>
+      <Text style={styles.question}>{question}</Text>
 
       <View style={styles.optionsContainer}>
         {options.map((option, index) => (
-          <Pressable
-            key={option.id}
-            style={[styles.option, getOptionStyle(option)]}
-            onPress={() => handlePress(option.id)}
-            disabled={disabled}
+          <Animated.View
+            key={index}
+            style={{
+              transform: [{ scale: scaleAnims[index] }],
+            }}
           >
-            <View style={styles.optionContent}>
-              <View style={[styles.label, selected === option.id && styles.selectedLabel]}>
-                <Text
-                  style={[styles.labelText, selected === option.id && styles.selectedLabelText]}
-                >
-                  {optionLabels[index]}
-                </Text>
+            <Pressable
+              style={[styles.option, getOptionStyle(index)]}
+              onPress={() => handlePress(index)}
+              disabled={disabled}
+            >
+              <View style={styles.optionContent}>
+                <View style={[styles.label, getLabelStyle(index)]}>
+                  <Text style={[styles.labelText, getLabelTextStyle(index)]}>
+                    {optionLabels[index]}
+                  </Text>
+                </View>
+                <Text style={[styles.optionText, getOptionTextStyle(index)]}>{option}</Text>
+                <View style={styles.iconContainer}>{getOptionIcon(index)}</View>
               </View>
-              <Text style={[styles.optionText, getOptionTextStyle(option)]}>{option.text}</Text>
-            </View>
-          </Pressable>
+            </Pressable>
+          </Animated.View>
         ))}
       </View>
 
-      {showFeedback && (
-        <Animated.View style={[styles.feedback, { opacity: fadeAnim }]}>
-          {selected === question.correctAnswer ? (
-            <View style={styles.feedbackContent}>
-              <Text style={styles.feedbackIcon}>✓</Text>
-              <Text style={styles.feedbackTextCorrect}>Correct!</Text>
-            </View>
-          ) : (
-            <View style={styles.feedbackContent}>
-              <Text style={styles.feedbackIcon}>✗</Text>
-              <Text style={styles.feedbackTextIncorrect}>Incorrect</Text>
-            </View>
-          )}
+      {showResult && selectedAnswer !== null && (
+        <Animated.View style={[styles.feedback, { opacity: feedbackAnim }]}>
+          <View style={styles.feedbackContent}>
+            {selectedAnswer === correctAnswer ? (
+              <>
+                <Icon icon={CheckCircle} size="md" color="#10B981" />
+                <View style={styles.feedbackTextContainer}>
+                  <Text style={styles.feedbackTitle}>Correct!</Text>
+                  <Text style={styles.feedbackDescription}>Well done! That's the right answer.</Text>
+                </View>
+              </>
+            ) : (
+              <>
+                <Icon icon={XCircle} size="md" color="#EF4444" />
+                <View style={styles.feedbackTextContainer}>
+                  <Text style={styles.feedbackTitle}>Incorrect</Text>
+                  <Text style={styles.feedbackDescription}>
+                    The correct answer is {optionLabels[correctAnswer || 0]}.
+                  </Text>
+                </View>
+              </>
+            )}
+          </View>
         </Animated.View>
       )}
     </View>
@@ -167,6 +257,12 @@ const styles = StyleSheet.create({
   selectedLabel: {
     backgroundColor: '#3B82F6',
   },
+  correctLabel: {
+    backgroundColor: '#10B981',
+  },
+  incorrectLabel: {
+    backgroundColor: '#EF4444',
+  },
   labelText: {
     fontSize: 16,
     fontWeight: '600',
@@ -175,10 +271,23 @@ const styles = StyleSheet.create({
   selectedLabelText: {
     color: '#FFFFFF',
   },
+  correctLabelText: {
+    color: '#FFFFFF',
+  },
+  incorrectLabelText: {
+    color: '#FFFFFF',
+  },
   optionText: {
     fontSize: 16,
     color: '#E5E7EB',
     flex: 1,
+    lineHeight: 22,
+  },
+  iconContainer: {
+    width: 24,
+    height: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   selectedOption: {
     borderColor: '#3B82F6',
@@ -197,33 +306,36 @@ const styles = StyleSheet.create({
   },
   correctText: {
     color: '#10B981',
+    fontWeight: '500',
   },
   incorrectText: {
     color: '#EF4444',
   },
   feedback: {
     marginTop: 20,
-    padding: 16,
+    padding: 20,
     borderRadius: 12,
     backgroundColor: '#1F2937',
+    borderWidth: 1,
+    borderColor: '#374151',
   },
   feedbackContent: {
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
+    alignItems: 'flex-start',
+    gap: 12,
   },
-  feedbackIcon: {
-    fontSize: 24,
+  feedbackTextContainer: {
+    flex: 1,
   },
-  feedbackTextCorrect: {
+  feedbackTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#10B981',
+    color: '#F9FAFB',
+    marginBottom: 4,
   },
-  feedbackTextIncorrect: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#EF4444',
+  feedbackDescription: {
+    fontSize: 14,
+    color: '#9CA3AF',
+    lineHeight: 20,
   },
 });

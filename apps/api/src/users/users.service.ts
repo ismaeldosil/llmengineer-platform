@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { calculateLevel, getLevelTitle } from '@llmengineer/shared';
+import { UpdateProfileDto } from './dto';
 
 interface CreateUserData {
   email: string;
@@ -129,5 +130,31 @@ export class UsersService {
       leveledUp,
       xpAdded: xp,
     };
+  }
+
+  async updateProfile(userId: string, dto: UpdateProfileDto) {
+    // Validate that displayName is provided and not empty
+    if (dto.displayName !== undefined) {
+      const trimmedName = dto.displayName.trim();
+      if (trimmedName.length === 0) {
+        throw new BadRequestException('El nombre no puede estar vacío');
+      }
+    }
+
+    // Update user profile
+    const updatedUser = await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        ...(dto.displayName !== undefined && { displayName: dto.displayName.trim() }),
+      },
+      select: {
+        id: true,
+        email: true,
+        displayName: true,
+        createdAt: true,
+      },
+    });
+
+    return updatedUser;
   }
 }

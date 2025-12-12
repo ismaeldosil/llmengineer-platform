@@ -1,6 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { BadRequestException } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { UpdateProfileDto } from './dto';
 
 describe('UsersService', () => {
   let service: UsersService;
@@ -33,6 +35,7 @@ describe('UsersService', () => {
     user: {
       findUnique: jest.fn(),
       create: jest.fn(),
+      update: jest.fn(),
     },
     userProgress: {
       findUnique: jest.fn(),
@@ -415,6 +418,186 @@ describe('UsersService', () => {
 
       // Should still return "LLM Master" for levels beyond 10
       expect(result?.levelTitle).toBe('LLM Master');
+    });
+  });
+
+  describe('updateProfile', () => {
+    const userId = 'test-user-id';
+
+    it('should update displayName successfully', async () => {
+      const updateDto: UpdateProfileDto = {
+        displayName: 'Updated Name',
+      };
+
+      const updatedUser = {
+        id: userId,
+        email: 'test@example.com',
+        displayName: 'Updated Name',
+        createdAt: new Date(),
+      };
+
+      mockPrismaService.user.update.mockResolvedValue(updatedUser);
+
+      const result = await service.updateProfile(userId, updateDto);
+
+      expect(result).toEqual(updatedUser);
+      expect(prismaService.user.update).toHaveBeenCalledWith({
+        where: { id: userId },
+        data: {
+          displayName: 'Updated Name',
+        },
+        select: {
+          id: true,
+          email: true,
+          displayName: true,
+          createdAt: true,
+        },
+      });
+    });
+
+    it('should trim displayName before updating', async () => {
+      const updateDto: UpdateProfileDto = {
+        displayName: '  Trimmed Name  ',
+      };
+
+      const updatedUser = {
+        id: userId,
+        email: 'test@example.com',
+        displayName: 'Trimmed Name',
+        createdAt: new Date(),
+      };
+
+      mockPrismaService.user.update.mockResolvedValue(updatedUser);
+
+      await service.updateProfile(userId, updateDto);
+
+      expect(prismaService.user.update).toHaveBeenCalledWith({
+        where: { id: userId },
+        data: {
+          displayName: 'Trimmed Name',
+        },
+        select: {
+          id: true,
+          email: true,
+          displayName: true,
+          createdAt: true,
+        },
+      });
+    });
+
+    it('should reject empty displayName after trimming', async () => {
+      const updateDto: UpdateProfileDto = {
+        displayName: '   ',
+      };
+
+      await expect(service.updateProfile(userId, updateDto)).rejects.toThrow(
+        BadRequestException,
+      );
+      await expect(service.updateProfile(userId, updateDto)).rejects.toThrow(
+        'El nombre no puede estar vacío',
+      );
+
+      expect(prismaService.user.update).not.toHaveBeenCalled();
+    });
+
+    it('should handle empty update DTO', async () => {
+      const updateDto: UpdateProfileDto = {};
+
+      const existingUser = {
+        id: userId,
+        email: 'test@example.com',
+        displayName: 'Original Name',
+        createdAt: new Date(),
+      };
+
+      mockPrismaService.user.update.mockResolvedValue(existingUser);
+
+      const result = await service.updateProfile(userId, updateDto);
+
+      expect(result).toEqual(existingUser);
+      expect(prismaService.user.update).toHaveBeenCalledWith({
+        where: { id: userId },
+        data: {},
+        select: {
+          id: true,
+          email: true,
+          displayName: true,
+          createdAt: true,
+        },
+      });
+    });
+
+    it('should not expose password in response', async () => {
+      const updateDto: UpdateProfileDto = {
+        displayName: 'New Name',
+      };
+
+      const updatedUser = {
+        id: userId,
+        email: 'test@example.com',
+        displayName: 'New Name',
+        createdAt: new Date(),
+      };
+
+      mockPrismaService.user.update.mockResolvedValue(updatedUser);
+
+      const result = await service.updateProfile(userId, updateDto);
+
+      expect(result).not.toHaveProperty('password');
+      // Verify that password is not in the select object
+      const callArgs = (prismaService.user.update as jest.Mock).mock.calls[0][0];
+      expect(callArgs.select).not.toHaveProperty('password');
+      expect(callArgs.select).toEqual({
+        id: true,
+        email: true,
+        displayName: true,
+        createdAt: true,
+      });
+    });
+
+    it('should handle update with valid alphanumeric name with spaces', async () => {
+      const updateDto: UpdateProfileDto = {
+        displayName: 'John Doe 123',
+      };
+
+      const updatedUser = {
+        id: userId,
+        email: 'test@example.com',
+        displayName: 'John Doe 123',
+        createdAt: new Date(),
+      };
+
+      mockPrismaService.user.update.mockResolvedValue(updatedUser);
+
+      const result = await service.updateProfile(userId, updateDto);
+
+      expect(result.displayName).toBe('John Doe 123');
+    });
+
+    it('should update only displayName and not other fields', async () => {
+      const updateDto: UpdateProfileDto = {
+        displayName: 'New Name',
+      };
+
+      const updatedUser = {
+        id: userId,
+        email: 'original@example.com',
+        displayName: 'New Name',
+        createdAt: new Date('2024-01-01'),
+      };
+
+      mockPrismaService.user.update.mockResolvedValue(updatedUser);
+
+      await service.updateProfile(userId, updateDto);
+
+      // Verify that only displayName is in the data field
+      expect(prismaService.user.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: {
+            displayName: 'New Name',
+          },
+        }),
+      );
     });
   });
 });
