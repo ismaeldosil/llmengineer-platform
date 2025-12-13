@@ -1,6 +1,7 @@
 import { View, StyleSheet, Platform } from 'react-native';
 import { Sidebar } from './Sidebar';
 import { Navbar } from './Navbar';
+import { useSidebarCollapsed } from '@/hooks/useSidebarCollapsed';
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -29,6 +30,8 @@ export function MainLayout({
   currentModuleId,
   onLogout,
 }: MainLayoutProps) {
+  const { isCollapsed, toggleCollapsed } = useSidebarCollapsed();
+
   // On mobile, don't show sidebar
   if (Platform.OS !== 'web') {
     return (
@@ -51,7 +54,11 @@ export function MainLayout({
 
   return (
     <View style={styles.container}>
-      <Sidebar currentModuleId={currentModuleId} />
+      <Sidebar
+        currentModuleId={currentModuleId}
+        isCollapsed={isCollapsed}
+        onToggleCollapse={toggleCollapsed}
+      />
       <View style={styles.mainArea}>
         <Navbar
           title={title}
