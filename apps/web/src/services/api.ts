@@ -10,6 +10,10 @@ import type {
   Quiz,
   QuizResult,
   SubmitQuizRequest,
+  GameType,
+  SubmitGameScoreRequest,
+  SubmitGameScoreResponse,
+  GameLeaderboardResponse,
 } from '@llmengineer/shared';
 
 export interface SearchResult {
@@ -40,7 +44,7 @@ export const apiSlice = createApi({
       return headers;
     },
   }),
-  tagTypes: ['User', 'Progress', 'Lessons', 'Badges', 'Leaderboard', 'Quiz'],
+  tagTypes: ['User', 'Progress', 'Lessons', 'Badges', 'Leaderboard', 'Quiz', 'Games'],
   endpoints: (builder) => ({
     // Auth
     login: builder.mutation<
@@ -66,6 +70,17 @@ export const apiSlice = createApi({
     getMe: builder.query<User, void>({
       query: () => '/users/me',
       providesTags: ['User'],
+    }),
+    updateProfile: builder.mutation<
+      User,
+      { displayName?: string; avatarUrl?: string; bio?: string }
+    >({
+      query: (data) => ({
+        url: '/users/me',
+        method: 'PATCH',
+        body: data,
+      }),
+      invalidatesTags: ['User'],
     }),
 
     // Progress
@@ -141,6 +156,33 @@ export const apiSlice = createApi({
       }),
       invalidatesTags: ['Progress', 'Lessons', 'Badges'],
     }),
+
+    // Games
+    submitGameScore: builder.mutation<
+      SubmitGameScoreResponse,
+      { gameType: GameType } & SubmitGameScoreRequest
+    >({
+      query: ({ gameType, ...body }) => ({
+        url: `/games/scores`,
+        method: 'POST',
+        body: { gameType, ...body },
+      }),
+      invalidatesTags: ['Games', 'Progress', 'Badges'],
+    }),
+    getGameLeaderboard: builder.query<
+      GameLeaderboardResponse,
+      { gameType: GameType; limit?: number }
+    >({
+      query: ({ gameType, limit = 10 }) => `/games/scores/${gameType}?limit=${limit}`,
+      providesTags: (_result, _error, { gameType }) => [{ type: 'Games', id: gameType }],
+    }),
+    getUserGameScores: builder.query<
+      Array<{ gameType: GameType; highScore: number; rank: number; playedAt: Date }>,
+      void
+    >({
+      query: () => '/games/scores/me',
+      providesTags: ['Games'],
+    }),
   }),
 });
 
@@ -148,6 +190,7 @@ export const {
   useLoginMutation,
   useRegisterMutation,
   useGetMeQuery,
+  useUpdateProfileMutation,
   useGetProgressQuery,
   useGetLessonsQuery,
   useGetNextLessonQuery,
@@ -159,4 +202,7 @@ export const {
   useCheckinMutation,
   useGetLessonQuizQuery,
   useSubmitQuizMutation,
+  useSubmitGameScoreMutation,
+  useGetGameLeaderboardQuery,
+  useGetUserGameScoresQuery,
 } = apiSlice;

@@ -27,6 +27,8 @@ export class UsersService {
         id: true,
         email: true,
         displayName: true,
+        avatarUrl: true,
+        bio: true,
         createdAt: true,
       },
     });
@@ -56,6 +58,8 @@ export class UsersService {
         id: true,
         email: true,
         displayName: true,
+        avatarUrl: true,
+        bio: true,
         createdAt: true,
       },
     });
@@ -148,16 +152,25 @@ export class UsersService {
       }
     }
 
+    // Validate avatarUrl if provided
+    if (dto.avatarUrl !== undefined && dto.avatarUrl.trim().length === 0) {
+      throw new BadRequestException('La URL del avatar no puede estar vacía');
+    }
+
     // Update user profile
     const updatedUser = await this.prisma.user.update({
       where: { id: userId },
       data: {
         ...(dto.displayName !== undefined && { displayName: dto.displayName.trim() }),
+        ...(dto.avatarUrl !== undefined && { avatarUrl: dto.avatarUrl.trim() || null }),
+        ...(dto.bio !== undefined && { bio: dto.bio.trim() || null }),
       },
       select: {
         id: true,
         email: true,
         displayName: true,
+        avatarUrl: true,
+        bio: true,
         createdAt: true,
       },
     });

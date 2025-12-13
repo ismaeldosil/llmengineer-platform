@@ -1,4 +1,4 @@
-import { IsOptional, IsString, MinLength, MaxLength, Matches } from 'class-validator';
+import { IsOptional, IsString, MinLength, MaxLength, Matches, IsUrl } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class UpdateProfileDto {
@@ -15,4 +15,25 @@ export class UpdateProfileDto {
     message: 'El nombre solo puede contener letras, números y espacios',
   })
   displayName?: string;
+
+  @ApiProperty({
+    example: 'https://example.com/avatar.jpg',
+    description: 'URL del avatar del usuario',
+    required: false,
+  })
+  @IsOptional()
+  @IsString({ message: 'La URL del avatar debe ser una cadena de texto' })
+  @IsUrl({}, { message: 'La URL del avatar debe ser una URL válida' })
+  @MaxLength(500, { message: 'La URL del avatar no puede tener más de 500 caracteres' })
+  avatarUrl?: string;
+
+  @ApiProperty({
+    example: 'Apasionado desarrollador de aplicaciones con LLMs',
+    description: 'Biografía del usuario',
+    required: false,
+  })
+  @IsOptional()
+  @IsString({ message: 'La biografía debe ser una cadena de texto' })
+  @MaxLength(500, { message: 'La biografía no puede tener más de 500 caracteres' })
+  bio?: string;
 }

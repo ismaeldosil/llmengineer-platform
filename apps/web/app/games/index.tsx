@@ -1,13 +1,15 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
 import { Stack } from 'expo-router';
 import { Gamepad2 } from 'lucide-react-native';
 import { Icon } from '@/components/ui/Icon';
 import { GameCard } from '@/components/games/GameCard';
+import { useGetUserGameScoresQuery } from '@/services/api';
+import type { GameType } from '@llmengineer/shared';
 
 interface Game {
   id: string;
-  slug: 'token-tetris' | 'prompt-golf' | 'embedding-match';
+  slug: GameType;
   name: string;
   description: string;
   icon: string;
@@ -45,6 +47,17 @@ const GAMES: Game[] = [
 ];
 
 export default function GamesScreen() {
+  const { data: userScores, isLoading } = useGetUserGameScoresQuery();
+
+  // Merge user scores with game data
+  const gamesWithScores = GAMES.map((game) => {
+    const userScore = userScores?.find((s) => s.gameType === game.slug);
+    return {
+      ...game,
+      highScore: userScore?.highScore,
+    };
+  });
+
   return (
     <>
       <Stack.Screen
@@ -65,9 +78,17 @@ export default function GamesScreen() {
           </Text>
         </View>
 
+        {/* Loading State */}
+        {isLoading && (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="small" color="#a855f7" />
+            <Text style={styles.loadingText}>Loading scores...</Text>
+          </View>
+        )}
+
         {/* Games Grid */}
         <View style={styles.gamesGrid}>
-          {GAMES.map((game) => (
+          {gamesWithScores.map((game) => (
             <View key={game.id} style={styles.gameCardWrapper}>
               <GameCard {...game} />
             </View>
@@ -105,6 +126,17 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: '#94a3b8',
     marginTop: 8,
+  },
+  loadingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    gap: 8,
+  },
+  loadingText: {
+    fontSize: 14,
+    color: '#94a3b8',
   },
   gamesGrid: {
     paddingHorizontal: 24,

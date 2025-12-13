@@ -4,6 +4,7 @@ export * from './types/badge';
 export * from './types/progress';
 export * from './types/leaderboard';
 export * from './types/quiz';
+export * from './types/game.types';
 export * from './constants/levels';
 export * from './constants/xp';
 export { calculateXpWithMultipliers } from './utils/xp-multipliers';

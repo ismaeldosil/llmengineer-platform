@@ -1,22 +1,37 @@
 import { View, Text, StyleSheet, ScrollView, Pressable, ActivityIndicator } from 'react-native';
 import { Stack, router } from 'expo-router';
 import { useSelector } from 'react-redux';
+import { useState } from 'react';
 import type { RootState } from '@/store';
-import { useGetProgressQuery, useGetBadgesQuery } from '@/services/api';
+import { useGetProgressQuery, useGetBadgesQuery, useUpdateProfileMutation } from '@/services/api';
 import { Settings } from 'lucide-react-native';
+import { EditProfileModal } from '@/components/profile/EditProfileModal';
 
 export default function ProfileScreen() {
   const user = useSelector((state: RootState) => state.auth.user);
+  const [isModalVisible, setIsModalVisible] = useState(false);
   const {
     data: progress,
     isLoading: progressLoading,
     isError: progressError,
   } = useGetProgressQuery();
   const { data: badges, isLoading: badgesLoading, isError: badgesError } = useGetBadgesQuery();
+  const [updateProfile] = useUpdateProfileMutation();
 
   const handleEditProfile = () => {
-    // Placeholder for future implementation
-    // TODO: Implement edit profile modal
+    setIsModalVisible(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalVisible(false);
+  };
+
+  const handleSaveProfile = async (data: {
+    displayName: string;
+    avatarUrl?: string;
+    bio?: string;
+  }) => {
+    await updateProfile(data).unwrap();
   };
 
   const handleNavigateToSettings = () => {
@@ -54,6 +69,14 @@ export default function ProfileScreen() {
   return (
     <>
       <Stack.Screen options={{ title: 'Perfil' }} />
+      <EditProfileModal
+        visible={isModalVisible}
+        onClose={handleCloseModal}
+        currentDisplayName={user?.displayName || ''}
+        currentAvatarUrl={user?.avatarUrl}
+        currentBio={user?.bio}
+        onSave={handleSaveProfile}
+      />
       <ScrollView style={styles.container}>
         <View style={styles.header}>
           <View style={styles.avatar}>

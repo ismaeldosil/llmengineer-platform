@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, View, Text, StyleSheet, Pressable } from 'react-native';
+import { Modal, View, Text, StyleSheet, Pressable, TextInput, ScrollView } from 'react-native';
 import { Input } from '../ui/Input';
 import { Button } from '../ui/Button';
 
@@ -7,28 +7,40 @@ interface EditProfileModalProps {
   visible: boolean;
   onClose: () => void;
   currentDisplayName: string;
-  onSave: (newName: string) => Promise<void>;
+  currentAvatarUrl?: string;
+  currentBio?: string;
+  onSave: (data: { displayName: string; avatarUrl?: string; bio?: string }) => Promise<void>;
 }
 
 export function EditProfileModal({
   visible,
   onClose,
   currentDisplayName,
+  currentAvatarUrl = '',
+  currentBio = '',
   onSave,
 }: EditProfileModalProps) {
   const [displayName, setDisplayName] = useState(currentDisplayName);
-  const [error, setError] = useState<string>('');
+  const [avatarUrl, setAvatarUrl] = useState(currentAvatarUrl);
+  const [bio, setBio] = useState(currentBio);
+  const [errors, setErrors] = useState<{
+    displayName?: string;
+    avatarUrl?: string;
+    bio?: string;
+  }>({});
   const [isLoading, setIsLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string>('');
 
-  // Sync local state when currentDisplayName prop changes
+  // Sync local state when props change
   useEffect(() => {
     if (visible) {
       setDisplayName(currentDisplayName);
-      setError('');
+      setAvatarUrl(currentAvatarUrl);
+      setBio(currentBio);
+      setErrors({});
       setSuccessMessage('');
     }
-  }, [visible, currentDisplayName]);
+  }, [visible, currentDisplayName, currentAvatarUrl, currentBio]);
 
   const validateDisplayName = (name: string): string | null => {
     if (!name || name.trim().length === 0) {
@@ -43,13 +55,54 @@ export function EditProfileModal({
     return null;
   };
 
+  const validateAvatarUrl = (url: string): string | null => {
+    if (!url || url.trim().length === 0) {
+      return null; // Optional field
+    }
+    // Basic URL validation
+    try {
+      new URL(url.trim());
+      return null;
+    } catch {
+      return 'Please enter a valid URL';
+    }
+  };
+
+  const validateBio = (bioText: string): string | null => {
+    if (!bioText || bioText.trim().length === 0) {
+      return null; // Optional field
+    }
+    if (bioText.trim().length > 500) {
+      return 'Bio must not exceed 500 characters';
+    }
+    return null;
+  };
+
   const handleDisplayNameChange = (text: string) => {
     setDisplayName(text);
-    // Clear error when user types
-    if (error) {
-      setError('');
+    if (errors.displayName) {
+      setErrors((prev) => ({ ...prev, displayName: undefined }));
     }
-    // Clear success message when user types
+    if (successMessage) {
+      setSuccessMessage('');
+    }
+  };
+
+  const handleAvatarUrlChange = (text: string) => {
+    setAvatarUrl(text);
+    if (errors.avatarUrl) {
+      setErrors((prev) => ({ ...prev, avatarUrl: undefined }));
+    }
+    if (successMessage) {
+      setSuccessMessage('');
+    }
+  };
+
+  const handleBioChange = (text: string) => {
+    setBio(text);
+    if (errors.bio) {
+      setErrors((prev) => ({ ...prev, bio: undefined }));
+    }
     if (successMessage) {
       setSuccessMessage('');
     }
@@ -57,32 +110,53 @@ export function EditProfileModal({
 
   const handleSave = async () => {
     const trimmedName = displayName.trim();
-    const validationError = validateDisplayName(trimmedName);
+    const trimmedUrl = avatarUrl.trim();
+    const trimmedBio = bio.trim();
 
-    if (validationError) {
-      setError(validationError);
+    // Validate all fields
+    const nameError = validateDisplayName(trimmedName);
+    const urlError = validateAvatarUrl(trimmedUrl);
+    const bioError = validateBio(trimmedBio);
+
+    if (nameError || urlError || bioError) {
+      setErrors({
+        displayName: nameError || undefined,
+        avatarUrl: urlError || undefined,
+        bio: bioError || undefined,
+      });
       return;
     }
 
-    // Don't save if nothing changed
-    if (trimmedName === currentDisplayName) {
-      setError('No changes to save');
+    // Check if anything changed
+    const hasChanges =
+      trimmedName !== currentDisplayName ||
+      trimmedUrl !== currentAvatarUrl ||
+      trimmedBio !== currentBio;
+
+    if (!hasChanges) {
+      setErrors({ displayName: 'No changes to save' });
       return;
     }
 
     setIsLoading(true);
-    setError('');
+    setErrors({});
     setSuccessMessage('');
 
     try {
-      await onSave(trimmedName);
+      await onSave({
+        displayName: trimmedName,
+        avatarUrl: trimmedUrl || undefined,
+        bio: trimmedBio || undefined,
+      });
       setSuccessMessage('Profile updated successfully!');
       // Close modal after a brief delay to show success message
       setTimeout(() => {
         onClose();
       }, 1500);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to update profile');
+      setErrors({
+        displayName: err instanceof Error ? err.message : 'Failed to update profile',
+      });
     } finally {
       setIsLoading(false);
     }
@@ -90,7 +164,9 @@ export function EditProfileModal({
 
   const handleCancel = () => {
     setDisplayName(currentDisplayName);
-    setError('');
+    setAvatarUrl(currentAvatarUrl);
+    setBio(currentBio);
+    setErrors({});
     setSuccessMessage('');
     onClose();
   };
@@ -127,27 +203,67 @@ export function EditProfileModal({
           </View>
 
           {/* Content */}
-          <View style={styles.content}>
+          <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
             <Input
               label="Display Name"
               placeholder="Enter your display name"
               value={displayName}
               onChangeText={handleDisplayNameChange}
-              error={error}
+              error={errors.displayName}
               maxLength={50}
               autoFocus
               testID="display-name-input"
               editable={!isLoading}
             />
-
             <Text style={styles.characterCount}>{displayName.length} / 50 characters</Text>
+
+            <View style={styles.fieldSpacing} />
+
+            <Input
+              label="Avatar URL (optional)"
+              placeholder="https://example.com/avatar.jpg"
+              value={avatarUrl}
+              onChangeText={handleAvatarUrlChange}
+              error={errors.avatarUrl}
+              maxLength={500}
+              testID="avatar-url-input"
+              editable={!isLoading}
+              autoCapitalize="none"
+              keyboardType="url"
+            />
+            <Text style={styles.helpText}>Enter a URL to your profile image</Text>
+
+            <View style={styles.fieldSpacing} />
+
+            <View style={styles.textareaContainer} testID="bio-input-container">
+              <Text style={styles.label}>Bio (optional)</Text>
+              <TextInput
+                style={[styles.textarea, errors.bio ? styles.textareaError : null]}
+                placeholder="Tell us about yourself..."
+                placeholderTextColor="#6B7280"
+                value={bio}
+                onChangeText={handleBioChange}
+                maxLength={500}
+                multiline
+                numberOfLines={4}
+                textAlignVertical="top"
+                testID="bio-input"
+                editable={!isLoading}
+              />
+              {errors.bio && (
+                <Text style={styles.error} testID="bio-input-error">
+                  {errors.bio}
+                </Text>
+              )}
+            </View>
+            <Text style={styles.characterCount}>{bio.length} / 500 characters</Text>
 
             {successMessage && (
               <View style={styles.successContainer} testID="success-message">
                 <Text style={styles.successText}>{successMessage}</Text>
               </View>
             )}
-          </View>
+          </ScrollView>
 
           {/* Actions */}
           <View style={styles.actions}>
@@ -190,6 +306,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     width: '100%',
     maxWidth: 500,
+    maxHeight: '90%',
     borderWidth: 1,
     borderColor: '#374151',
   },
@@ -220,14 +337,52 @@ const styles = StyleSheet.create({
   closeButtonTextDisabled: {
     color: '#6B7280',
   },
+  scrollView: {
+    maxHeight: 500,
+  },
   content: {
     padding: 24,
-    gap: 8,
+  },
+  fieldSpacing: {
+    height: 16,
   },
   characterCount: {
     fontSize: 12,
     color: '#9CA3AF',
     textAlign: 'right',
+    marginTop: 4,
+  },
+  helpText: {
+    fontSize: 12,
+    color: '#9CA3AF',
+    marginTop: 4,
+  },
+  textareaContainer: {
+    width: '100%',
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#D1D5DB',
+    marginBottom: 4,
+  },
+  textarea: {
+    backgroundColor: '#1F2937',
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 16,
+    color: '#F9FAFB',
+    borderWidth: 1,
+    borderColor: '#374151',
+    minHeight: 100,
+  },
+  textareaError: {
+    borderColor: '#EF4444',
+  },
+  error: {
+    fontSize: 14,
+    color: '#EF4444',
+    marginTop: 4,
   },
   successContainer: {
     backgroundColor: '#064E3B',
@@ -235,7 +390,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 1,
     borderColor: '#10B981',
-    marginTop: 8,
+    marginTop: 16,
   },
   successText: {
     fontSize: 14,
@@ -248,6 +403,8 @@ const styles = StyleSheet.create({
     gap: 12,
     padding: 24,
     paddingTop: 0,
+    borderTopWidth: 1,
+    borderTopColor: '#374151',
   },
   actionButton: {
     flex: 1,

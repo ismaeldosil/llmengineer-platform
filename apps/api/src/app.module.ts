@@ -12,6 +12,7 @@ import { StreaksModule } from './streaks/streaks.module';
 import { QuizModule } from './quiz/quiz.module';
 import { HealthModule } from './health/health.module';
 import { EmbeddingMatchModule } from './games/embedding-match/embedding-match.module';
+import { ScoresModule } from './games/scores/scores.module';
 import { CustomThrottlerGuard } from './common/guards/custom-throttler.guard';
 
 @Module({
@@ -35,6 +36,7 @@ import { CustomThrottlerGuard } from './common/guards/custom-throttler.guard';
     QuizModule,
     HealthModule,
     EmbeddingMatchModule,
+    ScoresModule,
   ],
   providers: [
     {
