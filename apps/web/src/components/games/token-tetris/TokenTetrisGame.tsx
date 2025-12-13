@@ -1,8 +1,9 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Pressable, ScrollView, Platform, Alert } from 'react-native';
 import { useTokenTetris } from './useTokenTetris';
 import { TetrisBoard } from './TetrisBoard';
 import { TetrisPiece } from './TetrisPiece';
+import { useSubmitGameScoreMutation } from '@/services/api';
 
 interface TokenTetrisGameProps {
   onGameOver?: (score: number) => void;
@@ -10,6 +11,12 @@ interface TokenTetrisGameProps {
 
 export const TokenTetrisGame: React.FC<TokenTetrisGameProps> = ({ onGameOver }) => {
   const { gameState, actions } = useTokenTetris();
+  const [submitScore, { isLoading: isSubmittingScore }] = useSubmitGameScoreMutation();
+  const [scoreSubmitted, setScoreSubmitted] = useState(false);
+  const [submissionResult, setSubmissionResult] = useState<{
+    isHighScore: boolean;
+    xpEarned: number;
+  } | null>(null);
 
   // Keyboard controls for web
   useEffect(() => {
@@ -59,25 +66,57 @@ export const TokenTetrisGame: React.FC<TokenTetrisGameProps> = ({ onGameOver }) 
     }
   }, [gameState.gameOver, gameState.score, onGameOver]);
 
+  // Submit score when game is over
+  useEffect(() => {
+    if (gameState.gameOver && gameState.score > 0 && !scoreSubmitted) {
+      handleSubmitScore();
+    }
+  }, [gameState.gameOver, gameState.score, scoreSubmitted]);
+
+  const handleSubmitScore = async () => {
+    if (scoreSubmitted) return;
+
+    try {
+      const result = await submitScore({
+        gameType: 'token-tetris',
+        score: gameState.score,
+        metadata: {
+          level: gameState.level,
+          lines: gameState.lines,
+        },
+      }).unwrap();
+
+      setScoreSubmitted(true);
+      setSubmissionResult({
+        isHighScore: result.isHighScore,
+        xpEarned: result.xpEarned,
+      });
+    } catch (error) {
+      console.error('Failed to submit score:', error);
+    }
+  };
+
   const handleStartGame = () => {
     actions.startGame();
+    setScoreSubmitted(false);
+    setSubmissionResult(null);
   };
 
   const handleGameOver = () => {
-    Alert.alert(
-      'Game Over',
-      `Final Score: ${gameState.score}\nLines: ${gameState.lines}\nLevel: ${gameState.level}`,
-      [
-        {
-          text: 'Play Again',
-          onPress: handleStartGame,
-        },
-        {
-          text: 'OK',
-          style: 'cancel',
-        },
-      ]
-    );
+    const message = submissionResult
+      ? `Final Score: ${gameState.score}\nLines: ${gameState.lines}\nLevel: ${gameState.level}\n\nXP Earned: ${submissionResult.xpEarned}${submissionResult.isHighScore ? '\n🎉 New High Score!' : ''}`
+      : `Final Score: ${gameState.score}\nLines: ${gameState.lines}\nLevel: ${gameState.level}`;
+
+    Alert.alert('Game Over', message, [
+      {
+        text: 'Play Again',
+        onPress: handleStartGame,
+      },
+      {
+        text: 'OK',
+        style: 'cancel',
+      },
+    ]);
   };
 
   if (!gameState.currentPiece && !gameState.gameOver) {
@@ -135,6 +174,17 @@ export const TokenTetrisGame: React.FC<TokenTetrisGameProps> = ({ onGameOver }) 
               <View style={styles.gameOverOverlay}>
                 <Text style={styles.gameOverText}>GAME OVER</Text>
                 <Text style={styles.finalScore}>Score: {gameState.score}</Text>
+                {isSubmittingScore && (
+                  <Text style={styles.submittingText}>Submitting score...</Text>
+                )}
+                {scoreSubmitted && submissionResult && (
+                  <View style={styles.scoreSubmittedContainer}>
+                    <Text style={styles.scoreSubmittedText}>
+                      {submissionResult.isHighScore ? '🎉 New High Score!' : 'Score Submitted!'}
+                    </Text>
+                    <Text style={styles.xpEarnedText}>+{submissionResult.xpEarned} XP</Text>
+                  </View>
+                )}
               </View>
             )}
           </View>
@@ -369,6 +419,27 @@ const styles = StyleSheet.create({
   finalScore: {
     fontSize: 24,
     color: '#F9FAFB',
+    marginBottom: 8,
+  },
+  submittingText: {
+    fontSize: 16,
+    color: '#9CA3AF',
+    marginTop: 8,
+  },
+  scoreSubmittedContainer: {
+    marginTop: 12,
+    alignItems: 'center',
+  },
+  scoreSubmittedText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#10B981',
+    marginBottom: 4,
+  },
+  xpEarnedText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#3B82F6',
   },
   sidePanel: {
     gap: 16,

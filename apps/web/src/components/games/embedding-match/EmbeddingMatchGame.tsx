@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
 import { GameBoard } from './GameBoard';
 import { GameHeader, DifficultyLevel } from './GameHeader';
 import { GameResult } from './GameResult';
 import { useEmbeddingMatch } from './useEmbeddingMatch';
 import { router } from 'expo-router';
+import { useSubmitGameScoreMutation } from '@/services/api';
 
 interface EmbeddingMatchGameProps {
   onGameOver?: (score: number) => void;
@@ -15,19 +16,69 @@ export const EmbeddingMatchGame: React.FC<EmbeddingMatchGameProps> = ({
 }) => {
   const { gameState, actions } = useEmbeddingMatch();
   const [showLevelSelect, setShowLevelSelect] = useState(true);
+  const [submitScore, { isLoading: isSubmittingScore }] = useSubmitGameScoreMutation();
+  const [scoreSubmitted, setScoreSubmitted] = useState(false);
+  const [submissionResult, setSubmissionResult] = useState<{
+    isHighScore: boolean;
+    xpEarned: number;
+  } | null>(null);
+
+  // Submit score when game is over
+  useEffect(() => {
+    if (gameState.isGameOver && gameState.score > 0 && !scoreSubmitted) {
+      handleSubmitScore();
+    }
+  }, [gameState.isGameOver, gameState.score, scoreSubmitted]);
+
+  const handleSubmitScore = async () => {
+    if (scoreSubmitted) return;
+
+    try {
+      const levelMap = { easy: 1, medium: 2, hard: 3 };
+      const result = await submitScore({
+        gameType: 'embedding-match',
+        score: gameState.score,
+        metadata: {
+          level: levelMap[gameState.level],
+          accuracy:
+            gameState.attempts > 0 ? (gameState.matchedPairs / gameState.attempts) * 100 : 100,
+          time:
+            gameState.level === 'easy'
+              ? 180 - gameState.timeRemaining
+              : gameState.level === 'medium'
+                ? 150 - gameState.timeRemaining
+                : 120 - gameState.timeRemaining,
+        },
+      }).unwrap();
+
+      setScoreSubmitted(true);
+      setSubmissionResult({
+        isHighScore: result.isHighScore,
+        xpEarned: result.xpEarned,
+      });
+    } catch (error) {
+      console.error('Failed to submit score:', error);
+    }
+  };
 
   const handleLevelSelect = (level: DifficultyLevel) => {
     actions.startGame(level);
     setShowLevelSelect(false);
+    setScoreSubmitted(false);
+    setSubmissionResult(null);
   };
 
   const handlePlayAgain = () => {
     actions.startGame(gameState.level);
+    setScoreSubmitted(false);
+    setSubmissionResult(null);
   };
 
   const handleChangeLevel = () => {
     actions.resetGame();
     setShowLevelSelect(true);
+    setScoreSubmitted(false);
+    setSubmissionResult(null);
   };
 
   const handleGoHome = () => {
@@ -142,6 +193,8 @@ export const EmbeddingMatchGame: React.FC<EmbeddingMatchGameProps> = ({
             onPlayAgain={handlePlayAgain}
             onChangeLevel={handleChangeLevel}
             onGoHome={handleGoHome}
+            isSubmittingScore={isSubmittingScore}
+            submissionResult={submissionResult}
           />
         )}
       </View>

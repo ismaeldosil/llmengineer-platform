@@ -13,6 +13,8 @@ model User {
   email        String   @unique
   password     String
   displayName  String
+  avatarUrl    String?
+  bio          String?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
@@ -20,6 +22,7 @@ model User {
   completions  LessonCompletion[]
   badges       UserBadge[]
   streakLog    StreakLog[]
+  gameScores   GameScore[]
 
   @@map("users")
 }
@@ -154,4 +157,20 @@ model LeaderboardSnapshot {
 enum LeaderboardSnapshotType {
   GLOBAL
   WEEKLY
+}
+
+model GameScore {
+  id        String   @id @default(cuid())
+  userId    String
+  gameType  String   // e.g., "embedding-match", "token-tetris", "prompt-golf"
+  score     Int
+  level     Int?     // Optional: some games have levels
+  metadata  Json?    // Optional: additional game-specific data (timeRemaining, matches, etc.)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([gameType, score])
+  @@index([userId, gameType])
+  @@map("game_scores")
 }

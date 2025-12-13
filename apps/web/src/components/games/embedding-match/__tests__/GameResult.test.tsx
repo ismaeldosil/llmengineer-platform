@@ -15,6 +15,8 @@ describe('GameResult', () => {
     onPlayAgain: jest.fn(),
     onChangeLevel: jest.fn(),
     onGoHome: jest.fn(),
+    isSubmittingScore: false,
+    submissionResult: null,
   };
 
   it('should render victory message', () => {
@@ -87,5 +89,28 @@ describe('GameResult', () => {
     const { queryByText } = render(<GameResult {...defaultProps} isVictory={false} />);
     // Stars should not be visible for non-victory
     expect(queryByText('Perfect!')).toBeFalsy();
+  });
+
+  it('should show submitting state when score is being submitted', () => {
+    const { getByText } = render(<GameResult {...defaultProps} isSubmittingScore={true} />);
+    expect(getByText('Submitting score...')).toBeTruthy();
+  });
+
+  it('should show submission result when score is submitted', () => {
+    const submissionResult = { isHighScore: false, xpEarned: 25 };
+    const { getByText } = render(
+      <GameResult {...defaultProps} submissionResult={submissionResult} />
+    );
+    expect(getByText('Score Submitted!')).toBeTruthy();
+    expect(getByText('+25 XP')).toBeTruthy();
+  });
+
+  it('should show high score message when achieving high score', () => {
+    const submissionResult = { isHighScore: true, xpEarned: 50 };
+    const { getByText } = render(
+      <GameResult {...defaultProps} submissionResult={submissionResult} />
+    );
+    expect(getByText('🎉 New High Score!')).toBeTruthy();
+    expect(getByText('+50 XP')).toBeTruthy();
   });
 });
