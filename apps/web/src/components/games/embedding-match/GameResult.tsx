@@ -15,6 +15,11 @@ export interface GameResultProps {
   onPlayAgain: () => void;
   onChangeLevel: () => void;
   onGoHome: () => void;
+  isSubmittingScore?: boolean;
+  submissionResult?: {
+    isHighScore: boolean;
+    xpEarned: number;
+  } | null;
 }
 
 export const GameResult: React.FC<GameResultProps> = ({
@@ -28,6 +33,8 @@ export const GameResult: React.FC<GameResultProps> = ({
   onPlayAgain,
   onChangeLevel,
   onGoHome,
+  isSubmittingScore,
+  submissionResult,
 }) => {
   const formatTime = (seconds: number): string => {
     const mins = Math.floor(seconds / 60);
@@ -123,6 +130,21 @@ export const GameResult: React.FC<GameResultProps> = ({
             <Text style={styles.levelValue}>{level.charAt(0).toUpperCase() + level.slice(1)}</Text>
           </View>
         </View>
+
+        {/* Score Submission Status */}
+        {isSubmittingScore && (
+          <View style={styles.submissionStatus}>
+            <Text style={styles.submittingText}>Submitting score...</Text>
+          </View>
+        )}
+        {submissionResult && (
+          <View style={styles.submissionStatus}>
+            <Text style={styles.submittedText}>
+              {submissionResult.isHighScore ? '🎉 New High Score!' : 'Score Submitted!'}
+            </Text>
+            <Text style={styles.xpText}>+{submissionResult.xpEarned} XP</Text>
+          </View>
+        )}
 
         {/* Actions */}
         <View style={styles.actions}>
@@ -251,6 +273,31 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
     color: '#f8fafc',
+  },
+  submissionStatus: {
+    backgroundColor: '#0f172a',
+    borderRadius: 12,
+    padding: 16,
+    borderWidth: 2,
+    borderColor: '#10b981',
+    alignItems: 'center',
+    marginBottom: 24,
+  },
+  submittingText: {
+    fontSize: 14,
+    color: '#94a3b8',
+    fontWeight: '500',
+  },
+  submittedText: {
+    fontSize: 16,
+    color: '#10b981',
+    fontWeight: '700',
+    marginBottom: 4,
+  },
+  xpText: {
+    fontSize: 18,
+    color: '#3b82f6',
+    fontWeight: '700',
   },
   actions: {
     gap: 12,

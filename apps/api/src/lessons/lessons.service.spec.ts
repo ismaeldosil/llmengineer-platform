@@ -1310,9 +1310,7 @@ describe('LessonsService', () => {
 
     it('should return context before and after match', async () => {
       const results = await lessonsService.search('tokenization');
-      const matchWithContext = results.find(
-        (r) => r.matchType === 'section' && r.contextBefore
-      );
+      const matchWithContext = results.find((r) => r.matchType === 'section' && r.contextBefore);
       expect(matchWithContext?.contextBefore).toBeDefined();
       expect(matchWithContext?.contextAfter).toBeDefined();
     });
