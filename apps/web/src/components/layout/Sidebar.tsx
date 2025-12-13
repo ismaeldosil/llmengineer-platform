@@ -89,54 +89,56 @@ export function Sidebar({
         isCollapsed && styles.containerCollapsed,
       ]}
     >
-      {/* Logo and Toggle */}
-      <View style={[styles.headerRow, isCollapsed && styles.headerRowCollapsed]}>
-        <Tooltip text="LLM Engineer" show={isCollapsed}>
-          <Pressable
-            style={[styles.logoContainer, isCollapsed && styles.logoContainerCollapsed]}
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            onPress={() => router.push('/dashboard/' as any)}
-          >
-            <View style={styles.logoIcon}>
-              <Icon icon={Zap} size="lg" color="#22c55e" />
-            </View>
-            {!isCollapsed && <Text style={styles.logoText}>LLM Engineer</Text>}
-          </Pressable>
-        </Tooltip>
-        {onToggleCollapse && !isCollapsed && (
-          <Pressable style={styles.headerToggle} onPress={onToggleCollapse} testID="sidebar-toggle">
-            <Icon icon={ChevronLeft} size="sm" variant="secondary" />
-          </Pressable>
-        )}
-      </View>
-      {onToggleCollapse && isCollapsed && (
-        <Tooltip text="Expandir" show={isCollapsed}>
-          <Pressable
-            style={styles.headerToggleCollapsed}
-            onPress={onToggleCollapse}
-            testID="sidebar-toggle"
-          >
-            <Icon icon={ChevronRight} size="sm" variant="secondary" />
-          </Pressable>
-        </Tooltip>
-      )}
+      {/* Logo */}
+      <Tooltip text="LLM Engineer" show={isCollapsed}>
+        <Pressable
+          style={[styles.logoContainer, isCollapsed && styles.logoContainerCollapsed]}
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          onPress={() => router.push('/dashboard/' as any)}
+        >
+          <View style={styles.logoIcon}>
+            <Icon icon={Zap} size="lg" color="#22c55e" />
+          </View>
+          {!isCollapsed && <Text style={styles.logoText}>LLM Engineer</Text>}
+        </Pressable>
+      </Tooltip>
 
-      {/* Dashboard Link */}
-      <Tooltip text="Dashboard" show={isCollapsed}>
+      {/* Dashboard Link with Toggle */}
+      <Tooltip text={isCollapsed ? 'Expandir' : 'Dashboard'} show={isCollapsed}>
         <Pressable
           style={[
             styles.navItem,
             isDashboard && styles.navItemActive,
             isCollapsed && styles.navItemCollapsed,
           ]}
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          onPress={() => router.push('/dashboard/' as any)}
+          onPress={onToggleCollapse}
+          testID="sidebar-toggle"
         >
           <Icon icon={LayoutDashboard} size="md" variant={isDashboard ? 'primary' : 'secondary'} />
           {!isCollapsed && (
-            <Text style={[styles.navItemText, isDashboard && styles.navItemTextActive]}>
-              Dashboard
-            </Text>
+            <>
+              <Text style={[styles.navItemText, isDashboard && styles.navItemTextActive]}>
+                Dashboard
+              </Text>
+              <View
+                style={[
+                  styles.chevronContainer,
+                  Platform.OS === 'web' && (styles.chevronContainerWeb as object),
+                ]}
+              >
+                <Icon icon={ChevronLeft} size="sm" variant="secondary" />
+              </View>
+            </>
+          )}
+          {isCollapsed && (
+            <View
+              style={[
+                styles.chevronContainerCollapsed,
+                Platform.OS === 'web' && (styles.chevronContainerCollapsedWeb as object),
+              ]}
+            >
+              <Icon icon={ChevronRight} size="sm" variant="secondary" />
+            </View>
           )}
         </Pressable>
       </Tooltip>
@@ -222,38 +224,12 @@ const styles = StyleSheet.create({
   containerCollapsed: {
     alignItems: 'center',
   },
-  headerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingRight: 12,
-    marginBottom: 8,
-  },
-  headerRowCollapsed: {
-    justifyContent: 'center',
-    paddingRight: 0,
-  },
-  headerToggle: {
-    width: 32,
-    height: 32,
-    borderRadius: 6,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#1e293b',
-  },
-  headerToggleCollapsed: {
-    width: 40,
-    height: 32,
-    borderRadius: 6,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
   logoContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 20,
     paddingVertical: 12,
+    marginBottom: 8,
   },
   logoContainerCollapsed: {
     paddingHorizontal: 0,
@@ -298,6 +274,23 @@ const styles = StyleSheet.create({
   },
   navItemTextActive: {
     color: '#f8fafc',
+  },
+  chevronContainer: {
+    marginLeft: 'auto' as unknown as number,
+    opacity: 0.7,
+  },
+  chevronContainerWeb: {
+    transition: 'opacity 0.2s ease-in-out, transform 0.2s ease-in-out',
+  },
+  chevronContainerCollapsed: {
+    position: 'absolute',
+    right: -8,
+    top: '50%',
+    transform: [{ translateY: -8 }],
+    opacity: 0.7,
+  },
+  chevronContainerCollapsedWeb: {
+    transition: 'opacity 0.2s ease-in-out, transform 0.2s ease-in-out',
   },
   sectionHeader: {
     paddingHorizontal: 20,

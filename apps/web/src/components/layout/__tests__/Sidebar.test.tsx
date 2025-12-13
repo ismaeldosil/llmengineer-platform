@@ -80,13 +80,16 @@ describe('Sidebar', () => {
       expect(dashboardItem).toBeTruthy();
     });
 
-    it('should navigate to dashboard when Dashboard item is pressed', () => {
-      const { getByText } = render(<Sidebar />);
+    it('should toggle collapse when Dashboard item is pressed', () => {
+      const onToggle = jest.fn();
+      const { getByText } = render(<Sidebar onToggleCollapse={onToggle} />);
 
       const dashboardItem = getByText('Dashboard');
       fireEvent.press(dashboardItem);
 
-      expect(expoRouter.router.push).toHaveBeenCalledWith('/dashboard/');
+      // Dashboard button now toggles collapse, not navigation
+      expect(onToggle).toHaveBeenCalledTimes(1);
+      expect(expoRouter.router.push).not.toHaveBeenCalled();
     });
 
     it('should not highlight Dashboard when on other routes', () => {
@@ -407,10 +410,10 @@ describe('Sidebar', () => {
       const { getByText } = render(<Sidebar />);
 
       fireEvent.press(getByText('LLM Engineer'));
-      fireEvent.press(getByText('Dashboard'));
       fireEvent.press(getByText('Setup + Fundamentos'));
 
-      expect(expoRouter.router.push).toHaveBeenCalledTimes(3);
+      // Dashboard button now toggles collapse, not navigation
+      expect(expoRouter.router.push).toHaveBeenCalledTimes(2);
     });
   });
 
@@ -539,20 +542,14 @@ describe('Sidebar', () => {
   });
 
   describe('Toggle Button', () => {
-    it('should render toggle button when onToggleCollapse is provided', () => {
-      const onToggle = jest.fn();
-      const { getByTestId } = render(<Sidebar onToggleCollapse={onToggle} />);
+    it('should render toggle in Dashboard button', () => {
+      const { getByTestId } = render(<Sidebar />);
 
+      // Toggle is now integrated into Dashboard button
       expect(getByTestId('sidebar-toggle')).toBeTruthy();
     });
 
-    it('should not render toggle button when onToggleCollapse is not provided', () => {
-      const { queryByTestId } = render(<Sidebar />);
-
-      expect(queryByTestId('sidebar-toggle')).toBeNull();
-    });
-
-    it('should call onToggleCollapse when toggle button is pressed', () => {
+    it('should call onToggleCollapse when Dashboard button is pressed', () => {
       const onToggle = jest.fn();
       const { getByTestId } = render(<Sidebar onToggleCollapse={onToggle} />);
 
@@ -566,6 +563,17 @@ describe('Sidebar', () => {
       const { getByTestId } = render(<Sidebar isCollapsed={true} onToggleCollapse={onToggle} />);
 
       expect(getByTestId('sidebar-toggle')).toBeTruthy();
+    });
+
+    it('should not navigate when Dashboard button is pressed', () => {
+      const onToggle = jest.fn();
+      const { getByTestId } = render(<Sidebar onToggleCollapse={onToggle} />);
+
+      fireEvent.press(getByTestId('sidebar-toggle'));
+
+      // Dashboard button now toggles collapse, not navigation
+      expect(expoRouter.router.push).not.toHaveBeenCalled();
+      expect(onToggle).toHaveBeenCalledTimes(1);
     });
   });
 });
