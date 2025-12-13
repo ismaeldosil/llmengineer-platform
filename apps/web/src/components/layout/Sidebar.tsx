@@ -120,23 +120,13 @@ export function Sidebar({
               <Text style={[styles.navItemText, isDashboard && styles.navItemTextActive]}>
                 Dashboard
               </Text>
-              <View
-                style={[
-                  styles.chevronContainer,
-                  Platform.OS === 'web' && (styles.chevronContainerWeb as object),
-                ]}
-              >
+              <View style={styles.chevronContainer}>
                 <Icon icon={ChevronLeft} size="sm" variant="secondary" />
               </View>
             </>
           )}
           {isCollapsed && (
-            <View
-              style={[
-                styles.chevronContainerCollapsed,
-                Platform.OS === 'web' && (styles.chevronContainerCollapsedWeb as object),
-              ]}
-            >
+            <View style={styles.chevronContainerCollapsed}>
               <Icon icon={ChevronRight} size="sm" variant="secondary" />
             </View>
           )}
@@ -278,9 +268,12 @@ const styles = StyleSheet.create({
   chevronContainer: {
     marginLeft: 'auto' as unknown as number,
     opacity: 0.7,
-  },
-  chevronContainerWeb: {
-    transition: 'opacity 0.2s ease-in-out, transform 0.2s ease-in-out',
+    ...(Platform.OS === 'web'
+      ? {
+          transition:
+            'opacity 0.2s ease-in-out, transform 0.2s ease-in-out' as unknown as undefined,
+        }
+      : {}),
   },
   chevronContainerCollapsed: {
     position: 'absolute',
@@ -288,9 +281,12 @@ const styles = StyleSheet.create({
     top: '50%',
     transform: [{ translateY: -8 }],
     opacity: 0.7,
-  },
-  chevronContainerCollapsedWeb: {
-    transition: 'opacity 0.2s ease-in-out, transform 0.2s ease-in-out',
+    ...(Platform.OS === 'web'
+      ? {
+          transition:
+            'opacity 0.2s ease-in-out, transform 0.2s ease-in-out' as unknown as undefined,
+        }
+      : {}),
   },
   sectionHeader: {
     paddingHorizontal: 20,
