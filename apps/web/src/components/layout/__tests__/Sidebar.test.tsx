@@ -541,31 +541,31 @@ describe('Sidebar', () => {
   describe('Toggle Button', () => {
     it('should render toggle button when onToggleCollapse is provided', () => {
       const onToggle = jest.fn();
-      const { getByText } = render(<Sidebar onToggleCollapse={onToggle} />);
+      const { getByTestId } = render(<Sidebar onToggleCollapse={onToggle} />);
 
-      expect(getByText('Colapsar')).toBeTruthy();
+      expect(getByTestId('sidebar-toggle')).toBeTruthy();
     });
 
     it('should not render toggle button when onToggleCollapse is not provided', () => {
-      const { queryByText } = render(<Sidebar />);
+      const { queryByTestId } = render(<Sidebar />);
 
-      expect(queryByText('Colapsar')).toBeNull();
+      expect(queryByTestId('sidebar-toggle')).toBeNull();
     });
 
     it('should call onToggleCollapse when toggle button is pressed', () => {
       const onToggle = jest.fn();
-      const { getByText } = render(<Sidebar onToggleCollapse={onToggle} />);
+      const { getByTestId } = render(<Sidebar onToggleCollapse={onToggle} />);
 
-      fireEvent.press(getByText('Colapsar'));
+      fireEvent.press(getByTestId('sidebar-toggle'));
 
       expect(onToggle).toHaveBeenCalledTimes(1);
     });
 
-    it('should hide toggle text when collapsed', () => {
+    it('should render toggle button when collapsed', () => {
       const onToggle = jest.fn();
-      const { queryByText } = render(<Sidebar isCollapsed={true} onToggleCollapse={onToggle} />);
+      const { getByTestId } = render(<Sidebar isCollapsed={true} onToggleCollapse={onToggle} />);
 
-      expect(queryByText('Colapsar')).toBeNull();
+      expect(getByTestId('sidebar-toggle')).toBeTruthy();
     });
   });
 });

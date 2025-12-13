@@ -89,19 +89,37 @@ export function Sidebar({
         isCollapsed && styles.containerCollapsed,
       ]}
     >
-      {/* Logo */}
-      <Tooltip text="LLM Engineer" show={isCollapsed}>
-        <Pressable
-          style={[styles.logoContainer, isCollapsed && styles.logoContainerCollapsed]}
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          onPress={() => router.push('/dashboard/' as any)}
-        >
-          <View style={styles.logoIcon}>
-            <Icon icon={Zap} size="lg" color="#22c55e" />
-          </View>
-          {!isCollapsed && <Text style={styles.logoText}>LLM Engineer</Text>}
-        </Pressable>
-      </Tooltip>
+      {/* Logo and Toggle */}
+      <View style={[styles.headerRow, isCollapsed && styles.headerRowCollapsed]}>
+        <Tooltip text="LLM Engineer" show={isCollapsed}>
+          <Pressable
+            style={[styles.logoContainer, isCollapsed && styles.logoContainerCollapsed]}
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            onPress={() => router.push('/dashboard/' as any)}
+          >
+            <View style={styles.logoIcon}>
+              <Icon icon={Zap} size="lg" color="#22c55e" />
+            </View>
+            {!isCollapsed && <Text style={styles.logoText}>LLM Engineer</Text>}
+          </Pressable>
+        </Tooltip>
+        {onToggleCollapse && !isCollapsed && (
+          <Pressable style={styles.headerToggle} onPress={onToggleCollapse} testID="sidebar-toggle">
+            <Icon icon={ChevronLeft} size="sm" variant="secondary" />
+          </Pressable>
+        )}
+      </View>
+      {onToggleCollapse && isCollapsed && (
+        <Tooltip text="Expandir" show={isCollapsed}>
+          <Pressable
+            style={styles.headerToggleCollapsed}
+            onPress={onToggleCollapse}
+            testID="sidebar-toggle"
+          >
+            <Icon icon={ChevronRight} size="sm" variant="secondary" />
+          </Pressable>
+        </Tooltip>
+      )}
 
       {/* Dashboard Link */}
       <Tooltip text="Dashboard" show={isCollapsed}>
@@ -183,22 +201,6 @@ export function Sidebar({
           </Tooltip>
         );
       })}
-
-      {/* Spacer */}
-      <View style={styles.spacer} />
-
-      {/* Toggle Button */}
-      {onToggleCollapse && (
-        <Tooltip text={isCollapsed ? 'Expandir' : 'Colapsar'} show={isCollapsed}>
-          <Pressable
-            style={[styles.toggleButton, isCollapsed && styles.toggleButtonCollapsed]}
-            onPress={onToggleCollapse}
-          >
-            <Icon icon={isCollapsed ? ChevronRight : ChevronLeft} size="sm" variant="secondary" />
-            {!isCollapsed && <Text style={styles.toggleText}>Colapsar</Text>}
-          </Pressable>
-        </Tooltip>
-      )}
     </View>
   );
 }
@@ -220,12 +222,38 @@ const styles = StyleSheet.create({
   containerCollapsed: {
     alignItems: 'center',
   },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingRight: 12,
+    marginBottom: 8,
+  },
+  headerRowCollapsed: {
+    justifyContent: 'center',
+    paddingRight: 0,
+  },
+  headerToggle: {
+    width: 32,
+    height: 32,
+    borderRadius: 6,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#1e293b',
+  },
+  headerToggleCollapsed: {
+    width: 40,
+    height: 32,
+    borderRadius: 6,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
   logoContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 20,
     paddingVertical: 12,
-    marginBottom: 8,
   },
   logoContainerCollapsed: {
     paddingHorizontal: 0,
@@ -343,32 +371,6 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '600',
     color: '#22c55e',
-  },
-  spacer: {
-    flex: 1,
-  },
-  toggleButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    marginHorizontal: 12,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#1e293b',
-  },
-  toggleButtonCollapsed: {
-    paddingHorizontal: 0,
-    marginHorizontal: 0,
-    width: 48,
-    justifyContent: 'center',
-    borderWidth: 0,
-  },
-  toggleText: {
-    fontSize: 13,
-    fontWeight: '500',
-    color: '#64748b',
-    marginLeft: 8,
   },
   tooltipWrapper: {
     position: 'relative',
