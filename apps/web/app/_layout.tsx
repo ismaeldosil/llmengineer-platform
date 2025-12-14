@@ -44,7 +44,7 @@ function RootLayoutNav() {
       screenOptions={{
         headerShown: false,
         contentStyle: {
-          backgroundColor: '#111827',
+          backgroundColor: '#0f172a',
         },
       }}
     />
@@ -65,6 +65,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#111827',
+    backgroundColor: '#0f172a',
   },
 });

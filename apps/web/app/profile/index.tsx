@@ -180,11 +180,11 @@ export default function ProfileScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#111827',
+    backgroundColor: '#0f172a',
   },
   loadingContainer: {
     flex: 1,
-    backgroundColor: '#111827',
+    backgroundColor: '#0f172a',
     justifyContent: 'center',
     alignItems: 'center',
     gap: 16,
@@ -195,7 +195,7 @@ const styles = StyleSheet.create({
   },
   errorContainer: {
     flex: 1,
-    backgroundColor: '#111827',
+    backgroundColor: '#0f172a',
     justifyContent: 'center',
     alignItems: 'center',
     padding: 24,

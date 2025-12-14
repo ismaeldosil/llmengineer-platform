@@ -139,7 +139,7 @@ export default function LeaderboardScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#111827',
+    backgroundColor: '#0f172a',
   },
   tabs: {
     flexDirection: 'row',
