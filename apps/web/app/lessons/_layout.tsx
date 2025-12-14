@@ -13,11 +13,11 @@ export default function LessonsLayout() {
     <Stack
       screenOptions={{
         headerStyle: {
-          backgroundColor: '#111827',
+          backgroundColor: '#0f172a',
         },
         headerTintColor: '#F9FAFB',
         contentStyle: {
-          backgroundColor: '#111827',
+          backgroundColor: '#0f172a',
         },
       }}
     />

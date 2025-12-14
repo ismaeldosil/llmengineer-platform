@@ -6,28 +6,32 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "scheme": "llmengineer",
-    "userInterfaceStyle": "automatic",
+    "userInterfaceStyle": "dark",
+    "backgroundColor": "#0f172a",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#1F2937"
+      "backgroundColor": "#0f172a"
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.llmengineer.app"
+      "bundleIdentifier": "com.llmengineer.app",
+      "backgroundColor": "#0f172a"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#1F2937"
+        "backgroundColor": "#0f172a"
       },
-      "package": "com.llmengineer.app"
+      "package": "com.llmengineer.app",
+      "backgroundColor": "#0f172a"
     },
     "web": {
       "bundler": "metro",
       "output": "single",
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/favicon.png",
+      "backgroundColor": "#0f172a"
     },
     "plugins": ["expo-router"],
     "experiments": {

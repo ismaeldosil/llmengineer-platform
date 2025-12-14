@@ -182,7 +182,7 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   keyboardView: {
     flex: 1,
-    backgroundColor: '#111827',
+    backgroundColor: '#0f172a',
   },
   scrollContainer: {
     flexGrow: 1,
@@ -190,7 +190,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 24,
-    backgroundColor: '#111827',
+    backgroundColor: '#0f172a',
     justifyContent: 'center',
   },
   header: {
