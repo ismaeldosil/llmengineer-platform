@@ -204,7 +204,7 @@ function GameCard({ game, onPress }: GameCardProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#111827',
+    backgroundColor: '#0f172a',
   },
   header: {
     padding: 20,
@@ -389,7 +389,7 @@ const styles = StyleSheet.create({
     lineHeight: 24,
   },
   unlockRequirementContainer: {
-    backgroundColor: '#111827',
+    backgroundColor: '#0f172a',
     padding: 16,
     borderRadius: 12,
     width: '100%',

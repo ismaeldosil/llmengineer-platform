@@ -13,7 +13,7 @@ export default function GamesLayout() {
           fontWeight: 'bold',
         },
         contentStyle: {
-          backgroundColor: '#111827',
+          backgroundColor: '#0f172a',
         },
       }}
     />
