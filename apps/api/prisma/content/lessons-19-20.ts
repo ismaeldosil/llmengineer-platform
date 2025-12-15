@@ -91,14 +91,14 @@ async function analyzeInvoice(imagePath: string) {
           },
           {
             type: "text",
-            text: `Extrae la siguiente información de esta factura en formato JSON:
+            text: \`Extrae la siguiente información de esta factura en formato JSON:
             - Número de factura
             - Fecha de emisión
             - Proveedor (nombre, dirección, RFC)
             - Items (descripción, cantidad, precio unitario, total)
             - Subtotal, IVA, Total
 
-            Retorna solo el JSON, sin explicaciones adicionales.`
+            Retorna solo el JSON, sin explicaciones adicionales.\`
           }
         ],
       },

@@ -973,7 +973,7 @@ class SmartRouter:
 # Uso
 router = SmartRouter()
 response, cost = router.generate("¿Cuál es la capital de España?")  # -> gpt-3.5-turbo
-print(f"Cost: ${cost:.4f}")
+print(f"Cost: \${cost:.4f}")
 \`\`\`
 
 ## Caching Strategies
@@ -1047,8 +1047,8 @@ def track_usage(model: str, user: str, tokens: int, cost: float):
 # Alertas cuando costo diario > threshold
 async def check_daily_budget():
     daily_cost = cost_spent.labels(model='gpt-4')._value.get()
-    if daily_cost > 1000:  # $1000/day
-        await send_alert(f"⚠️  Daily cost exceeds $1000: ${daily_cost:.2f}")
+    if daily_cost > 1000:  # \$1000/day
+        await send_alert(f"⚠️  Daily cost exceeds \$1000: \${daily_cost:.2f}")
 \`\`\`
 
 **Ahorro típico con optimizaciones**:
