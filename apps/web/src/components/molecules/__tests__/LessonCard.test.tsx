@@ -8,7 +8,6 @@ import { Lesson } from '@llmengineer/shared';
 // Mock lucide-react-native icons
 jest.mock('lucide-react-native', () => ({
   CheckCircle2: 'CheckCircle2',
-  Lock: 'Lock',
   Clock: 'Clock',
   Award: 'Award',
   Play: 'Play',
@@ -179,29 +178,6 @@ describe('LessonCard', () => {
     expect(getByText('15 min')).toBeTruthy();
   });
 
-  // New tests for locked state
-  it('should render locked lesson correctly', () => {
-    const { getByText, queryAllByText, queryByText } = render(
-      <LessonCard lesson={mockLesson} onPress={mockOnPress} isLocked={true} />
-    );
-
-    const lockIcons = queryAllByText('Icon(Lock)');
-    expect(lockIcons.length).toBeGreaterThan(0);
-    // Should not show action text when locked
-    expect(queryByText('Comenzar')).toBeNull();
-  });
-
-  it('should not call onPress when locked lesson is pressed', () => {
-    const { getByText } = render(
-      <LessonCard lesson={mockLesson} onPress={mockOnPress} isLocked={true} />
-    );
-
-    const card = getByText('Introduction to Prompts');
-    fireEvent.press(card);
-
-    expect(mockOnPress).not.toHaveBeenCalled();
-  });
-
   it('should show "Comenzar" for available lessons', () => {
     const { getByText } = render(<LessonCard lesson={mockLesson} onPress={mockOnPress} />);
 
@@ -249,13 +225,6 @@ describe('LessonCard', () => {
       />
     );
     expect(getTextCompleted('Completado')).toBeTruthy();
-
-    // Locked status
-    const { queryAllByText: queryAllLocked } = render(
-      <LessonCard lesson={mockLesson} onPress={mockOnPress} status="locked" />
-    );
-    const lockIcons = queryAllLocked('Icon(Lock)');
-    expect(lockIcons.length).toBeGreaterThan(0);
   });
 
   it('should display lesson icon based on status', () => {
@@ -281,13 +250,6 @@ describe('LessonCard', () => {
     );
     const checkIcons = queryAllCompleted('Icon(CheckCircle2)');
     expect(checkIcons.length).toBeGreaterThan(0);
-
-    // Locked lesson should show Lock icon (multiple instances)
-    const { queryAllByText: queryAllLocked } = render(
-      <LessonCard lesson={mockLesson} onPress={mockOnPress} status="locked" />
-    );
-    const lockIcons = queryAllLocked('Icon(Lock)');
-    expect(lockIcons.length).toBeGreaterThan(0);
   });
 
   describe('Press Handlers', () => {
@@ -309,20 +271,6 @@ describe('LessonCard', () => {
 
       // Should trigger press out animation
       expect(card).toBeTruthy();
-    });
-
-    it('should not handle press events when locked', () => {
-      const { getByText } = render(
-        <LessonCard lesson={mockLesson} onPress={mockOnPress} isLocked={true} />
-      );
-
-      const card = getByText('Introduction to Prompts');
-      fireEvent(card, 'pressIn');
-      fireEvent(card, 'pressOut');
-
-      // Should not call onPress even after press events
-      fireEvent.press(card);
-      expect(mockOnPress).not.toHaveBeenCalled();
     });
   });
 
@@ -418,34 +366,9 @@ describe('LessonCard', () => {
 
       expect(root).toBeTruthy();
     });
-
-    it('should not show pulsing indicator for locked status', () => {
-      const { root } = render(
-        <LessonCard lesson={mockLesson} onPress={mockOnPress} status="locked" />
-      );
-
-      expect(root).toBeTruthy();
-    });
   });
 
   describe('Status Badge Visibility', () => {
-    it('should show locked badge when status is locked', () => {
-      const { queryAllByText } = render(
-        <LessonCard lesson={mockLesson} onPress={mockOnPress} status="locked" />
-      );
-
-      const lockIcons = queryAllByText('Icon(Lock)');
-      expect(lockIcons.length).toBeGreaterThan(0);
-    });
-
-    it('should not show locked badge for available lessons', () => {
-      const { root } = render(
-        <LessonCard lesson={mockLesson} onPress={mockOnPress} status="available" />
-      );
-
-      expect(root).toBeTruthy();
-    });
-
     it('should show completed overlay for completed lessons', () => {
       const completedLesson: Lesson = {
         ...mockLesson,
@@ -464,17 +387,6 @@ describe('LessonCard', () => {
   describe('Lesson Metadata Display', () => {
     it('should display all metadata for available lesson', () => {
       const { getByText } = render(<LessonCard lesson={mockLesson} onPress={mockOnPress} />);
-
-      expect(getByText('Semana 1')).toBeTruthy();
-      expect(getByText('beginner')).toBeTruthy();
-      expect(getByText('+100 XP')).toBeTruthy();
-      expect(getByText('15 min')).toBeTruthy();
-    });
-
-    it('should display metadata even for locked lessons', () => {
-      const { getByText } = render(
-        <LessonCard lesson={mockLesson} onPress={mockOnPress} isLocked={true} />
-      );
 
       expect(getByText('Semana 1')).toBeTruthy();
       expect(getByText('beginner')).toBeTruthy();
@@ -557,24 +469,6 @@ describe('LessonCard', () => {
       expect(getByText('Comenzar')).toBeTruthy();
     });
 
-    it('should use explicit status over isLocked', () => {
-      const { getByText } = render(
-        <LessonCard lesson={mockLesson} onPress={mockOnPress} isLocked={true} status="available" />
-      );
-
-      // Should show "Comenzar" (available) even though isLocked is true
-      expect(getByText('Comenzar')).toBeTruthy();
-    });
-
-    it('should derive locked status from isLocked when no status provided', () => {
-      const { queryByText } = render(
-        <LessonCard lesson={mockLesson} onPress={mockOnPress} isLocked={true} />
-      );
-
-      // Should not show action text when locked
-      expect(queryByText('Comenzar')).toBeNull();
-    });
-
     it('should derive completed status from isCompleted when no status provided', () => {
       const completedLesson: Lesson = {
         ...mockLesson,
@@ -614,28 +508,9 @@ describe('LessonCard', () => {
       const checkIcons = queryAllByText('Icon(CheckCircle2)');
       expect(checkIcons.length).toBeGreaterThan(0);
     });
-
-    it('should show Lock icon for locked status', () => {
-      const { queryAllByText } = render(
-        <LessonCard lesson={mockLesson} onPress={mockOnPress} status="locked" />
-      );
-      // There are multiple Lock icons (one in lesson icon, one in badge)
-      const lockIcons = queryAllByText('Icon(Lock)');
-      expect(lockIcons.length).toBeGreaterThan(0);
-    });
   });
 
   describe('Action Indicator Text', () => {
-    it('should not show action indicator for locked lessons', () => {
-      const { queryByText } = render(
-        <LessonCard lesson={mockLesson} onPress={mockOnPress} status="locked" />
-      );
-
-      expect(queryByText('Comenzar')).toBeNull();
-      expect(queryByText('Continuar')).toBeNull();
-      expect(queryByText('Completado')).toBeNull();
-    });
-
     it('should show correct action text for each status', () => {
       // Available
       const { getByText: getAvailable } = render(

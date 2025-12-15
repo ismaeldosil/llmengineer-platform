@@ -772,7 +772,7 @@ vectorstore.add_texts(
 
 ❌ **Mal**: Indexar PDFs con texto corrupto, símbolos raros
 \`\`\`python
-text = "Capítulo\x00 1\n\n\n\n   Introducción   !!!!"
+text = "Capítulo[NULL] 1\\n\\n\\n\\n   Introducción   !!!!"  # Caracteres basura de PDF
 \`\`\`
 
 ✅ **Bien**: Limpiar antes de indexar
@@ -780,8 +780,10 @@ text = "Capítulo\x00 1\n\n\n\n   Introducción   !!!!"
 import re
 
 def clean_text(text: str) -> str:
-    # Remover caracteres nulos y control
-    text = re.sub(r'[\\x00-\\x08\\x0B\\x0C\\x0E-\\x1F\\x7F]', '', text)
+    # Remover caracteres nulos y de control (ASCII 0-31 excepto tab/newline/cr)
+    import string
+    allowed = set(string.printable)
+    text = ''.join(c for c in text if c in allowed)
     # Normalizar espacios
     text = re.sub(r'\\s+', ' ', text)
     # Remover puntuación excesiva

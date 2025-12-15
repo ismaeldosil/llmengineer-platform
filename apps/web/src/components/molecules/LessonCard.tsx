@@ -1,19 +1,18 @@
 import { View, Text, StyleSheet, Pressable, Animated, Platform } from 'react-native';
-import { CheckCircle2, Lock, Clock, Award, Play, BookOpen } from 'lucide-react-native';
+import { CheckCircle2, Clock, Award, Play, BookOpen } from 'lucide-react-native';
 import { Icon } from '@/components/ui/Icon';
 import type { Lesson } from '@llmengineer/shared';
 import { useRef, useEffect } from 'react';
 
-export type LessonStatus = 'locked' | 'available' | 'in_progress' | 'completed';
+export type LessonStatus = 'available' | 'in_progress' | 'completed';
 
 export interface LessonCardProps {
   lesson: Lesson;
   onPress: () => void;
   status?: LessonStatus;
-  isLocked?: boolean;
 }
 
-export function LessonCard({ lesson, onPress, status, isLocked = false }: LessonCardProps) {
+export function LessonCard({ lesson, onPress, status }: LessonCardProps) {
   const difficultyColors = {
     beginner: '#10B981',
     intermediate: '#F59E0B',
@@ -21,8 +20,7 @@ export function LessonCard({ lesson, onPress, status, isLocked = false }: Lesson
   };
 
   // Determine lesson status automatically if not provided
-  const lessonStatus: LessonStatus =
-    status || (isLocked ? 'locked' : lesson.isCompleted ? 'completed' : 'available');
+  const lessonStatus: LessonStatus = status || (lesson.isCompleted ? 'completed' : 'available');
 
   // Pulsing animation for in-progress state
   const pulseAnim = useRef(new Animated.Value(1)).current;
@@ -49,12 +47,10 @@ export function LessonCard({ lesson, onPress, status, isLocked = false }: Lesson
   }, [lessonStatus, pulseAnim]);
 
   const handlePress = () => {
-    if (lessonStatus === 'locked') return;
     onPress();
   };
 
   const handlePressIn = () => {
-    if (lessonStatus === 'locked') return;
     Animated.spring(scaleAnim, {
       toValue: 0.98,
       useNativeDriver: true,
@@ -62,7 +58,6 @@ export function LessonCard({ lesson, onPress, status, isLocked = false }: Lesson
   };
 
   const handlePressOut = () => {
-    if (lessonStatus === 'locked') return;
     Animated.spring(scaleAnim, {
       toValue: 1,
       useNativeDriver: true,
@@ -86,8 +81,6 @@ export function LessonCard({ lesson, onPress, status, isLocked = false }: Lesson
 
   const getIconForStatus = () => {
     switch (lessonStatus) {
-      case 'locked':
-        return <Icon icon={Lock} size="lg" color="#64748b" />;
       case 'completed':
         return <Icon icon={CheckCircle2} size="lg" color="#22c55e" />;
       case 'in_progress':
@@ -105,15 +98,13 @@ export function LessonCard({ lesson, onPress, status, isLocked = false }: Lesson
           {
             backgroundColor: getBackgroundColor(),
             borderColor: getBorderColor(),
-            opacity: lessonStatus === 'locked' ? 0.6 : 1,
-            cursor: lessonStatus === 'locked' ? 'not-allowed' : 'pointer',
+            cursor: 'pointer',
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
           } as any,
         ]}
         onPress={handlePress}
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
-        disabled={lessonStatus === 'locked'}
       >
         {/* Pulsing indicator for in-progress state */}
         {lessonStatus === 'in_progress' && (
@@ -145,11 +136,6 @@ export function LessonCard({ lesson, onPress, status, isLocked = false }: Lesson
                 </Text>
               </View>
             </View>
-            {lessonStatus === 'locked' && (
-              <View style={styles.lockedBadge}>
-                <Icon icon={Lock} size="sm" color="#64748b" />
-              </View>
-            )}
           </View>
 
           {/* Lesson icon */}
@@ -158,7 +144,6 @@ export function LessonCard({ lesson, onPress, status, isLocked = false }: Lesson
               styles.lessonIcon,
               lessonStatus === 'completed' && styles.lessonIconComplete,
               lessonStatus === 'in_progress' && styles.lessonIconInProgress,
-              lessonStatus === 'locked' && styles.lessonIconLocked,
             ]}
           >
             {getIconForStatus()}
@@ -182,17 +167,15 @@ export function LessonCard({ lesson, onPress, status, isLocked = false }: Lesson
                 <Text style={styles.duration}>{lesson.estimatedMinutes} min</Text>
               </View>
             </View>
-            {lessonStatus !== 'locked' && (
-              <View style={styles.actionIndicator}>
-                {lessonStatus === 'completed' ? (
-                  <Text style={styles.actionTextCompleted}>Completado</Text>
-                ) : lessonStatus === 'in_progress' ? (
-                  <Text style={styles.actionTextInProgress}>Continuar</Text>
-                ) : (
-                  <Text style={styles.actionText}>Comenzar</Text>
-                )}
-              </View>
-            )}
+            <View style={styles.actionIndicator}>
+              {lessonStatus === 'completed' ? (
+                <Text style={styles.actionTextCompleted}>Completado</Text>
+              ) : lessonStatus === 'in_progress' ? (
+                <Text style={styles.actionTextInProgress}>Continuar</Text>
+              ) : (
+                <Text style={styles.actionText}>Comenzar</Text>
+              )}
+            </View>
           </View>
         </View>
 
@@ -257,11 +240,6 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     textTransform: 'capitalize',
   },
-  lockedBadge: {
-    backgroundColor: '#1e293b',
-    padding: 4,
-    borderRadius: 6,
-  },
   lessonIcon: {
     width: 56,
     height: 56,
@@ -276,9 +254,6 @@ const styles = StyleSheet.create({
   },
   lessonIconInProgress: {
     backgroundColor: '#1e3a8a',
-  },
-  lessonIconLocked: {
-    backgroundColor: '#1e293b',
   },
   title: {
     fontSize: 18,
