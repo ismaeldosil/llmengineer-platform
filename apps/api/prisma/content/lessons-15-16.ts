@@ -1896,7 +1896,7 @@ class SIEMIntegration:
 
 **Security Checklist para Deployment**:
 
-```markdown
+\`\`\`markdown
 ## Pre-Deployment Security Checklist
 
 ### Secrets & Keys
@@ -1935,7 +1935,7 @@ class SIEMIntegration:
 - [ ] GDPR compliance verificado
 - [ ] Términos de servicio y privacy policy
 - [ ] Consent management implementado
-```
+\`\`\`
 
 El deployment seguro no es un evento único - requiere monitoreo continuo, actualizaciones regulares, y respuesta rápida a nuevas amenazas.`,
       keyPoints: [

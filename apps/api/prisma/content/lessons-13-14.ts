@@ -399,7 +399,7 @@ class ABTestFramework {
   }
 
   async analyzeResults(experimentId: string) {
-    const results = await this.analytics.query(`
+    const results = await this.analytics.query(\`
       SELECT
         variant,
         COUNT(*) as interactions,
@@ -407,9 +407,9 @@ class ABTestFramework {
         AVG(timeToResponse) as avg_response_time,
         AVG(CASE WHEN taskCompleted THEN 1 ELSE 0 END) as completion_rate
       FROM interactions
-      WHERE experiment_id = '${experimentId}'
+      WHERE experiment_id = '\${experimentId}'
       GROUP BY variant
-    `);
+    \`);
 
     return this.statisticalSignificance(results);
   }
@@ -793,7 +793,7 @@ jobs:
 
       - name: Run regression tests
         env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_API_KEY: \${{ secrets.OPENAI_API_KEY }}
         run: npm run eval:regression
 
       - name: Check for regressions
@@ -2277,7 +2277,7 @@ class RetryHandler {
 
         // Log y esperar antes de reintentar
         console.warn(
-          \`Attempt \${attempt} failed for \${context}: \${error.message}. ` +
+          \`Attempt \${attempt} failed for \${context}: \${error.message}. \` +
           \`Retrying in \${delay}ms...\`
         );
 
@@ -2454,14 +2454,14 @@ class GracefulAgent {
     const progress = this.analyzeProgress(completedSteps);
 
     // Generar respuesta parcial útil
-    const partialResponse = await this.llm.generate(`
-Tarea solicitada: ${task}
+    const partialResponse = await this.llm.generate(\`
+Tarea solicitada: \${task}
 
 Pasos completados exitosamente:
-${completedSteps.map(s => \`- \${s.type}: \${s.output}\`).join('\n')}
+\${completedSteps.map(s => \\\`- \\\${s.type}: \\\${s.output}\\\`).join('\\n')}
 
-Paso que falló: ${failedStep.type}
-Error: ${error.message}
+Paso que falló: \${failedStep.type}
+Error: \${error.message}
 
 Genera una respuesta útil para el usuario que:
 1. Explique qué se logró completar
@@ -2470,7 +2470,7 @@ Genera una respuesta útil para el usuario que:
 4. Sugiera pasos alternativos si es posible
 
 Respuesta:
-    `);
+    \`);
 
     return partialResponse;
   }
