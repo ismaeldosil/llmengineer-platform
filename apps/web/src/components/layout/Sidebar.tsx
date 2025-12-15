@@ -26,18 +26,8 @@ interface SidebarProps {
   onToggleCollapse?: () => void;
 }
 
-const DEFAULT_MODULES: Module[] = [
-  { id: '1', title: 'Setup + Fundamentos', lessonsCompleted: 5, totalLessons: 5, isComplete: true },
-  { id: '2', title: 'Plugins Core + Web', lessonsCompleted: 6, totalLessons: 6, isComplete: true },
-  { id: '3', title: 'Desarrollo + Build', lessonsCompleted: 5, totalLessons: 5, isComplete: true },
-  {
-    id: '4',
-    title: 'Testing + App Store',
-    lessonsCompleted: 0,
-    totalLessons: 4,
-    isComplete: false,
-  },
-];
+// Los módulos reales vienen del MainLayout via useGetLessonsQuery
+const DEFAULT_MODULES: Module[] = [];
 
 const EXPANDED_WIDTH = 260;
 const COLLAPSED_WIDTH = 72;
@@ -133,14 +123,14 @@ export function Sidebar({
         </Pressable>
       </Tooltip>
 
-      {/* Modules Section */}
-      {!isCollapsed && (
+      {/* Weeks/Modules Section */}
+      {!isCollapsed && modules.length > 0 && (
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>MODULOS</Text>
+          <Text style={styles.sectionTitle}>SEMANAS</Text>
         </View>
       )}
 
-      {isCollapsed && <View style={styles.collapsedDivider} />}
+      {isCollapsed && modules.length > 0 && <View style={styles.collapsedDivider} />}
 
       {modules.map((module) => {
         const isActive = currentModuleId === module.id;

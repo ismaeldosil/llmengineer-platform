@@ -102,19 +102,20 @@ describe('Sidebar', () => {
   });
 
   describe('Modules Section', () => {
-    it('should render MODULOS section header', () => {
-      const { getByText } = render(<Sidebar />);
+    it('should render SEMANAS section header when modules provided', () => {
+      const modules = [
+        { id: '1', title: 'Semana 1: Test', lessonsCompleted: 1, totalLessons: 2, isComplete: false },
+      ];
+      const { getByText } = render(<Sidebar modules={modules} />);
 
-      expect(getByText('MODULOS')).toBeTruthy();
+      expect(getByText('SEMANAS')).toBeTruthy();
     });
 
-    it('should render default modules when no modules prop provided', () => {
-      const { getByText } = render(<Sidebar />);
+    it('should not render SEMANAS section when no modules provided', () => {
+      const { queryByText } = render(<Sidebar />);
 
-      expect(getByText('Setup + Fundamentos')).toBeTruthy();
-      expect(getByText('Plugins Core + Web')).toBeTruthy();
-      expect(getByText('Desarrollo + Build')).toBeTruthy();
-      expect(getByText('Testing + App Store')).toBeTruthy();
+      // With empty default modules, SEMANAS header should not appear
+      expect(queryByText('SEMANAS')).toBeNull();
     });
 
     it('should render custom modules when provided', () => {
@@ -364,10 +365,10 @@ describe('Sidebar', () => {
 
   describe('Edge Cases', () => {
     it('should handle empty modules array', () => {
-      const { getByText, queryByText } = render(<Sidebar modules={[]} />);
+      const { queryByText } = render(<Sidebar modules={[]} />);
 
-      expect(getByText('MODULOS')).toBeTruthy();
-      expect(queryByText('Setup + Fundamentos')).toBeNull();
+      // SEMANAS header should not appear when no modules
+      expect(queryByText('SEMANAS')).toBeNull();
     });
 
     it('should handle long module titles with truncation', () => {
@@ -407,10 +408,13 @@ describe('Sidebar', () => {
     });
 
     it('should handle rapid navigation between items', () => {
-      const { getByText } = render(<Sidebar />);
+      const modules = [
+        { id: '1', title: 'Semana 1: Test', lessonsCompleted: 0, totalLessons: 2, isComplete: false },
+      ];
+      const { getByText } = render(<Sidebar modules={modules} />);
 
       fireEvent.press(getByText('LLM Engineer'));
-      fireEvent.press(getByText('Setup + Fundamentos'));
+      fireEvent.press(getByText('Semana 1: Test'));
 
       // Dashboard button now toggles collapse, not navigation
       expect(expoRouter.router.push).toHaveBeenCalledTimes(2);
@@ -470,12 +474,15 @@ describe('Sidebar', () => {
 
   describe('Accessibility', () => {
     it('should render all interactive elements as Pressable', () => {
-      const { getByText } = render(<Sidebar />);
+      const modules = [
+        { id: '1', title: 'Semana 1: Test', lessonsCompleted: 0, totalLessons: 2, isComplete: false },
+      ];
+      const { getByText } = render(<Sidebar modules={modules} />);
 
       // All these should be pressable
       expect(getByText('LLM Engineer')).toBeTruthy();
       expect(getByText('Dashboard')).toBeTruthy();
-      expect(getByText('Setup + Fundamentos')).toBeTruthy();
+      expect(getByText('Semana 1: Test')).toBeTruthy();
     });
 
     it('should maintain consistent module order', () => {
@@ -493,11 +500,14 @@ describe('Sidebar', () => {
 
   describe('Collapsed Mode', () => {
     it('should hide text elements when collapsed', () => {
-      const { queryByText } = render(<Sidebar isCollapsed={true} />);
+      const modules = [
+        { id: '1', title: 'Semana 1: Test', lessonsCompleted: 0, totalLessons: 2, isComplete: false },
+      ];
+      const { queryByText } = render(<Sidebar modules={modules} isCollapsed={true} />);
 
       expect(queryByText('LLM Engineer')).toBeNull();
       expect(queryByText('Dashboard')).toBeNull();
-      expect(queryByText('MODULOS')).toBeNull();
+      expect(queryByText('SEMANAS')).toBeNull();
     });
 
     it('should show text elements when not collapsed', () => {
