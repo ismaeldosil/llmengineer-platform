@@ -14,6 +14,19 @@ jest.mock('@/hooks/useSidebarCollapsed', () => ({
   }),
 }));
 
+// Mock useGetLessonsQuery hook
+jest.mock('@/services/api', () => ({
+  useGetLessonsQuery: () => ({
+    data: [
+      { id: '1', title: 'Lesson 1', week: 1, isCompleted: true },
+      { id: '2', title: 'Lesson 2', week: 1, isCompleted: false },
+      { id: '3', title: 'Lesson 3', week: 2, isCompleted: false },
+    ],
+    isLoading: false,
+    error: null,
+  }),
+}));
+
 // Mock Sidebar component
 jest.mock('../Sidebar', () => ({
   Sidebar: ({ currentModuleId }: any) => {
