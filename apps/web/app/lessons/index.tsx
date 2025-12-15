@@ -8,7 +8,7 @@ import {
   RefreshControl,
   Pressable,
 } from 'react-native';
-import { Stack, router, useLocalSearchParams } from 'expo-router';
+import { Stack, router, useGlobalSearchParams } from 'expo-router';
 import { useGetLessonsQuery, useGetProgressQuery } from '@/services/api';
 import { LessonCard } from '@/components/molecules/LessonCard';
 import { MainLayout } from '@/components/layout';
@@ -33,7 +33,7 @@ const WEEK_TITLES: Record<number, string> = {
 };
 
 export default function LessonsScreen() {
-  const { module } = useLocalSearchParams<{ module?: string }>();
+  const { module } = useGlobalSearchParams<{ module?: string }>();
   const selectedWeek = module ? parseInt(module, 10) : null;
 
   const { data: lessons, isLoading, error, refetch } = useGetLessonsQuery();
