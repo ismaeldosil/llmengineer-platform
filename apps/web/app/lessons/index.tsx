@@ -8,17 +8,34 @@ import {
   RefreshControl,
   Pressable,
 } from 'react-native';
-import { Stack, router } from 'expo-router';
+import { Stack, router, useLocalSearchParams } from 'expo-router';
 import { useGetLessonsQuery, useGetProgressQuery } from '@/services/api';
 import { LessonCard } from '@/components/molecules/LessonCard';
 import { MainLayout } from '@/components/layout';
 import { LessonSearch } from '@/components/lessons';
-import { ChevronRight, BookOpen, CheckCircle2, Search } from 'lucide-react-native';
+import { ChevronRight, BookOpen, CheckCircle2, Search, X } from 'lucide-react-native';
 import { Icon } from '@/components/ui/Icon';
 import { getLevelTitle, XP_PER_LEVEL, getXpProgressInLevel } from '@llmengineer/shared';
 import type { Lesson } from '@llmengineer/shared';
 
+// Nombres de las semanas del curso
+const WEEK_TITLES: Record<number, string> = {
+  1: 'Fundamentos',
+  2: 'Prompting Básico',
+  3: 'Contexto',
+  4: 'Outputs y Errores',
+  5: 'Producción Básica',
+  6: 'RAG',
+  7: 'Evaluación y Agentes',
+  8: 'Agentes Avanzados',
+  9: 'Fine-tuning y MLOps',
+  10: 'Modelos Especializados',
+};
+
 export default function LessonsScreen() {
+  const { module } = useLocalSearchParams<{ module?: string }>();
+  const selectedWeek = module ? parseInt(module, 10) : null;
+
   const { data: lessons, isLoading, error, refetch } = useGetLessonsQuery();
   const { data: progress } = useGetProgressQuery();
   const [refreshing, setRefreshing] = useState(false);
@@ -29,6 +46,13 @@ export default function LessonsScreen() {
   const levelTitle = getLevelTitle(level);
   const xpInCurrentLevel = getXpProgressInLevel(totalXp);
   const xpForNextLevel = XP_PER_LEVEL - xpInCurrentLevel;
+
+  // Filter lessons by week if module parameter is present
+  const filteredLessons = useMemo(() => {
+    if (!lessons) return [];
+    if (!selectedWeek) return lessons;
+    return lessons.filter((lesson) => lesson.week === selectedWeek);
+  }, [lessons, selectedWeek]);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -42,9 +66,9 @@ export default function LessonsScreen() {
   }, [refetch]);
 
   const groupedLessons = useMemo(() => {
-    if (!lessons) return [];
+    if (!filteredLessons.length) return [];
 
-    const grouped = lessons.reduce(
+    const grouped = filteredLessons.reduce(
       (acc, lesson) => {
         const week = lesson.week;
         if (!acc[week]) {
@@ -64,12 +88,21 @@ export default function LessonsScreen() {
         completed: weekLessons.filter((l) => l.isCompleted).length,
         total: weekLessons.length,
       }));
-  }, [lessons]);
+  }, [filteredLessons]);
 
-  const totalLessons = lessons?.length || 0;
-  const completedLessons = lessons?.filter((l) => l.isCompleted).length || 0;
+  // Stats for filtered view
+  const displayedLessons = filteredLessons.length;
+  const displayedCompleted = filteredLessons.filter((l) => l.isCompleted).length;
   const progressPercent =
-    totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
+    displayedLessons > 0 ? Math.round((displayedCompleted / displayedLessons) * 100) : 0;
+
+  // Get week title for display
+  const weekTitle = selectedWeek ? WEEK_TITLES[selectedWeek] : null;
+
+  // Clear filter function
+  const clearFilter = () => {
+    router.replace('/lessons/');
+  };
 
   if (isLoading) {
     return (
@@ -96,7 +129,17 @@ export default function LessonsScreen() {
           <Text style={styles.breadcrumbLink}>Dashboard</Text>
         </Pressable>
         <Icon icon={ChevronRight} size="sm" color="#6B7280" />
-        <Text style={styles.breadcrumbCurrent}>Lecciones</Text>
+        {selectedWeek ? (
+          <>
+            <Pressable onPress={clearFilter} style={styles.breadcrumbItem}>
+              <Text style={styles.breadcrumbLink}>Lecciones</Text>
+            </Pressable>
+            <Icon icon={ChevronRight} size="sm" color="#6B7280" />
+            <Text style={styles.breadcrumbCurrent}>Semana {selectedWeek}</Text>
+          </>
+        ) : (
+          <Text style={styles.breadcrumbCurrent}>Lecciones</Text>
+        )}
       </View>
 
       {/* Page Title */}
@@ -104,10 +147,19 @@ export default function LessonsScreen() {
         <View style={styles.titleContainer}>
           <View style={styles.titleWithIcon}>
             <Icon icon={BookOpen} size="lg" color="#3B82F6" />
-            <Text style={styles.pageTitle}>Lecciones</Text>
+            <Text style={styles.pageTitle}>
+              {selectedWeek ? `Semana ${selectedWeek}: ${weekTitle}` : 'Lecciones'}
+            </Text>
+            {selectedWeek && (
+              <Pressable style={styles.clearFilterButton} onPress={clearFilter}>
+                <Icon icon={X} size="sm" color="#9CA3AF" />
+              </Pressable>
+            )}
           </View>
           <Text style={styles.pageSubtitle}>
-            Aprende los fundamentos de LLM Engineering paso a paso
+            {selectedWeek
+              ? `${displayedLessons} lecciones en esta semana`
+              : 'Aprende los fundamentos de LLM Engineering paso a paso'}
           </Text>
         </View>
         <Pressable
@@ -125,8 +177,10 @@ export default function LessonsScreen() {
             <Icon icon={BookOpen} size="md" color="#3B82F6" />
           </View>
           <View style={styles.statContent}>
-            <Text style={styles.statValue}>{totalLessons}</Text>
-            <Text style={styles.statLabel}>Lecciones totales</Text>
+            <Text style={styles.statValue}>{displayedLessons}</Text>
+            <Text style={styles.statLabel}>
+              {selectedWeek ? 'En esta semana' : 'Lecciones totales'}
+            </Text>
           </View>
         </View>
 
@@ -135,13 +189,15 @@ export default function LessonsScreen() {
             <Icon icon={CheckCircle2} size="md" color="#10B981" />
           </View>
           <View style={styles.statContent}>
-            <Text style={styles.statValue}>{completedLessons}</Text>
+            <Text style={styles.statValue}>{displayedCompleted}</Text>
             <Text style={styles.statLabel}>Completadas</Text>
           </View>
         </View>
 
         <View style={styles.progressCard}>
-          <Text style={styles.progressTitle}>Progreso General</Text>
+          <Text style={styles.progressTitle}>
+            {selectedWeek ? 'Progreso Semana' : 'Progreso General'}
+          </Text>
           <View style={styles.progressBarContainer}>
             <View style={[styles.progressBar, { width: `${progressPercent}%` }]} />
           </View>
@@ -398,6 +454,15 @@ const styles = StyleSheet.create({
   searchButtonActive: {
     backgroundColor: '#3B82F6',
     borderColor: '#3B82F6',
+  },
+  clearFilterButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 8,
+    backgroundColor: '#374151',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 12,
   },
   searchPanel: {
     marginTop: 16,

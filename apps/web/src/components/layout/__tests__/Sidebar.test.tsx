@@ -104,7 +104,13 @@ describe('Sidebar', () => {
   describe('Modules Section', () => {
     it('should render SEMANAS section header when modules provided', () => {
       const modules = [
-        { id: '1', title: 'Semana 1: Test', lessonsCompleted: 1, totalLessons: 2, isComplete: false },
+        {
+          id: '1',
+          title: 'Semana 1: Test',
+          lessonsCompleted: 1,
+          totalLessons: 2,
+          isComplete: false,
+        },
       ];
       const { getByText } = render(<Sidebar modules={modules} />);
 
@@ -409,7 +415,13 @@ describe('Sidebar', () => {
 
     it('should handle rapid navigation between items', () => {
       const modules = [
-        { id: '1', title: 'Semana 1: Test', lessonsCompleted: 0, totalLessons: 2, isComplete: false },
+        {
+          id: '1',
+          title: 'Semana 1: Test',
+          lessonsCompleted: 0,
+          totalLessons: 2,
+          isComplete: false,
+        },
       ];
       const { getByText } = render(<Sidebar modules={modules} />);
 
@@ -475,7 +487,13 @@ describe('Sidebar', () => {
   describe('Accessibility', () => {
     it('should render all interactive elements as Pressable', () => {
       const modules = [
-        { id: '1', title: 'Semana 1: Test', lessonsCompleted: 0, totalLessons: 2, isComplete: false },
+        {
+          id: '1',
+          title: 'Semana 1: Test',
+          lessonsCompleted: 0,
+          totalLessons: 2,
+          isComplete: false,
+        },
       ];
       const { getByText } = render(<Sidebar modules={modules} />);
 
@@ -501,7 +519,13 @@ describe('Sidebar', () => {
   describe('Collapsed Mode', () => {
     it('should hide text elements when collapsed', () => {
       const modules = [
-        { id: '1', title: 'Semana 1: Test', lessonsCompleted: 0, totalLessons: 2, isComplete: false },
+        {
+          id: '1',
+          title: 'Semana 1: Test',
+          lessonsCompleted: 0,
+          totalLessons: 2,
+          isComplete: false,
+        },
       ];
       const { queryByText } = render(<Sidebar modules={modules} isCollapsed={true} />);
 

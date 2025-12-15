@@ -59,9 +59,11 @@ export function MainLayout({
       if (!byWeek[lesson.week]) {
         byWeek[lesson.week] = { completed: 0, total: 0 };
       }
-      byWeek[lesson.week].total++;
+      // Non-null assertion safe here because we just initialized it above
+      const weekData = byWeek[lesson.week]!;
+      weekData.total++;
       if (lesson.isCompleted) {
-        byWeek[lesson.week].completed++;
+        weekData.completed++;
       }
     }
 
