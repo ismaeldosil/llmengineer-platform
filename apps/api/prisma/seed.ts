@@ -108,9 +108,19 @@ async function seedBadges() {
       isSecret: false,
     },
     {
-      slug: 'week-8-complete',
+      slug: 'week-5-complete',
+      name: 'Mitad del Camino',
+      description: 'Completaste las primeras 5 semanas del curso',
+      icon: '🎯',
+      category: BadgeCategory.completion,
+      requirement: { weekComplete: 5 },
+      xpBonus: 200,
+      isSecret: false,
+    },
+    {
+      slug: 'week-10-complete',
       name: 'Graduado LLM Engineer',
-      description: 'Completaste todo el curso de 8 semanas',
+      description: 'Completaste todo el curso de 10 semanas',
       icon: '🎓',
       category: BadgeCategory.mastery,
       requirement: { allWeeksComplete: true },
@@ -192,6 +202,7 @@ async function seedBadges() {
 
 async function seedLessons() {
   const lessons = [
+    // ==================== SEMANA 1: Fundamentos ====================
     {
       slug: 'intro-to-llms',
       title: 'Introducción a los LLMs',
@@ -229,13 +240,14 @@ async function seedLessons() {
       sections: [],
       isPublished: true,
     },
+    // ==================== SEMANA 2: Prompting Básico ====================
     {
       slug: 'prompt-engineering-basics',
       title: 'Introducción al Prompt Engineering',
       description:
         'Descubre cómo escribir prompts efectivos para obtener mejores respuestas de los LLMs.',
-      week: 1,
-      order: 3,
+      week: 2,
+      order: 1,
       difficulty: Difficulty.beginner,
       xpReward: 100,
       estimatedMinutes: 25,
@@ -247,21 +259,22 @@ async function seedLessons() {
       title: 'Temperature y Parámetros de Sampling',
       description:
         'Aprende a controlar la creatividad y determinismo de las respuestas mediante parámetros.',
-      week: 1,
-      order: 4,
+      week: 2,
+      order: 2,
       difficulty: Difficulty.beginner,
       xpReward: 100,
       estimatedMinutes: 20,
       sections: [],
       isPublished: true,
     },
+    // ==================== SEMANA 3: Contexto y System Prompts ====================
     {
       slug: 'system-prompts',
       title: 'System Prompts y Roles',
       description:
         'Entiende cómo usar system prompts para definir el comportamiento del modelo.',
-      week: 1,
-      order: 5,
+      week: 3,
+      order: 1,
       difficulty: Difficulty.beginner,
       xpReward: 100,
       estimatedMinutes: 20,
@@ -273,21 +286,22 @@ async function seedLessons() {
       title: 'Gestión de Contexto',
       description:
         'Aprende a manejar conversaciones largas y optimizar el uso de tokens.',
-      week: 2,
-      order: 1,
+      week: 3,
+      order: 2,
       difficulty: Difficulty.beginner,
       xpReward: 150,
       estimatedMinutes: 25,
       sections: [],
       isPublished: true,
     },
+    // ==================== SEMANA 4: Outputs y Manejo de Errores ====================
     {
       slug: 'structured-outputs',
       title: 'Outputs Estructurados',
       description:
         'Descubre cómo obtener respuestas en formatos específicos como JSON.',
-      week: 2,
-      order: 2,
+      week: 4,
+      order: 1,
       difficulty: Difficulty.intermediate,
       xpReward: 150,
       estimatedMinutes: 30,
@@ -299,21 +313,22 @@ async function seedLessons() {
       title: 'Manejo de Errores y Rate Limits',
       description:
         'Aprende a manejar errores, timeouts y límites de rate de las APIs.',
-      week: 2,
-      order: 3,
+      week: 4,
+      order: 2,
       difficulty: Difficulty.intermediate,
       xpReward: 150,
       estimatedMinutes: 25,
       sections: [],
       isPublished: true,
     },
+    // ==================== SEMANA 5: Producción Básica ====================
     {
       slug: 'streaming-responses',
       title: 'Streaming de Respuestas',
       description:
         'Implementa streaming para obtener respuestas progresivas en tiempo real.',
-      week: 2,
-      order: 4,
+      week: 5,
+      order: 1,
       difficulty: Difficulty.intermediate,
       xpReward: 150,
       estimatedMinutes: 30,
@@ -325,21 +340,21 @@ async function seedLessons() {
       title: 'Optimización de Costos',
       description:
         'Estrategias para reducir costos de API manteniendo calidad de respuestas.',
-      week: 2,
-      order: 5,
+      week: 5,
+      order: 2,
       difficulty: Difficulty.intermediate,
       xpReward: 150,
       estimatedMinutes: 25,
       sections: [],
       isPublished: true,
     },
-    // Semana 3: RAG
+    // ==================== SEMANA 6: RAG ====================
     {
       slug: 'rag-fundamentals',
       title: 'RAG Fundamentals',
       description:
         'Aprende los fundamentos de Retrieval Augmented Generation: embeddings, vector databases y chunking strategies.',
-      week: 3,
+      week: 6,
       order: 1,
       difficulty: Difficulty.intermediate,
       xpReward: 200,
@@ -352,7 +367,7 @@ async function seedLessons() {
       title: 'RAG Avanzado',
       description:
         'Técnicas avanzadas de RAG: hybrid search, re-ranking, query transformation y evaluación de pipelines.',
-      week: 3,
+      week: 6,
       order: 2,
       difficulty: Difficulty.advanced,
       xpReward: 200,
@@ -360,13 +375,13 @@ async function seedLessons() {
       sections: [],
       isPublished: true,
     },
-    // Semana 4: Evaluation & Agents Basics
+    // ==================== SEMANA 7: Evaluación y Agentes Básicos ====================
     {
       slug: 'evaluation-benchmarking',
       title: 'Evaluación y Benchmarking',
       description:
         'Aprende a evaluar LLMs: métricas automáticas, LLM-as-Judge, benchmarks estándar y evaluación humana.',
-      week: 4,
+      week: 7,
       order: 1,
       difficulty: Difficulty.intermediate,
       xpReward: 200,
@@ -379,7 +394,7 @@ async function seedLessons() {
       title: 'Agentes y Tool Use',
       description:
         'Fundamentos de agentes: function calling, tool use, ReAct pattern y construcción de agentes básicos.',
-      week: 4,
+      week: 7,
       order: 2,
       difficulty: Difficulty.intermediate,
       xpReward: 200,
@@ -387,13 +402,13 @@ async function seedLessons() {
       sections: [],
       isPublished: true,
     },
-    // Semana 5: Agents Advanced & Security
+    // ==================== SEMANA 8: Agentes Avanzados y Seguridad ====================
     {
       slug: 'agents-advanced',
       title: 'Agentes Avanzados',
       description:
         'Sistemas multi-agente, orquestación con LangGraph y CrewAI, memoria a largo plazo y planning.',
-      week: 5,
+      week: 8,
       order: 1,
       difficulty: Difficulty.advanced,
       xpReward: 250,
@@ -406,7 +421,7 @@ async function seedLessons() {
       title: 'Seguridad y Guardrails',
       description:
         'Protege tus aplicaciones LLM: prompt injection, jailbreaking, PII detection y content moderation.',
-      week: 5,
+      week: 8,
       order: 2,
       difficulty: Difficulty.advanced,
       xpReward: 250,
@@ -414,13 +429,13 @@ async function seedLessons() {
       sections: [],
       isPublished: true,
     },
-    // Semana 6: Fine-tuning & MLOps
+    // ==================== SEMANA 9: Fine-tuning y MLOps ====================
     {
       slug: 'finetuning-adaptation',
       title: 'Fine-tuning y Adaptación',
       description:
         'Técnicas de fine-tuning: LoRA, QLoRA, preparación de datasets y cuándo usar fine-tuning vs prompting.',
-      week: 6,
+      week: 9,
       order: 1,
       difficulty: Difficulty.advanced,
       xpReward: 250,
@@ -433,7 +448,7 @@ async function seedLessons() {
       title: 'MLOps para LLMs',
       description:
         'Lleva LLMs a producción: observabilidad, logging, A/B testing, optimización de latencia y costos.',
-      week: 6,
+      week: 9,
       order: 2,
       difficulty: Difficulty.advanced,
       xpReward: 250,
@@ -441,13 +456,13 @@ async function seedLessons() {
       sections: [],
       isPublished: true,
     },
-    // Semana 7: Multimodal
+    // ==================== SEMANA 10: Modelos Especializados ====================
     {
       slug: 'multimodal-models',
       title: 'Modelos Multimodales',
       description:
         'Trabaja con modelos que procesan imágenes, audio y documentos: GPT-4 Vision, Whisper y más.',
-      week: 7,
+      week: 10,
       order: 1,
       difficulty: Difficulty.advanced,
       xpReward: 250,
@@ -455,14 +470,13 @@ async function seedLessons() {
       sections: [],
       isPublished: true,
     },
-    // Semana 8: Local Models
     {
       slug: 'local-models-edge',
       title: 'Modelos Locales y Edge',
       description:
         'Ejecuta LLMs localmente: Ollama, quantización, optimización para edge y casos de uso offline.',
-      week: 8,
-      order: 1,
+      week: 10,
+      order: 2,
       difficulty: Difficulty.advanced,
       xpReward: 250,
       estimatedMinutes: 40,

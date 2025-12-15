@@ -1,12 +1,13 @@
 /* eslint-disable no-console */
 import { PrismaClient } from '@prisma/client';
-// Weeks 1-5 (Lessons 1-10)
+// 10 semanas, 2 lecciones por semana = 20 lecciones total
+// Semanas 1-5 (Lecciones 1-10): Fundamentos
 import { introToLlms, apiBasics } from './content/lessons-1-2';
 import { promptEngineeringBasics, temperatureAndSampling } from './content/lessons-3-4';
 import { systemPrompts, contextManagement } from './content/lessons-5-6';
 import { structuredOutputs, errorHandling } from './content/lessons-7-8';
 import { streamingResponses, costOptimization } from './content/lessons-9-10';
-// Weeks 6-9 (Lessons 11-20)
+// Semanas 6-10 (Lecciones 11-20): Avanzado
 import { ragFundamentals, ragAdvanced } from './content/lessons-11-12';
 import { evaluationBenchmarking, agentsFundamentals } from './content/lessons-13-14';
 import { agentsAdvanced, securityGuardrails } from './content/lessons-15-16';
@@ -15,35 +16,36 @@ import { multimodalModels, localModelsEdge } from './content/lessons-19-20';
 
 const prisma = new PrismaClient();
 
-// Map slug to content (all 20 lessons)
+// Map slug to content (all 20 lessons, 10 weeks x 2)
 const lessonContentMap: Record<string, { sections: unknown[]; quiz?: unknown }> = {
-  // Week 1
+  // Semana 1: Fundamentos
   'intro-to-llms': introToLlms,
   'api-basics': apiBasics,
-  // Week 2
+  // Semana 2: Prompting Básico
   'prompt-engineering-basics': promptEngineeringBasics,
   'temperature-and-sampling': temperatureAndSampling,
-  // Week 3
+  // Semana 3: Contexto y System Prompts
   'system-prompts': systemPrompts,
   'context-management': contextManagement,
-  // Week 4
+  // Semana 4: Outputs y Errores
   'structured-outputs': structuredOutputs,
   'error-handling': errorHandling,
-  // Week 5
+  // Semana 5: Producción Básica
   'streaming-responses': streamingResponses,
   'cost-optimization': costOptimization,
-  // Week 6
+  // Semana 6: RAG
   'rag-fundamentals': ragFundamentals,
   'rag-advanced': ragAdvanced,
-  // Week 7
+  // Semana 7: Evaluación y Agentes Básicos
   'evaluation-benchmarking': evaluationBenchmarking,
   'agents-fundamentals': agentsFundamentals,
-  // Week 8
+  // Semana 8: Agentes Avanzados y Seguridad
   'agents-advanced': agentsAdvanced,
   'security-guardrails': securityGuardrails,
+  // Semana 9: Fine-tuning y MLOps
   'finetuning-adaptation': finetuningAdaptation,
   'production-mlops': productionMlops,
-  // Week 9
+  // Semana 10: Modelos Especializados
   'multimodal-models': multimodalModels,
   'local-models-edge': localModelsEdge,
 };
