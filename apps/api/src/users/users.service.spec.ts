@@ -100,6 +100,8 @@ describe('UsersService', () => {
           id: true,
           email: true,
           displayName: true,
+          avatarUrl: true,
+          bio: true,
           createdAt: true,
         },
       });
@@ -164,6 +166,8 @@ describe('UsersService', () => {
           id: true,
           email: true,
           displayName: true,
+          avatarUrl: true,
+          bio: true,
           createdAt: true,
         },
       });
@@ -459,6 +463,8 @@ describe('UsersService', () => {
           id: true,
           email: true,
           displayName: true,
+          avatarUrl: true,
+          bio: true,
           createdAt: true,
         },
       });
@@ -489,6 +495,8 @@ describe('UsersService', () => {
           id: true,
           email: true,
           displayName: true,
+          avatarUrl: true,
+          bio: true,
           createdAt: true,
         },
       });
@@ -529,6 +537,8 @@ describe('UsersService', () => {
           id: true,
           email: true,
           displayName: true,
+          avatarUrl: true,
+          bio: true,
           createdAt: true,
         },
       });
@@ -558,6 +568,8 @@ describe('UsersService', () => {
         id: true,
         email: true,
         displayName: true,
+        avatarUrl: true,
+        bio: true,
         createdAt: true,
       });
     });

@@ -5,14 +5,20 @@
   "framework": null,
   "installCommand": "npm install --legacy-peer-deps",
   "rewrites": [
-    {
-      "source": "/health",
-      "destination": "/assets/health.json"
-    },
-    {
-      "source": "/((?!assets/).*)",
-      "destination": "/index.html"
-    }
+    { "source": "/health", "destination": "/assets/health.json" },
+    { "source": "/dashboard", "destination": "/index.html" },
+    { "source": "/dashboard/(.*)", "destination": "/index.html" },
+    { "source": "/auth/(.*)", "destination": "/index.html" },
+    { "source": "/lessons", "destination": "/index.html" },
+    { "source": "/lessons/(.*)", "destination": "/index.html" },
+    { "source": "/games", "destination": "/index.html" },
+    { "source": "/games/(.*)", "destination": "/index.html" },
+    { "source": "/profile", "destination": "/index.html" },
+    { "source": "/profile/(.*)", "destination": "/index.html" },
+    { "source": "/leaderboard", "destination": "/index.html" },
+    { "source": "/leaderboard/(.*)", "destination": "/index.html" },
+    { "source": "/badges", "destination": "/index.html" },
+    { "source": "/:path((?!assets|_expo|favicon).*)", "destination": "/index.html" }
   ],
   "headers": [
     {

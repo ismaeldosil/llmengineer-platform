@@ -1,8 +1,27 @@
-import { configureStore } from '@reduxjs/toolkit';
+import { configureStore, Middleware } from '@reduxjs/toolkit';
 import { setupListeners } from '@reduxjs/toolkit/query';
 import { apiSlice } from '@/services/api';
 import authReducer, { setCredentials } from './slices/authSlice';
 import progressReducer from './slices/progressSlice';
+
+// Middleware to sync auth state after profile update
+const profileSyncMiddleware: Middleware = (storeAPI) => (next) => (action) => {
+  const result = next(action);
+  // Update auth state when profile is updated
+  if (apiSlice.endpoints.updateProfile.matchFulfilled(action)) {
+    const state = storeAPI.getState() as RootState;
+    const currentToken = state.auth.token;
+    if (currentToken) {
+      storeAPI.dispatch(
+        setCredentials({
+          user: action.payload,
+          token: currentToken,
+        })
+      );
+    }
+  }
+  return result;
+};
 
 export const store = configureStore({
   reducer: {
@@ -15,22 +34,7 @@ export const store = configureStore({
       serializableCheck: {
         ignoredActions: ['persist/PERSIST'],
       },
-    }).concat(apiSlice.middleware, (storeAPI) => (next) => (action) => {
-      // Update auth state when profile is updated
-      if (apiSlice.endpoints.updateProfile.matchFulfilled(action)) {
-        const state = storeAPI.getState() as RootState;
-        const currentToken = state.auth.token;
-        if (currentToken) {
-          storeAPI.dispatch(
-            setCredentials({
-              user: action.payload,
-              token: currentToken,
-            })
-          );
-        }
-      }
-      return next(action);
-    }),
+    }).concat(apiSlice.middleware, profileSyncMiddleware),
 });
 
 setupListeners(store.dispatch);
